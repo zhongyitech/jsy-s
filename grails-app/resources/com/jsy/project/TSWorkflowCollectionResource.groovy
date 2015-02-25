@@ -45,6 +45,7 @@ class TSWorkflowCollectionResource {
         (1..22).each { i ->
             TSProject.findByName('project'+i) ?: new TSProject(
                     name: 'project'+i,
+                    projectDealer: 'dealer_'+i,
                     projectOwner: admin,
                     creator: admin,
                     creatorName: admin.chainName,
