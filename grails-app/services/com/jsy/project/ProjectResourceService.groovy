@@ -391,6 +391,10 @@ class ProjectResourceService {
         }
 
         println "otherFilesSize7:"+project.othersFiles.size()
+
+        //设置下一个阶段
+        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+        tsWorkflow.moveToModelPhase(tsWorkflow.getGatherOAPhase())
         project.save(failOnError: true)
     }
 

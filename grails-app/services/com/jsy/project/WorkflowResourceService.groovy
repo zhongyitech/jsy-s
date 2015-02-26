@@ -119,38 +119,6 @@ class WorkflowResourceService {
         flow1.save(failOnError: true)
 
         def modelPhase = flow1.getNextModelPhase()
-        if(!flow1 || !modelPhase) {
-            throw new Exception("no first model phase found")
-        };
-
-        TSWorkflowPhase workflowCurrentPhase = new TSWorkflowPhase(
-                phaseIndex: modelPhase.phaseIndex,
-                phaseEn: modelPhase.phaseEn,
-                phaseName: modelPhase.phaseName,
-                phaseWorkflow:flow1
-        );
-        modelPhase.phaseParticipants?.each{parti->
-            workflowCurrentPhase.addToPhaseParticipants(parti)
-        }
-
-
-
-        if(workflowCurrentPhase.hasErrors()){
-            throw new Exception(workflowCurrentPhase.getErrors())
-        }
-        workflowCurrentPhase.save(failOnError: true)
-
-        //冗余设计
-        project.currentStageName=workflowCurrentPhase.phaseName
-        project.currentStageEn=workflowCurrentPhase.phaseEn
-        project.save(failOnError: true)
-
-        flow1.workflowCurrentPhase=workflowCurrentPhase
-        flow1.addToWorkflowPhases(workflowCurrentPhase)
-        if(flow1.hasErrors()){
-            throw new Exception(flow1.getErrors())
-        }
-
-        flow1.save(failOnError: true)
+        flow1.moveToModelPhase(modelPhase)
     }
 }

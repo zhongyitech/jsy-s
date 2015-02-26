@@ -44,4 +44,84 @@ class TSWorkflow {
             return workflowModel.modelPhases.find{it.phaseIndex== 1};
         }
     }
+
+
+    def getGatherInfoPhase(){
+        def phase =  workflowModel.modelPhases.find{it.phaseEn== 'gatherInfo'};
+        return phase
+    }
+
+    def getGatherOAPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'gatherOA'};
+        return phase
+    }
+
+    def getResearchPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'research'};
+        return phase
+    }
+
+    def getResearchOAPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'researchOA'};
+        return phase
+    }
+
+    def getMeetingPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'meeting'};
+        return phase
+    }
+
+    def getOtherEAPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'otherEA'};
+        return phase
+    }
+
+    def getAddCompanyPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'addCompany'};
+        return phase
+    }
+
+    def getMakeContactPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'makeContact'};
+        return phase
+    }
+
+    def getMakeContactOAPhase(){
+        def phase = workflowModel.modelPhases.find{it.phaseEn== 'makeContactOA'};
+        return phase
+    }
+
+    def moveToModelPhase(modelPhase){
+        if(!modelPhase) {
+            throw new Exception("no modelPhase")
+        };
+
+        TSWorkflowPhase workflowCurrentPhase = new TSWorkflowPhase(
+                phaseIndex: modelPhase.phaseIndex,
+                phaseEn: modelPhase.phaseEn,
+                phaseName: modelPhase.phaseName,
+                phaseWorkflow:this
+        );
+        modelPhase.phaseParticipants?.each{parti->
+            workflowCurrentPhase.addToPhaseParticipants(parti)
+        }
+
+        if(workflowCurrentPhase.hasErrors()){
+            throw new Exception(workflowCurrentPhase.getErrors())
+        }
+        workflowCurrentPhase.save(failOnError: true)
+
+        //冗余设计
+        workflowProject.currentStageName=workflowCurrentPhase.phaseName
+        workflowProject.currentStageEn=workflowCurrentPhase.phaseEn
+        workflowProject.save(failOnError: true)
+
+        this.workflowCurrentPhase=workflowCurrentPhase
+        this.addToWorkflowPhases(workflowCurrentPhase)
+        if(this.hasErrors()){
+            throw new Exception(this.getErrors())
+        }
+
+        this.save(failOnError: true)
+    }
 }
