@@ -5,7 +5,9 @@ import com.jsy.fundObject.Fund
 import com.jsy.system.UploadFile
 
 /**
- * 基金项目
+ * 基金项目，这里记录了项目的基本信息，以及创建项目流程的所有业务数据
+ * 
+ * 创建项目流程: gatherInfo gatherOA research researchOA meeting otherEA addCompany makeContact makeContactOA
  */
 class TSProject {
 
@@ -47,10 +49,15 @@ class TSProject {
     TSFlowFile businessPlanFile  //商务计划书
 
     //步骤1.2 gatherOA
+    String gatherOAStatus = "working"
 
     //步骤1.3 research
+    TSFlowFile lawTransfer       //法律进调
+    TSFlowFile projectTransfer   //项目进调
+    TSFlowFile financialReport   //财务报告
 
     //步骤1.4 researchOA
+    String researchOAStatus = "working"
 
     //步骤1.5 meeting
 
@@ -61,6 +68,7 @@ class TSProject {
     //步骤3   makeContact
 
     //步骤3.1 makeContactOA
+    String makeContactOAStatus = "working"
 
 
 
@@ -72,6 +80,9 @@ class TSProject {
 
         /****步骤1.1 gatherInfo****/
         othersFiles:TSFlowFile,         //其他文件
+
+        /****步骤1.3 research****/
+        researchOthersFiles:TSFlowFile, //其他文件
     ];
 
     static mappedBy = [
@@ -80,7 +91,13 @@ class TSProject {
             financialFile: "none",
             toPublicFile: "none",
             businessPlanFile: "none",
-            othersFiles: "none"]
+            othersFiles: "none",
+
+            lawTransfer: "none",
+            projectTransfer: "none",
+            financialReport: "none",
+            researchOthersFiles: "none",
+    ]
 
     static constraints = {
         name blank: false, unique: true
@@ -103,6 +120,18 @@ class TSProject {
         stockStructure nullable: true
         debt nullable: true
         assets nullable: true
+
+        gatherOAStatus : ["working", "complete", "reject", "fallback"]
+
+        lawTransfer nullable: true
+        projectTransfer nullable: true
+        financialReport nullable: true
+
+        researchOAStatus : ["working", "complete", "reject", "fallback"]
+
+
+        makeContactOAStatus : ["working", "complete", "reject", "fallback"]
+
     }
 
     public TSWorkflow getProjectWorkflow(){

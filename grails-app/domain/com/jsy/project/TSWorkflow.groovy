@@ -51,8 +51,18 @@ class TSWorkflow {
         return phase
     }
 
+    def getGatherInfo(){
+        def phase =  workflowPhases.find{it.phaseEn== 'gatherInfo'};
+        return phase
+    }
+
     def getGatherOAPhase(){
         def phase = workflowModel.modelPhases.find{it.phaseEn== 'gatherOA'};
+        return phase
+    }
+
+    def getGatherOA(){
+        def phase = workflowPhases.find{it.phaseEn== 'gatherOA'};
         return phase
     }
 
@@ -61,8 +71,18 @@ class TSWorkflow {
         return phase
     }
 
+    def getResearch(){
+        def phase = workflowPhases.find{it.phaseEn== 'research'};
+        return phase
+    }
+
     def getResearchOAPhase(){
         def phase = workflowModel.modelPhases.find{it.phaseEn== 'researchOA'};
+        return phase
+    }
+
+    def getResearchOA(){
+        def phase = workflowPhases.find{it.phaseEn== 'researchOA'};
         return phase
     }
 
@@ -71,8 +91,18 @@ class TSWorkflow {
         return phase
     }
 
+    def getMeeting(){
+        def phase = workflowPhases.find{it.phaseEn== 'meeting'};
+        return phase
+    }
+
     def getOtherEAPhase(){
         def phase = workflowModel.modelPhases.find{it.phaseEn== 'otherEA'};
+        return phase
+    }
+
+    def getOtherEA(){
+        def phase = workflowPhases.find{it.phaseEn== 'otherEA'};
         return phase
     }
 
@@ -81,13 +111,28 @@ class TSWorkflow {
         return phase
     }
 
+    def getAddCompany(){
+        def phase = workflowPhases.find{it.phaseEn== 'addCompany'};
+        return phase
+    }
+
     def getMakeContactPhase(){
         def phase = workflowModel.modelPhases.find{it.phaseEn== 'makeContact'};
         return phase
     }
 
+    def getMakeContact(){
+        def phase = workflowPhases.find{it.phaseEn== 'makeContact'};
+        return phase
+    }
+
     def getMakeContactOAPhase(){
         def phase = workflowModel.modelPhases.find{it.phaseEn== 'makeContactOA'};
+        return phase
+    }
+
+    def getMakeContactOA(){
+        def phase = workflowPhases.find{it.phaseEn== 'makeContactOA'};
         return phase
     }
 
@@ -115,6 +160,9 @@ class TSWorkflow {
         workflowProject.currentStageName=workflowCurrentPhase.phaseName
         workflowProject.currentStageEn=workflowCurrentPhase.phaseEn
         workflowProject.save(failOnError: true)
+
+        this.workflowCurrentPhase?.phaseFinished=true
+        this.workflowCurrentPhase?.save(failOnError: true)
 
         this.workflowCurrentPhase=workflowCurrentPhase
         this.addToWorkflowPhases(workflowCurrentPhase)

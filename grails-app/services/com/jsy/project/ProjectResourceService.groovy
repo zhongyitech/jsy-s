@@ -180,7 +180,62 @@ class ProjectResourceService {
                         "project":project
                 ];
             }else if(phase.phaseEn=='research'){
+
+                def lawTransfer = []
+                project.lawTransfer?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    lawTransfer << attachFile
+                }
+
+                def projectTransfer = []
+                project.projectTransfer?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    projectTransfer << attachFile
+                }
+
+                def financialReport = []
+                project.financialReport?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    financialReport << attachFile
+                }
+
+                def other_attachments = []
+                project.researchOthersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    entity.desc2 = tsfile.pdesc2
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
+
+
                 resultObj.researchBean = [
+                        "lawTransfer":lawTransfer,
+                        "lawTransfer_pdesc":project.lawTransfer?.pdesc,
+                        "lawTransfer_pdesc2":project.lawTransfer?.pdesc2,
+                        "projectTransfer":projectTransfer,
+                        "projectTransfer_pdesc":project.projectTransfer?.pdesc,
+                        "projectTransfer_pdesc2":project.projectTransfer?.pdesc2,
+                        "financialReport":financialReport,
+                        "financialReport_pdesc":project.financialReport?.pdesc,
+                        "financialReport_pdesc2":project.financialReport?.pdesc2,
+                        "other_attachments":other_attachments,
+
                         "phase": phase,
                         "accessable":accessable,
                         "project":project
@@ -267,8 +322,7 @@ class ProjectResourceService {
 
 
     def completeGather(TSProject project, def obj){
-        println "otherFilesSize1:"+project.othersFiles.size()
-        def phase = getPhase(project, "gatherInfo");
+        def phase = project.getProjectWorkflow().getGatherInfo();
 
         if(obj.certificateFiles_attachments && obj.certificateFiles_attachments.size() > 0){
             TSFlowFile flowFile = new TSFlowFile(pdesc: obj.certificateFilesDesc,flowPhase:phase,project:project);
@@ -291,7 +345,6 @@ class ProjectResourceService {
             }
 
         }
-        println "otherFilesSize2:"+project.othersFiles.size()
         if(obj.debtFiles_attachments && obj.debtFiles_attachments.size() > 0){
             TSFlowFile flowFile = new TSFlowFile(pdesc: obj.debtFilesDesc,flowPhase:phase,project:project);
             flowFile.save(failOnError: true)
@@ -312,7 +365,6 @@ class ProjectResourceService {
                 project.debtFile = flowFile
             }
         }
-        println "otherFilesSize3:"+project.othersFiles.size()
         if(obj.financialFiles_attachments && obj.financialFiles_attachments.size() > 0){
             TSFlowFile flowFile = new TSFlowFile(pdesc: obj.financialFilesDesc,flowPhase:phase,project:project);
             flowFile.save(failOnError: true)
@@ -333,7 +385,6 @@ class ProjectResourceService {
                 project.financialFile = flowFile
             }
         }
-        println "otherFilesSize4:"+project.othersFiles.size()
         if(obj.toPublicFiles_attachments && obj.toPublicFiles_attachments.size() > 0){
             TSFlowFile flowFile = new TSFlowFile(pdesc: obj.toPublicFilesDesc,flowPhase:phase,project:project);
             flowFile.save(failOnError: true)
@@ -354,7 +405,6 @@ class ProjectResourceService {
                 project.toPublicFile = flowFile
             }
         }
-        println "otherFilesSize5:"+project.othersFiles.size()
         if(obj.businessPlanFiles_attachments && obj.businessPlanFiles_attachments.size() > 0){
             TSFlowFile flowFile = new TSFlowFile(pdesc: obj.businessPlanFilesDesc,flowPhase:phase,project:project);
             flowFile.save(failOnError: true)
@@ -375,7 +425,6 @@ class ProjectResourceService {
                 project.businessPlanFile = flowFile
             }
         }
-        println "otherFilesSize6:"+project.othersFiles.size()
         if(obj.other_attachments && obj.other_attachments.size() > 0){
             obj.other_attachments?.each{attachFile->
                 TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
@@ -390,7 +439,6 @@ class ProjectResourceService {
             }
         }
 
-        println "otherFilesSize7:"+project.othersFiles.size()
 
         //设置下一个阶段
         TSWorkflow tsWorkflow = project.getProjectWorkflow()
@@ -398,15 +446,137 @@ class ProjectResourceService {
         project.save(failOnError: true)
     }
 
-    def getPhase(TSProject project,String phaseEn){
-        def rtn
-        project.getProjectWorkflow().workflowPhases.each {phase->
-            if(phase.phaseEn==phaseEn){
-                rtn = phase
-                return rtn
+    def completeResearch(TSProject project, def obj) {
+        def phase = project.getProjectWorkflow().getResearch()
+
+        if(obj.lowFiles_attachments && obj.lowFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.lowDesc,pdesc2: obj.lowDesc2,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.lowFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.lawTransfer){
+                project.lawTransfer.pdesc=flowFile.pdesc
+                project.lawTransfer.pdesc2=flowFile.pdesc2
+                flowFile.relateFiles.each{it->
+                    project.lawTransfer.addToRelateFiles(it)
+                }
+            }else{
+                project.lawTransfer = flowFile
+            }
+
+        }
+
+        if(obj.projectFiles_attachments && obj.projectFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.projectDesc,pdesc2: obj.projectDesc2,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.projectFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.projectTransfer){
+                project.projectTransfer.pdesc=flowFile.pdesc
+                project.projectTransfer.pdesc2=flowFile.pdesc2
+                flowFile.relateFiles.each{it->
+                    project.projectTransfer.addToRelateFiles(it)
+                }
+            }else{
+                project.projectTransfer = flowFile
+            }
+
+        }
+
+
+        if(obj.finanFiles_attachments && obj.finanFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.finanDesc,pdesc2: obj.finanDesc2,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.finanFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.financialReport){
+                project.financialReport.pdesc=flowFile.pdesc
+                project.financialReport.pdesc2=flowFile.pdesc2
+                flowFile.relateFiles.each{it->
+                    project.financialReport.addToRelateFiles(it)
+                }
+            }else{
+                project.financialReport = flowFile
+            }
+
+        }
+
+        if(obj.research_other_attachments && obj.research_other_attachments.size() > 0){
+            obj.research_other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,pdesc2: attachFile.desc2,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToResearchOthersFiles(flowFile)
             }
         }
-        rtn
+
+        println "research:"
+        //设置下一个阶段
+        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+        def nextphase = tsWorkflow.getResearchOAPhase()
+        tsWorkflow.moveToModelPhase(nextphase)
+        project.save(failOnError: true)
+    }
+
+
+
+
+    /**
+     * gatherOA, researchOA，makeContactOA
+     */
+    def checkOAJob(){
+        println "start checking oa job..."
+        TSProject.list().each {project->
+            def moveToModel = null
+            project.getProjectWorkflow().workflowPhases.each {phase->
+                if("gatherOA".equals(phase.phaseEn)){
+                    project.gatherOAStatus = "complete"
+
+                    TSWorkflow tsWorkflow = project.getProjectWorkflow()
+                    moveToModel = tsWorkflow.getResearchPhase()
+
+                    project.save(failOnError: true)
+                }else if("researchOA".equals(phase.phaseEn)){
+                    project.researchOAStatus = "complete"
+
+                    TSWorkflow tsWorkflow = project.getProjectWorkflow()
+                    moveToModel = tsWorkflow.getMeetingPhase()
+
+                    project.save(failOnError: true)
+                }else if("makeContactOA".equals(phase.phaseEn)){
+                    project.makeContactOAStatus = "complete"
+                    project.isEnded=true //已经是最后一个阶段了
+                    project.save(failOnError: true)
+                }
+
+            }
+            if(moveToModel){
+                project.getProjectWorkflow().moveToModelPhase(moveToModel)
+            }
+        }
     }
 
 

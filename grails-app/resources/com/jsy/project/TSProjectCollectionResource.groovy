@@ -129,7 +129,7 @@ class TSProjectCollectionResource {
         return Response.ok(result.toString()).status(200).build()
     }
 
-    //新增
+    //提交收集
     @POST
     @Path('/complete_gather')
     Response completeGather(String datastr) {
@@ -151,7 +151,7 @@ class TSProjectCollectionResource {
         try{
             //权限校验
             def user = springSecurityService.getCurrentUser();
-            def phase = projectResourceService.getPhase(project, "gatherInfo");
+            def phase = project.getProjectWorkflow().getGatherInfo()
             def accessable = projectResourceService.checkUserAccessable(phase,project,user);
             if(!accessable){
                 restStatus = "500";
@@ -178,6 +178,55 @@ class TSProjectCollectionResource {
             return Response.ok(result.toString()).status(500).build()
         }
     }
+
+    //提交现场考察
+    @POST
+    @Path('/complete_research')
+    Response completeResearch(String datastr) {
+        JSONObject result = new JSONObject();
+        JSONArray table = new JSONArray();
+        String restStatus = "200";
+
+        // get project
+        org.json.JSONObject obj = JSON.parse(datastr)
+        def projectid = obj.projectid
+        TSProject project = TSProject.get(projectid);
+        if(!project){
+            restStatus = "500";
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "no such project found")
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+        try{
+            //权限校验
+            def user = springSecurityService.getCurrentUser();
+            def phase = project.getProjectWorkflow().getResearch()
+            def accessable = projectResourceService.checkUserAccessable(phase,project,user);
+            if(!accessable){
+                restStatus = "500";
+                result.put("rest_status", restStatus)
+                result.put("rest_result", "you can not access this phase")
+                return Response.ok(result.toString()).status(500).build()
+            }
+
+
+
+            //数据保存
+            projectResourceService.completeResearch(project,obj)
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "")
+            return Response.ok(result.toString()).status(200).build()
+        }catch (Exception e){
+            restStatus = "500";
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", e.getLocalizedMessage())
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
 
 
     @POST
