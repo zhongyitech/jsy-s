@@ -1,8 +1,11 @@
 package com.jsy.system
 
+import com.jsy.fundObject.Finfo
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import javax.ws.rs.DELETE
+import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
 import static org.grails.jaxrs.response.Responses.*
@@ -36,25 +39,105 @@ class DepartmentCollectionResource {
 //    result.put("rest_status", restStatus)
 //    result.put("rest_result", dp as JSON)
 //    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-    @POST
-    Response create(Department dto) {
-        created departmentResourceService.create(dto)
-    }
-
     @GET
-    Response readAll() {
+    @Path('/readAll')
+    Response readAll(){
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        def dp
-        try{
-            dp = departmentResourceService.readAll()
+        def bfpr
+        try {
+            bfpr = Department.findAll()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(500).build()
+
+        }
+
+    }
+    @POST
+    Response create(Department dto) {
+
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def bfpr
+        try {
+            bfpr = departmentResourceService.create(dto)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(500).build()
+
+        }
+
+
+    }
+
+    @PUT
+    Response update(Department dto,@QueryParam('id') Long id){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        dto.id = id
+        def  rc
+        try {
+            rc = departmentResourceService.update(dto)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", rc as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", rc as JSON)
+            return Response.ok(result.toString()).status(500).build()
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", dp as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
+
+    }
+
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(Finfo finfo) {
+        print("filePackageResourceService.readAllForPage()")
+        org.json.JSONObject result = new org.json.JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        int total
+        org.json.JSONObject json
+        def fp
+        try {
+            json = departmentResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            total = json.get("size")
+            print(total)
+            fp = json.get("page")
+            print(fp)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", fp as JSON)
+            result.put("rest_total", total)
+
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", fp as JSON)
+            result.put("rest_total", total)
+
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+
     }
 
     @GET
@@ -75,10 +158,36 @@ class DepartmentCollectionResource {
         result.put("rest_result", dp as JSON)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
+    @DELETE
+    Response delete(@QueryParam('id') Long id){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def dp
+        try{
+            dp = departmentResourceService.delete(id)
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dp as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dp as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+
+    }
 
 
     @Path('/{id}')
     DepartmentResource getResource(@PathParam('id') Long id) {
         new DepartmentResource(departmentResourceService: departmentResourceService, id: id)
     }
+
+
+
 }

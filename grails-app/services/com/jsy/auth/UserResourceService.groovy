@@ -32,8 +32,44 @@ class UserResourceService {
             throw new DomainObjectNotFoundException(User.class, dto.id)
             return false
         }
-        obj.union(dto)
+//        obj.union(dto)
 //        obj.properties = dto.properties
+        if (dto.password){
+            obj.password = dto.password
+        }
+        if (dto.chainName){
+            obj.chainName = dto.chainName
+        }
+        if (dto.skr){
+            obj.skr = dto.skr
+        }
+        if (dto.khh){
+            obj.khh = dto.khh
+        }
+        if (dto.yhzh){
+            obj.yhzh = dto.yhzh
+        }
+        if (null != dto.isUser || "" != dto.isUser){
+            obj.isUser = dto.isUser
+        }
+        if (dto.department){
+            obj.department = dto.department
+        }
+        if (null != dto.enabled || "" != dto.enabled){
+            print("dto.enabled = "+dto.enabled)
+            print("obj.enabled = "+obj.enabled)
+            obj.enabled = dto.enabled
+            print("finished obj.enabled = "+obj.enabled)
+        }
+        if (null != dto.accountExpired || "" != dto.accountExpired){
+            obj.accountExpired = dto.accountExpired
+        }
+        if (null != dto.accountLocked || "" != dto.accountLocked){
+            obj.accountLocked = dto.accountLocked
+        }
+        if (null != dto.passwordExpired || "" != dto.passwordExpired){
+            obj.passwordExpired = dto.passwordExpired
+        }
         obj
     }
 

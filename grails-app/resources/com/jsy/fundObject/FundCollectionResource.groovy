@@ -95,7 +95,6 @@ class FundCollectionResource {
     @PUT
     @Path('/update')
     Response update(Fund dto,@QueryParam('id') Long id) {
-        print("update id = "+id)
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def fund

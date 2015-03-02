@@ -1,8 +1,10 @@
 package com.jsy.fundObject
 
+import com.jsy.system.TypeConfig
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
@@ -33,15 +35,20 @@ class FundCompanyInformationCollectionResource {
         def bfpr
         try {
             bfpr = fundCompanyInformationResourceService.create(dto)
-
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(500).build()
 
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", bfpr as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", bfpr as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 
@@ -63,10 +70,28 @@ class FundCompanyInformationCollectionResource {
 
     }
 
+    @DELETE
+    @Path('/delete')
+    Response delete(@QueryParam('id') Long id){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def  rc
+        try {
+            rc = fundCompanyInformationResourceService.delete(id)
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+        }
+        result.put("rest_status", restStatus)
+        result.put("rest_result", rc as JSON)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
+    }
+
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("filePackageResourceService.readAllForPage()")
+        print("fundCompanyInformationResourceService.readAllForPage()")
         org.json.JSONObject result = new org.json.JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
@@ -92,8 +117,43 @@ class FundCompanyInformationCollectionResource {
 
 
     @GET
+    @Path("/readAll")
     Response readAll() {
-        ok fundCompanyInformationResourceService.readAll()
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def bfpr
+        try {
+            bfpr = fundCompanyInformationResourceService.readAll()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
+    @GET
+    @Path("/findById")
+    Response findById(@QueryParam('id') Long id) {
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def bfpr
+        try {
+            bfpr = FundCompanyInformation.get(id)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", bfpr as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
     }
 
     //获取募集基金账户信息
@@ -120,10 +180,29 @@ class FundCompanyInformationCollectionResource {
     }
 
 
-    @Path('/{id}')
-    FundCompanyInformationResource getResource(@PathParam('id') Long id) {
-        new FundCompanyInformationResource(fundCompanyInformationResourceService: fundCompanyInformationResourceService, id: id)
+    @GET
+    @Path('/findByType')
+    Response findByType(@QueryParam('type') Long type){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def dp
+        try{
+            dp = FundCompanyInformation.findAllByCompanyType(TypeConfig.get(type))
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dp as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dp as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+
     }
+
+
 
 
 }

@@ -125,6 +125,7 @@ class UserCollectionResource {
     UserResource getResource(@PathParam('id') Long id) {
         new UserResource(userResourceService: userResourceService, id:id)
     }
+
     @GET
     @Path('/findUserFromRole')
     Response findUserFromRole(@QueryParam('authority') String authority){
@@ -213,7 +214,6 @@ class UserCollectionResource {
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
-            print(e)
             e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
@@ -260,4 +260,32 @@ class UserCollectionResource {
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
+
+    @POST
+    @Path('/updatePassword')
+    Response updatePassword(User dto){
+        print("userCollectionResource.updatePassword()")
+        org.json.JSONObject result = new org.json.JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        try {
+            User obj = springSecurityService.getCurrentUser()
+            obj.password = dto.password
+            obj.save(failOnError: true)
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", obj as JSON)
+
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            e.printStackTrace()
+            print(e)
+            result.put("rest_status", restStatus)
+
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+
+    }
+
 }

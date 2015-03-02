@@ -28,6 +28,9 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
+    //角色
+//    static hasMany = [role: Role]
+
 	static transients = ['springSecurityService']
 
 	static constraints = {
