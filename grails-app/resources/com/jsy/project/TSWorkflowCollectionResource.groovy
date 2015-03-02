@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response
 @Produces(['application/xml','application/json'])
 class TSWorkflowCollectionResource {
 
-    def workflowResourceService
+    WorkflowResourceService workflowResourceService
 
 
     @GET

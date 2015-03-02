@@ -247,13 +247,69 @@ class ProjectResourceService {
                         "project":project
                 ];
             }else if(phase.phaseEn=='meeting'){
+                def meetingRecord = []
+                project.meetingRecord?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    meetingRecord << attachFile
+                }
+
+                def other_attachments = []
+                project.meetingOthersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
                 resultObj.meetingBeans = [
+                        "meetingRecord":meetingRecord,
+                        "meetingDesc": meetingRecord.pdesc,
+                        "other_attachments":other_attachments,
+
                         "phase": phase,
                         "accessable":accessable,
                         "project":project
                 ];
             }else if(phase.phaseEn=='otherEA'){
+                def thirdPartyFile = []
+                project.thirdPartyFile?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    thirdPartyFile << attachFile
+                }
+
+                def other_attachments = []
+                project.thirdPartyOthersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
                 resultObj.otherEABean = [
+                        "thirdPartyFile":thirdPartyFile,
+                        "thirdPartyDesc":thirdPartyFile.pdesc,
+                        "other_attachments":other_attachments,
+
                         "phase": phase,
                         "accessable":accessable,
                         "project":project
@@ -295,7 +351,7 @@ class ProjectResourceService {
         boolean isIn=false;
         phaseParticipants?.each{role->
             myRoles?.each{myRole->
-                if(role.name==myRole.name){
+                if(role.authority==myRole.authority){
                     isIn = true;
                     return isIn;
                 }
@@ -533,7 +589,6 @@ class ProjectResourceService {
             }
         }
 
-        println "research:"
         //设置下一个阶段
         TSWorkflow tsWorkflow = project.getProjectWorkflow()
         def nextphase = tsWorkflow.getResearchOAPhase()
@@ -542,38 +597,128 @@ class ProjectResourceService {
     }
 
 
+    def completeMeeting(TSProject project, def obj) {
+        def phase = project.getProjectWorkflow().getMeeting()
+
+        if(obj.meetingFiles_attachments && obj.meetingFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.meetingDesc,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.meetingFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.meetingRecord){
+                project.meetingRecord.pdesc=flowFile.pdesc
+                flowFile.relateFiles.each{it->
+                    project.meetingRecord.addToRelateFiles(it)
+                }
+            }else{
+                project.meetingRecord = flowFile
+            }
+
+        }
+
+        if(obj.meeting_other_attachments && obj.meeting_other_attachments.size() > 0){
+            obj.meeting_other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,pdesc2: attachFile.desc2,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToMeetingOthersFiles(flowFile)
+            }
+        }
+
+        //设置下一个阶段
+        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+        def nextphase = tsWorkflow.getOtherEAPhase()
+        tsWorkflow.moveToModelPhase(nextphase)
+        project.save(failOnError: true)
+    }
+
+    def completeThirdpartyLow(TSProject project, def obj) {
+        def phase = project.getProjectWorkflow().getOtherEA()
+
+        if(obj.thirdpartyLowFiles_attachments && obj.thirdpartyLowFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.thirdpartyLowDesc,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.thirdpartyLowFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.thirdPartyFile){
+                project.thirdPartyFile.pdesc=flowFile.pdesc
+                flowFile.relateFiles.each{it->
+                    project.thirdPartyFile.addToRelateFiles(it)
+                }
+            }else{
+                project.thirdPartyFile = flowFile
+            }
+
+        }
+
+        if(obj.thirdpartyLow_other_attachments && obj.thirdpartyLow_other_attachments.size() > 0){
+            obj.thirdpartyLow_other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,pdesc2: attachFile.desc2,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToThirdPartyOthersFiles(flowFile)
+            }
+        }
+
+        //设置下一个阶段
+        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+        def nextphase = tsWorkflow.getAddCompanyPhase()
+        tsWorkflow.moveToModelPhase(nextphase)
+        project.save(failOnError: true)
+    }
 
 
     /**
      * gatherOA, researchOA，makeContactOA
      */
     def checkOAJob(){
-        println "start checking oa job..."
         TSProject.list().each {project->
             def moveToModel = null
-            project.getProjectWorkflow().workflowPhases.each {phase->
-                if("gatherOA".equals(phase.phaseEn)){
-                    project.gatherOAStatus = "complete"
+            def phase = project.getProjectWorkflow()?.getWorkflowCurrentPhase()
+            if("gatherOA".equals(phase.phaseEn)){
+                project.gatherOAStatus = "complete"
 
-                    TSWorkflow tsWorkflow = project.getProjectWorkflow()
-                    moveToModel = tsWorkflow.getResearchPhase()
+                TSWorkflow tsWorkflow = project.getProjectWorkflow()
+                moveToModel = tsWorkflow.getResearchPhase()
 
-                    project.save(failOnError: true)
-                }else if("researchOA".equals(phase.phaseEn)){
-                    project.researchOAStatus = "complete"
+                project.save(failOnError: true)
+            }else if("researchOA".equals(phase.phaseEn)){
+                project.researchOAStatus = "complete"
 
-                    TSWorkflow tsWorkflow = project.getProjectWorkflow()
-                    moveToModel = tsWorkflow.getMeetingPhase()
+                TSWorkflow tsWorkflow = project.getProjectWorkflow()
+                moveToModel = tsWorkflow.getMeetingPhase()
 
-                    project.save(failOnError: true)
-                }else if("makeContactOA".equals(phase.phaseEn)){
-                    project.makeContactOAStatus = "complete"
-                    project.isEnded=true //已经是最后一个阶段了
-                    project.save(failOnError: true)
-                }
-
+                project.save(failOnError: true)
+            }else if("makeContactOA".equals(phase.phaseEn)){
+                project.makeContactOAStatus = "complete"
+                project.isEnded=true //已经是最后一个阶段了
+                project.save(failOnError: true)
             }
+
             if(moveToModel){
+                println "move modelphase by job..."+moveToModel
                 project.getProjectWorkflow().moveToModelPhase(moveToModel)
             }
         }

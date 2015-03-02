@@ -60,8 +60,10 @@ class TSProject {
     String researchOAStatus = "working"
 
     //步骤1.5 meeting
+    TSFlowFile meetingRecord       //会议纪要
 
     //步骤1.6 otherEA
+    TSFlowFile thirdPartyFile
 
     //步骤2   addCompany
 
@@ -83,6 +85,12 @@ class TSProject {
 
         /****步骤1.3 research****/
         researchOthersFiles:TSFlowFile, //其他文件
+
+        /****步骤1.5 research****/
+        meetingOthersFiles:TSFlowFile,  //其他文件
+
+        /****步骤1.6 otherEA****/
+        thirdPartyOthersFiles:TSFlowFile,  //其他文件
     ];
 
     static mappedBy = [
@@ -97,6 +105,12 @@ class TSProject {
             projectTransfer: "none",
             financialReport: "none",
             researchOthersFiles: "none",
+
+            meetingRecord: "none",
+            meetingOthersFiles: "none",
+
+            thirdPartyFile: "none",
+            thirdPartyOthersFiles: "none",
     ]
 
     static constraints = {
@@ -128,9 +142,12 @@ class TSProject {
         financialReport nullable: true
 
         researchOAStatus : ["working", "complete", "reject", "fallback"]
-
-
         makeContactOAStatus : ["working", "complete", "reject", "fallback"]
+
+        meetingRecord nullable: true
+
+        thirdPartyFile nullable: true
+        thirdPartyOthersFiles nullable: true
 
     }
 

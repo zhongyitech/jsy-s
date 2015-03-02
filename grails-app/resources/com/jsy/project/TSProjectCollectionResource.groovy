@@ -227,6 +227,101 @@ class TSProjectCollectionResource {
         }
     }
 
+    //提交会议
+    @POST
+    @Path('/complete_meeting')
+    Response completeMeeting(String datastr) {
+        JSONObject result = new JSONObject();
+        JSONArray table = new JSONArray();
+        String restStatus = "200";
+
+        // get project
+        org.json.JSONObject obj = JSON.parse(datastr)
+        def projectid = obj.projectid
+        TSProject project = TSProject.get(projectid);
+        if(!project){
+            restStatus = "500";
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "no such project found")
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+        try{
+            //权限校验
+            def user = springSecurityService.getCurrentUser();
+            def phase = project.getProjectWorkflow().getMeeting()
+            def accessable = projectResourceService.checkUserAccessable(phase,project,user);
+            if(!accessable){
+                restStatus = "500";
+                result.put("rest_status", restStatus)
+                result.put("rest_result", "you can not access this phase")
+                return Response.ok(result.toString()).status(500).build()
+            }
+
+
+
+            //数据保存
+            projectResourceService.completeMeeting(project,obj)
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "")
+            return Response.ok(result.toString()).status(200).build()
+        }catch (Exception e){
+            restStatus = "500";
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", e.getLocalizedMessage())
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
+
+    //提交第三方法律
+    @POST
+    @Path('/complete_thirdpartyLow')
+    Response completeThirdpartyLow(String datastr) {
+        JSONObject result = new JSONObject();
+        JSONArray table = new JSONArray();
+        String restStatus = "200";
+
+        // get project
+        org.json.JSONObject obj = JSON.parse(datastr)
+        def projectid = obj.projectid
+        TSProject project = TSProject.get(projectid);
+        if(!project){
+            restStatus = "500";
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "no such project found")
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+        try{
+            //权限校验
+            def user = springSecurityService.getCurrentUser();
+            def phase = project.getProjectWorkflow().getOtherEA()
+            def accessable = projectResourceService.checkUserAccessable(phase,project,user);
+            if(!accessable){
+                restStatus = "500";
+                result.put("rest_status", restStatus)
+                result.put("rest_result", "you can not access this phase")
+                return Response.ok(result.toString()).status(500).build()
+            }
+
+            //数据保存
+            projectResourceService.completeThirdpartyLow(project,obj)
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "")
+            return Response.ok(result.toString()).status(200).build()
+        }catch (Exception e){
+            restStatus = "500";
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", e.getLocalizedMessage())
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
 
 
     @POST

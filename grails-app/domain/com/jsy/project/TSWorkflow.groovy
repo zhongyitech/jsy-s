@@ -2,6 +2,7 @@ package com.jsy.project
 
 import com.jsy.auth.User
 import com.jsy.system.UploadFile
+import grails.transaction.Transactional
 
 class TSWorkflow {
 
@@ -136,10 +137,14 @@ class TSWorkflow {
         return phase
     }
 
+    @Transactional
     def moveToModelPhase(modelPhase){
         if(!modelPhase) {
             throw new Exception("no modelPhase")
         };
+
+        this.workflowCurrentPhase?.phaseFinished=true
+        this.workflowCurrentPhase?.save(failOnError: true)
 
         TSWorkflowPhase workflowCurrentPhase = new TSWorkflowPhase(
                 phaseIndex: modelPhase.phaseIndex,
@@ -160,9 +165,6 @@ class TSWorkflow {
         workflowProject.currentStageName=workflowCurrentPhase.phaseName
         workflowProject.currentStageEn=workflowCurrentPhase.phaseEn
         workflowProject.save(failOnError: true)
-
-        this.workflowCurrentPhase?.phaseFinished=true
-        this.workflowCurrentPhase?.save(failOnError: true)
 
         this.workflowCurrentPhase=workflowCurrentPhase
         this.addToWorkflowPhases(workflowCurrentPhase)
