@@ -88,7 +88,7 @@ class FundCompanyInformationCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
-//
+
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
