@@ -85,6 +85,7 @@ class ProjectResourceService {
     def getAllFlowPhaseInfo(TSProject project,User user){
 
         def resultObj=[:]
+        resultObj.project = project;
 
         def projectWorkflows = project.projectWorkflows
 
@@ -160,8 +161,7 @@ class ProjectResourceService {
                 }
 
                 resultObj.gatherInfoBean = [
-                    "phase": phase,
-                    "accessable":accessable,
+
                     "certificateFilesDesc":project.certificateFile?.pdesc,
                     "debtFilesDesc":project.debtFile?.pdesc,
                     "financialFilesDesc":project.financialFile?.pdesc,
@@ -172,13 +172,15 @@ class ProjectResourceService {
                     "financialFiles_attachments": financialFiles,
                     "toPublicFiles_attachments": toPublicFiles,
                     "businessPlanFiles_attachments": businessPlanFiles,
-                    "other_attachments": other_attachments
+                    "other_attachments": other_attachments,
+
+                    "phase": phase,
+                    "accessable":accessable
                 ];
             }else if(phase.phaseEn=='gatherOA'){
                 resultObj.gatherOABean = [
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='research'){
 
@@ -238,14 +240,12 @@ class ProjectResourceService {
                         "other_attachments":other_attachments,
 
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='researchOA'){
                 resultObj.researchOABean = [
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='meeting'){
                 def meetingRecord = []
@@ -278,8 +278,7 @@ class ProjectResourceService {
                         "other_attachments":other_attachments,
 
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='otherEA'){
                 def thirdPartyFile = []
@@ -312,14 +311,12 @@ class ProjectResourceService {
                         "other_attachments":other_attachments,
 
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='addCompany'){
                 resultObj.addCompanyBean = [
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='makeContact'){
                 def signers = []
@@ -362,14 +359,12 @@ class ProjectResourceService {
                         "other_attachments":other_attachments,
 
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }else if(phase.phaseEn=='makeContactOA'){
                 resultObj.makeContactOABean = [
                         "phase": phase,
-                        "accessable":accessable,
-                        "project":project
+                        "accessable":accessable
                 ];
             }
 
