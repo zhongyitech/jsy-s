@@ -1,6 +1,7 @@
 package com.jsy.project
 
 import com.jsy.auth.User
+import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
 import com.jsy.system.UploadFile
 import com.jsy.util.OrderProperty
@@ -724,9 +725,8 @@ class ProjectResourceService {
     }
 
     def completeAddCompany(TSProject project, def obj) {
-        Company company =Company.get(obj.companyid);
-        ProjectCompany projectCompany = new ProjectCompany(project:project,company:company)
-        projectCompany.save(failOnError: true)
+        FundCompanyInformation company =FundCompanyInformation.get(obj.companyid);
+        project.company=company
 
         //设置下一个阶段
         TSWorkflow tsWorkflow = project.getProjectWorkflow()
@@ -750,7 +750,7 @@ class ProjectResourceService {
             project.addToAttentions(simpleRecord);
         }
 
-        println obj.fund
+//        println obj.fund
 
         if(obj.other_attachments && obj.other_attachments.size() > 0){
             obj.other_attachments?.each{attachFile->
