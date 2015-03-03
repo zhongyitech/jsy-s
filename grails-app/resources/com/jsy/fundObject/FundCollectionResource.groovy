@@ -49,7 +49,6 @@ class FundCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             e.printStackTrace()
-            print(e)
             result.put("rest_status", restStatus)
             result.put("rest_result", fund as JSON)
             return Response.ok(result.toString()).status(500).build()
