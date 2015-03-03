@@ -91,7 +91,6 @@ class WdqztsqCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("WdqztsqCollectionResource.readAllForPage()")
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
@@ -99,9 +98,7 @@ class WdqztsqCollectionResource {
         try {
             JSONObject json = wdqztsqResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             ia = json.get("page")
-            print(ia)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)

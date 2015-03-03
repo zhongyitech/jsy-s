@@ -28,7 +28,6 @@ class BankTransactionsRecordCollectionResource {
 
     @POST
     Response create(FundToBank dto) {
-        print("create bankTransactionsRecordResourceService")
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def ftb

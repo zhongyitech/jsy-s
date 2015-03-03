@@ -174,7 +174,6 @@ class InvestmentArchivesCollectionResource {
     @PUT
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto,@QueryParam('id') @DefaultValue("") String id) {
-        print("asdf" )
 //        测试数据
 //        {"customer":{"name":"12","credentialsNumber":"12","country":"china","phone":"12",country":"12","credentialsType":"12","telephone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"12","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T14:49:20Z","dqrq":"2014-12-23T14:49:20Z","fxfs":"12","htzt":"1","ywjl":"1"}
 //        {"customer":{"name":"12","khh":"12","yhzh":"12","country":"12","credentialsType":"12","credentialsNumber":"12","telephone":"12","phone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"122301","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T18:17:43Z","dqrq":"2014-12-23T18:17:43Z","fxfs":"12","htzt":"1","ywjl":"1"}
@@ -372,7 +371,6 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("InvestmentArchivesCollectionResource.readAllForPage()")
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
@@ -389,7 +387,6 @@ class InvestmentArchivesCollectionResource {
             print(ia)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
             print(e)
         }
         print("ia = "+ia)

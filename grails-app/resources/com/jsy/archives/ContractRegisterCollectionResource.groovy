@@ -34,7 +34,6 @@ class ContractRegisterCollectionResource {
         String rest_information = REST_INFORMATION
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        print("Create contractRegisterResourceService")
         def cr
         try {
             //截取合同编号
@@ -45,7 +44,6 @@ class ContractRegisterCollectionResource {
             for(int i=qs;i<=js;i++){
                 if (Contract.findByHtbh(bh+i)){
                     rest_information = "已经存在的合同编号："+bh+i
-                    print(rest_information)
                     restStatus = REST_STATUS_FAI
                     result.put("rest_information", rest_information)
                     result.put("rest_status", restStatus)
@@ -88,12 +86,9 @@ class ContractRegisterCollectionResource {
         JSONObject json
         def fp
         try {
-            print(finfo.properties)
             json = contractRegisterResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             fp = json.get("page")
-            print(fp)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)

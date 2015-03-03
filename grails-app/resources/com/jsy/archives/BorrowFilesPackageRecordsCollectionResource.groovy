@@ -48,7 +48,6 @@ class BorrowFilesPackageRecordsCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("filePackageResourceService.readAllForPage()")
         org.json.JSONObject result = new org.json.JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
@@ -57,9 +56,7 @@ class BorrowFilesPackageRecordsCollectionResource {
         try {
             json = borrowFilesPackageRecordsResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             fp = json.get("page")
-            print(fp)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)

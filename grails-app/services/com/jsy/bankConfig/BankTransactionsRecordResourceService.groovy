@@ -41,7 +41,6 @@ class BankTransactionsRecordResourceService {
 //        参数：pagesize 每页数据条数
 //              startposition,查询起始位置
 //        def user = User.findAllByChinaNameLike(queryparam)
-        print("service.queryparam = "+queryparam)
         if(null == queryparam){
             queryparam = ""
         }

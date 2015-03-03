@@ -69,8 +69,6 @@ class SummaryToFundCollectionResource {
 
     @PUT
     Response update(SummaryToFund dto,@QueryParam('id') Long id){
-        print(dto.properties)
-        print(id)
         dto.id = id
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;

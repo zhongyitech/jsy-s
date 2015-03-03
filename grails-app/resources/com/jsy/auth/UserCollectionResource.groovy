@@ -36,9 +36,6 @@ class UserCollectionResource {
     @PUT
     @Path("/create")
     Response create(User dto,@QueryParam('rolelist') String rolelist) {
-        print("UserCollectionResource.create()")
-        print(dto)
-        print(rolelist)
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def dd
@@ -60,11 +57,9 @@ class UserCollectionResource {
             print("return successful")
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
-            e.printStackTrace()
             print(e)
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
-            print("return failed")
             return Response.ok(result.toString()).status(500).build()
         }
 //        result.put("rest_status", restStatus)
@@ -178,13 +173,9 @@ class UserCollectionResource {
             if([] == users){
                 print("找不到该用户！")
             }
-            print("users = " + users)
             def dp = Department.get(departmentid)
-            print("dp.id = " + dp.id)
-            print(users.department.id)
             def user = User.findByDepartment( dp)
             users = user.find(users)
-            print(users)
 
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
@@ -251,9 +242,7 @@ class UserCollectionResource {
         try {
             org.json.JSONObject json = userResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             ia = json.get("page")
-            print(ia)
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
             result.put("rest_total", total)
@@ -262,7 +251,6 @@ class UserCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)
-            e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
             result.put("rest_total", total)
@@ -280,7 +268,6 @@ class UserCollectionResource {
     @POST
     @Path('/updatePassword')
     Response updatePassword(User dto){
-        print("userCollectionResource.updatePassword()")
         org.json.JSONObject result = new org.json.JSONObject();
         String restStatus = REST_STATUS_SUC;
         try {
@@ -294,7 +281,6 @@ class UserCollectionResource {
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
-            e.printStackTrace()
             print(e)
             result.put("rest_status", restStatus)
 

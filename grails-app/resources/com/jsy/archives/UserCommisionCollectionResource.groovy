@@ -31,7 +31,6 @@ class UserCommisionCollectionResource {
 
     @GET
     Response getbyid(@QueryParam('id') Long id) {
-        print("UserCommision :" + id)
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def uc
