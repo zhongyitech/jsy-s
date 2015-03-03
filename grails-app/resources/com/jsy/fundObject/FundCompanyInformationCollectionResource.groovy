@@ -92,7 +92,6 @@ class FundCompanyInformationCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("fundCompanyInformationResourceService.readAllForPage()")
         org.json.JSONObject result = new org.json.JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
@@ -120,17 +119,27 @@ class FundCompanyInformationCollectionResource {
     Response readAll() {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        def bfpr
+        def ja = new JSONArray()
         try {
-            bfpr = fundCompanyInformationResourceService.readAll()
+            def page = fundCompanyInformationResourceService.readAll()
+            page.each {
+                JSONObject jsonObject =new JSONObject((it as JSON).toString());
+                def pars = new JSONArray()
+                it?.hhrpx?.split(",").each {fid->
+                    pars.put(FundCompanyInformation.get(Long.valueOf(fid)) as JSON)
+                }
+                jsonObject.put("partner", pars)
+                ja.put(jsonObject)
+            }
+
             result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
+            result.put("rest_result", ja.toString())
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             e.printStackTrace()
             result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
+            result.put("rest_result", ja.toString())
             return Response.ok(result.toString()).status(500).build()
         }
     }
