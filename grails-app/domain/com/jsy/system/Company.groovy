@@ -1,6 +1,10 @@
 package com.jsy.system
 
 import com.jsy.auth.User
+import com.jsy.fundObject.Fund
+import com.jsy.project.StockRight
+import com.jsy.project.TSFlowFile
+import com.jsy.project.TSWorkflow
 
 /**
  * 公司表
@@ -33,6 +37,63 @@ class Company {
     String address
 
 
+    //执行商务合伙人
+    String partner
+
+    //法人国籍
+    String partnerNationality
+
+    //法人证件类型
+    String docType
+
+    //法人证件号码
+    String docNumber
+
+    //营业执照
+    TSFlowFile businessLicense
+
+    //组织机构代码证
+    TSFlowFile orgCode
+
+    //税务证件
+    TSFlowFile taxFile
+
+    //银行开户许可证
+    TSFlowFile banksPermit
+
+    //使用代码证
+    TSFlowFile useCodePermit
+
+    static hasMany = [
+            othersFiles:TSFlowFile,  //其他文件
+    ];
+
+    static mappedBy = [
+            businessLicense: "none",
+            orgCode: "none",
+            taxFile: "none",
+            banksPermit: "none",
+            useCodePermit: "none",
+    ]
+
     static constraints = {
+        description nullable: true
+        status nullable: true
+        memo nullable: true
+        province nullable: true
+        city nullable: true
+        region nullable: true
+        address nullable: true
+
+        partner nullable: true
+        partnerNationality nullable: true
+        docType nullable: true
+        docNumber nullable: true
+
+        businessLicense nullable: true
+        orgCode nullable: true
+        taxFile nullable: true
+        banksPermit nullable: true
+        useCodePermit nullable: true
     }
 }

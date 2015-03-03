@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response
 @Produces(['application/xml','application/json'])
 class TSWorkflowCollectionResource {
 
-    def workflowResourceService
+    WorkflowResourceService workflowResourceService
 
 
     @GET
@@ -29,6 +29,7 @@ class TSWorkflowCollectionResource {
         init_project();
         init_flowModel();
         init_flow();
+        init_company();
 
         ok "good"
     }
@@ -67,6 +68,12 @@ class TSWorkflowCollectionResource {
     def init_flowModel = {
         workflowResourceService.initFlowModel()
     }
+
+    def init_company = {
+        workflowResourceService.initCompany()
+    }
+
+
 
 
 }
