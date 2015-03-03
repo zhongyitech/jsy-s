@@ -11,11 +11,7 @@ class UploadFile {
     //文件提取标识
     String filePath
 
-
-    String fileDesc
-
     static constraints = {
         fileType nullable: true
-        fileDesc nullable: true
     }
 }

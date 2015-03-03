@@ -1,8 +1,10 @@
 package com.jsy.auth
 
+import com.jsy.fundObject.Finfo
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
@@ -41,20 +43,65 @@ class RoleCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
-    @GET
-    Response readAll() {
+    @DELETE
+    @Path('/delete')
+    Response delete(@QueryParam('id') Long id){
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        def ia
+        def  rc
         try {
-            ia = roleResourceService.readAll()
+            rc = roleResourceService.delete(id)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", ia as JSON)
+        result.put("rest_result", rc as JSON)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
+    }
+
+    @GET
+    @Path("/readAll")
+    Response readAll() {
+        JSONObject result = new JSONObject()
+        int status = 500
+        try {
+            def all = roleResourceService.readAll()
+            result.put("rest_result", all as JSON)
+            status = 200
+        }catch (Exception e){
+            result.put("rest_status", "error")
+            e.printStackTrace()
+        }
+        return Response.ok(result.toString()).status(status).build()
+    }
+
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(Finfo finfo) {
+        print("fundCompanyInformationResourceService.readAllForPage()")
+        org.json.JSONObject result = new org.json.JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        int total
+        org.json.JSONObject json
+        def fp
+        try {
+            json = roleResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            total = json.get("size")
+            print(total)
+            fp = json.get("page")
+            print(fp)
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            print(e)
+        }
+        result.put("rest_status", restStatus)
+        result.put("rest_result", fp as JSON)
+        result.put("rest_total", total)
+
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
     }
 
 //    @GET
@@ -74,11 +121,11 @@ class RoleCollectionResource {
         String restStatus = REST_STATUS_SUC;
         def dd
         try {
-            dto.id=id
-            dd=roleResourceService.update(dto)
+//            dto.id=id
+            dd=roleResourceService.update(dto, id)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
-            print(e)
+            e.printStackTrace()
         }
         result.put("rest_status", restStatus)
         result.put("rest_result", dd as JSON)

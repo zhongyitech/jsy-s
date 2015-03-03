@@ -4,8 +4,8 @@ package com.jsy.auth
  */
 class Operation {
 
-    //操作码
-    int czm
+    //操作
+    String cz
     //名称
     String name
     //标题

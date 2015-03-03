@@ -1,12 +1,14 @@
 package com.jsy.fundObject
 
+import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
+import org.json.JSONArray
 
 class FundCompanyInformationResourceService {
 
     def create(FundCompanyInformation dto) {
-        dto.save()
+        dto.save(failOnError: true)
     }
 
     def read(id) {
@@ -27,6 +29,12 @@ class FundCompanyInformationResourceService {
             throw new DomainObjectNotFoundException(FundCompanyInformation.class, dto.id)
         }
         obj.properties = dto.properties
+        obj.bankAccount?.each{bank->
+            bank.save(failOnError: true)
+        }
+        obj.save(failOnError: true)
+
+        def obj2 = FundCompanyInformation.get(dto.id)
         obj
     }
 
@@ -42,7 +50,19 @@ class FundCompanyInformationResourceService {
         }
         JSONObject json = new JSONObject()
 
-        json.put("page", FundCompanyInformation.list(max: pagesize, offset: startposition))
+        def ja = new JSONArray()
+        def page = FundCompanyInformation.list(max: pagesize, offset: startposition)
+        page.each {
+            JSONObject jsonObject =new JSONObject((it as JSON).toString());
+            def pars = new JSONArray()
+            it.hhrpx.split(",").each {fid->
+                pars.put(FundCompanyInformation.get(Long.valueOf(fid)) as JSON)
+            }
+            jsonObject.put("partner", pars)
+            ja.put(jsonObject)
+        }
+
+        json.put("page", ja)
         json.put("size", FundCompanyInformation.list().size())
 
         return  json

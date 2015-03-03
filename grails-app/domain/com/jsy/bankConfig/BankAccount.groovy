@@ -1,5 +1,7 @@
 package com.jsy.bankConfig
 
+import com.jsy.system.TypeConfig
+
 //银行账户表
 class BankAccount {
 
@@ -14,6 +16,13 @@ class BankAccount {
 
 //    账号
     String account
+
+    //用途
+    TypeConfig purpose
+
+//是否默认账户
+    boolean defaultAccount
+
     static constraints = {
     }
 }
