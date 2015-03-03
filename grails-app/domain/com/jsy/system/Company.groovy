@@ -77,6 +77,14 @@ class Company {
     ]
 
     static constraints = {
+        description nullable: true
+        status nullable: true
+        memo nullable: true
+        province nullable: true
+        city nullable: true
+        region nullable: true
+        address nullable: true
+
         partner nullable: true
         partnerNationality nullable: true
         docType nullable: true

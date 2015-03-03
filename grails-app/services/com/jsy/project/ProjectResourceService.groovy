@@ -1,6 +1,7 @@
 package com.jsy.project
 
 import com.jsy.auth.User
+import com.jsy.system.Company
 import com.jsy.system.UploadFile
 import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
@@ -321,7 +322,45 @@ class ProjectResourceService {
                         "project":project
                 ];
             }else if(phase.phaseEn=='makeContact'){
+                def signers = []
+                project.signers?.each{signer->
+                    def record = [:]
+                    record.name = signer.name
+                    record.value = signer.value
+                    signers << record
+                }
+
+                def attentions = []
+                project.attentions?.each{attention->
+                    def record = [:]
+                    record.name = attention.name
+                    record.value = attention.value
+                    attentions << record
+                }
+
+
+                def other_attachments = []
+                project.makeContactOthersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
+
                 resultObj.makeContactBean = [
+                        "signers":signers,
+                        "attentions":attentions,
+                        "other_attachments":other_attachments,
+
                         "phase": phase,
                         "accessable":accessable,
                         "project":project
@@ -689,6 +728,57 @@ class ProjectResourceService {
         project.save(failOnError: true)
     }
 
+    def completeAddCompany(TSProject project, def obj) {
+        Company company =Company.get(obj.companyid);
+        ProjectCompany projectCompany = new ProjectCompany(project:project,company:company)
+        projectCompany.save(failOnError: true)
+
+        //设置下一个阶段
+        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+        def nextphase = tsWorkflow.getMakeContactPhase()
+        tsWorkflow.moveToModelPhase(nextphase)
+        project.save(failOnError: true)
+    }
+
+    def completeMakeContact(TSProject project, def obj) {
+        def phase = project.getProjectWorkflow().getMakeContact()
+
+        obj.signers?.each{signer->
+            SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
+            simpleRecord.save(failOnError: true)
+            project.addToSigners(simpleRecord);
+        }
+
+        obj.attentions?.each{attention->
+            SimpleRecord simpleRecord = new SimpleRecord(name: attention.name, value: attention.value)
+            simpleRecord.save(failOnError: true)
+            project.addToAttentions(simpleRecord);
+        }
+
+        println obj.fund
+
+        if(obj.other_attachments && obj.other_attachments.size() > 0){
+            obj.other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToMakeContactOthersFiles(flowFile)
+            }
+        }
+
+        //设置下一个阶段
+        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+        def nextphase = tsWorkflow.makeContactOAPhase
+        tsWorkflow.moveToModelPhase(nextphase)
+        project.save(failOnError: true)
+    }
+
+
 
     /**
      * gatherOA, researchOA，makeContactOA
@@ -697,6 +787,7 @@ class ProjectResourceService {
         TSProject.list().each {project->
             def moveToModel = null
             def phase = project.getProjectWorkflow()?.getWorkflowCurrentPhase()
+            if(!phase) return;
             if("gatherOA".equals(phase.phaseEn)){
                 project.gatherOAStatus = "complete"
 

@@ -2,7 +2,6 @@ package com.jsy.project
 
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
-import com.jsy.system.UploadFile
 
 /**
  * 基金项目，这里记录了项目的基本信息，以及创建项目流程的所有业务数据
@@ -68,6 +67,7 @@ class TSProject {
     //步骤2   addCompany
 
     //步骤3   makeContact
+//    Fund fund                //关联基金
 
     //步骤3.1 makeContactOA
     String makeContactOAStatus = "working"
@@ -91,6 +91,11 @@ class TSProject {
 
         /****步骤1.6 otherEA****/
         thirdPartyOthersFiles:TSFlowFile,  //其他文件
+
+        /****步骤3 签署合同****/
+        signers: SimpleRecord,                //签署方
+        attentions: SimpleRecord,             //注意事项
+        makeContactOthersFiles:TSFlowFile,    //其他文件
     ];
 
     static mappedBy = [
@@ -111,6 +116,10 @@ class TSProject {
 
             thirdPartyFile: "none",
             thirdPartyOthersFiles: "none",
+
+            makeContactOthersFiles: "none",
+            attentions: "none",
+            signers: "none",
     ]
 
     static constraints = {
@@ -148,6 +157,8 @@ class TSProject {
 
         thirdPartyFile nullable: true
         thirdPartyOthersFiles nullable: true
+
+//        fund nullable: true
 
     }
 

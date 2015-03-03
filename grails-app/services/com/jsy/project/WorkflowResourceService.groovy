@@ -2,6 +2,7 @@ package com.jsy.project
 
 import com.jsy.auth.Role
 import com.jsy.auth.User
+import com.jsy.system.Company
 import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
@@ -97,6 +98,36 @@ class WorkflowResourceService {
         SpecailAccess sa2 = new SpecailAccess(fromDate: fromDate, toDate:toDate, accessor:accessor, projectId:2, phaseEn:"gatherInfoBean");
         sa2.save(failOnError: true)
 
+    }
+
+    def initCompany(){
+        def admin  = User.findByUsername("admin")
+        Company company1 = new Company(
+                name:"洞庭湖",
+                aliasName:"洞庭湖",
+                buildDate: new Date(),
+                responsible:admin,
+                phone:"123"
+        );
+        company1.save(failOnError: true)
+
+        Company company2 = new Company(
+                name:"财经阳",
+                aliasName:"财经阳",
+                buildDate: new Date(),
+                responsible:admin,
+                phone:"123"
+        );
+        company2.save(failOnError: true)
+
+        Company company3 = new Company(
+                name:"广州白云机场",
+                aliasName:"广州白云机场",
+                buildDate: new Date(),
+                responsible:admin,
+                phone:"123"
+        );
+        company3.save(failOnError: true)
     }
 
 
