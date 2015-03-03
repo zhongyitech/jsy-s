@@ -29,12 +29,6 @@ class FundCompanyInformationResourceService {
             throw new DomainObjectNotFoundException(FundCompanyInformation.class, dto.id)
         }
         obj.properties = dto.properties
-        obj.bankAccount?.each{bank->
-            bank.save(failOnError: true)
-        }
-        obj.save(failOnError: true)
-
-        def obj2 = FundCompanyInformation.get(dto.id)
         obj
     }
 
@@ -55,7 +49,7 @@ class FundCompanyInformationResourceService {
         page.each {
             JSONObject jsonObject =new JSONObject((it as JSON).toString());
             def pars = new JSONArray()
-            it.hhrpx.split(",").each {fid->
+            it?.hhrpx?.split(",").each {fid->
                 pars.put(FundCompanyInformation.get(Long.valueOf(fid)) as JSON)
             }
             jsonObject.put("partner", pars)

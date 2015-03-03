@@ -33,24 +33,38 @@ class UserCollectionResource {
     def springSecurityService
 
     //创建用户
-    @POST
-    Response create(User dto) {
+    @PUT
+    @Path("/create")
+    Response create(User dto,@QueryParam('rolelist') String rolelist) {
         print("UserCollectionResource.create()")
+        print(dto)
+        print(rolelist)
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def dd
+        JSONObject jsdd = new JSONObject()
         try {
             dd = userResourceService.create(dto)
             print(dd.properties)
+            JSONArray ja = new JSONArray(rolelist)
+            print("ja.size = "+ja.length())
+            for (int i = 0;i<ja.length();i++){
+                UserRole.create(dd,Role.get(ja.get(i).getAt("id"))).save(failOnError: true)
+            }
+            jsdd.put("User",dd as JSON)
+            jsdd.put("Role",ja)
             result.put("rest_status", restStatus)
-            result.put("rest_result", dd as JSON)
+            result.put("rest_result", jsdd as JSON)
+            print("return successful" + result.toString())
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            print("return successful")
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             e.printStackTrace()
             print(e)
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
+            print("return failed")
             return Response.ok(result.toString()).status(500).build()
         }
 //        result.put("rest_status", restStatus)
@@ -87,6 +101,9 @@ class UserCollectionResource {
         def ia
         try {
             ia = userResourceService.readAll()
+//            json user;
+//
+//            user.put(role, [{id:1}, {}])
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
@@ -125,7 +142,6 @@ class UserCollectionResource {
     UserResource getResource(@PathParam('id') Long id) {
         new UserResource(userResourceService: userResourceService, id:id)
     }
-
     @GET
     @Path('/findUserFromRole')
     Response findUserFromRole(@QueryParam('authority') String authority){
