@@ -1,6 +1,7 @@
 package com.jsy.fundObject
 
 import com.jsy.bankConfig.BankAccount
+import com.jsy.project.TSFlowFile
 import com.jsy.system.Company
 import com.jsy.system.Department
 import com.jsy.system.TypeConfig
@@ -71,8 +72,36 @@ class FundCompanyInformation {
     //合伙人排序,id以逗号分开  1,2,3
     String hhrpx
 
+
+    //营业执照
+    TSFlowFile businessLicense
+
+    //组织机构代码证
+    TSFlowFile orgCode
+
+    //税务证件
+    TSFlowFile taxFile
+
+    //银行开户许可证
+    TSFlowFile banksPermit
+
+    //使用代码证
+    TSFlowFile useCodePermit
+
     //合伙人
-    static hasMany = [partner: FundCompanyInformation, bankAccount:BankAccount]
+    static hasMany = [
+            partner: FundCompanyInformation,
+            bankAccount:BankAccount,
+            othersFiles:TSFlowFile,  //其他文件
+    ]
+
+    static mappedBy = [
+            businessLicense: "none",
+            orgCode: "none",
+            taxFile: "none",
+            banksPermit: "none",
+            useCodePermit: "none",
+    ]
 
     static constraints = {
         hhrpx nullable: true
@@ -95,5 +124,11 @@ class FundCompanyInformation {
         remark nullable: true
         companyType nullable: true
         protocolTemplate nullable: true
+
+        businessLicense nullable: true
+        orgCode nullable: true
+        taxFile nullable: true
+        banksPermit nullable: true
+        useCodePermit nullable: true
     }
 }

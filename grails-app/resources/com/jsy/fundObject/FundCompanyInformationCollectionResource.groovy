@@ -136,6 +136,12 @@ class FundCompanyInformationCollectionResource {
     }
 
     @GET
+    @Path('/listAll')
+    Response listAll() {
+        ok fundCompanyInformationResourceService.readAll()
+    }
+
+    @GET
     @Path("/findById")
     Response findById(@QueryParam('id') Long id) {
         JSONObject result = new JSONObject();
