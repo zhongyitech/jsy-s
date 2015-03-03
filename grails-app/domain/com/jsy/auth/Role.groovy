@@ -4,7 +4,6 @@ class Role {
 
 	String authority
     String name
-
 	static mapping = {
 		cache true
 	}

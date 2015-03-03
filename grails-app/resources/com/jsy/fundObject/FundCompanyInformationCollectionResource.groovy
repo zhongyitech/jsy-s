@@ -3,6 +3,7 @@ package com.jsy.fundObject
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.json.JSONArray
 
 import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
@@ -87,7 +88,7 @@ class FundCompanyInformationCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
-
+//
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
@@ -96,19 +97,17 @@ class FundCompanyInformationCollectionResource {
         String restStatus = REST_STATUS_SUC;
         int total
         org.json.JSONObject json
-        def fp
+        JSONArray fp
         try {
             json = fundCompanyInformationResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             fp = json.get("page")
-            print(fp)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", fp as JSON)
+        result.put("rest_result", fp.toString())
         result.put("rest_total", total)
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()

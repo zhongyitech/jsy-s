@@ -34,74 +34,37 @@ class RoleCollectionResource {
         def dd
         try {
             dd=roleResourceService.create(dto)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(500).build()
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", dd as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-    }
-
-    @DELETE
-    @Path('/delete')
-    Response delete(@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def  rc
-        try {
-            rc = roleResourceService.delete(id)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-        }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", rc as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @GET
-    @Path("/readAll")
     Response readAll() {
-        JSONObject result = new JSONObject()
-        int status = 500
-        try {
-            def all = roleResourceService.readAll()
-            result.put("rest_result", all as JSON)
-            status = 200
-        }catch (Exception e){
-            result.put("rest_status", "error")
-            e.printStackTrace()
-        }
-        return Response.ok(result.toString()).status(status).build()
-    }
-
-    @POST
-    @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
-        print("fundCompanyInformationResourceService.readAllForPage()")
-        org.json.JSONObject result = new org.json.JSONObject();
+        JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        int total
-        org.json.JSONObject json
-        def fp
+        def ia
         try {
-            json = roleResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            fp = json.get("page")
-            print(fp)
+            ia = roleResourceService.readAll()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", ia as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
+            restStatus = REST_STATUS_FAI
             print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", ia as JSON)
+            return Response.ok(result.toString()).status(500).build()
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", fp as JSON)
-        result.put("rest_total", total)
-
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
 //    @GET
@@ -109,6 +72,34 @@ class RoleCollectionResource {
 //    Response findManager(){
 //
 //    }
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(Finfo finfo) {
+        print("Role.readAllForPage()")
+        int total
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def ra
+        def r
+        try {
+            ra=roleResourceService.readAllForPage(finfo)
+            total = ra.get("size")
+            print(total)
+            r = ra.get("page")
+            result.put("rest_status", restStatus)
+            result.put("rest_result", r)
+            result.put("rest_total", total)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", r)
+            result.put("rest_total", total)
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
 
     @Path('/{id}')
     RoleResource getResource(@PathParam('id') Long id) {
@@ -121,15 +112,42 @@ class RoleCollectionResource {
         String restStatus = REST_STATUS_SUC;
         def dd
         try {
-//            dto.id=id
-            dd=roleResourceService.update(dto, id)
+            print("dto.id = "+dto.id)
+            dto.id=id
+            print("finish dto.id = "+dto.id)
+            dd=roleResourceService.update(dto)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
+            print(e)
             e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(500).build()
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", dd as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    }
+
+    @DELETE
+    Response delete(@QueryParam('id') Long id){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def dd
+        try {
+
+            dd=roleResourceService.delete(id)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
     }
 
 }
