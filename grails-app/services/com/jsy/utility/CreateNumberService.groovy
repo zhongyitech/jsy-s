@@ -24,7 +24,6 @@ class CreateNumberService {
         return  funnocut
     }
     public static StringBuffer getFullNumber(StringBuffer mark,String id){
-        print("CreateNumberService.getFullNumber:"+mark+"+"+id)
         mark.append(id.toString())
         return mark
     }

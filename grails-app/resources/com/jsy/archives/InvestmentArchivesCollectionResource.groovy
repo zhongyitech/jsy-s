@@ -182,8 +182,6 @@ class InvestmentArchivesCollectionResource {
         def ia
 
         if ("" == id || null == id){
-            print("Create InvestmentArchives:" + dto.fund)
-
             try {
                 Customer cus=null
                 if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
@@ -217,7 +215,6 @@ class InvestmentArchivesCollectionResource {
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
         }else{
-            print("Update InvestmentArchives:" + dto.properties)
 //            try {
             Customer cus=null
             if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
@@ -233,7 +230,6 @@ class InvestmentArchivesCollectionResource {
             }
             dto.customer=cus
             ia = investmentArchivesResourceService.update(dto,Integer.parseInt(id))
-            print("ia = "+ia)
 //            }catch (Exception e){
 //                restStatus = REST_STATUS_FAI
 //                print(e)
@@ -329,7 +325,7 @@ class InvestmentArchivesCollectionResource {
     return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
-    //打印更新接口
+    //打印更新接口还有奖励领了，然后
     @POST
     @Path('/print1')
     Response print1(@QueryParam('archiveNum') String archiveNum){
@@ -376,20 +372,15 @@ class InvestmentArchivesCollectionResource {
         int total
         def ia
         ia = investmentArchivesResourceService.findByParm(finfo.keyword)
-        print("keyword = "+finfo.keyword)
         total = ia.size()
-        print("total = " + total)
         try {
             JSONObject json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             ia = json.get("page")
-            print(ia)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)
         }
-        print("ia = "+ia)
         result.put("rest_status", restStatus)
         result.put("rest_result", ia)
         result.put("rest_total", total)
@@ -418,7 +409,6 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/IAOutput')
     Response IAOutput(Finfo finfo){
-        print("InvestmentArchivesCollectionResource.IAOutput()")
         if (null == finfo.keyword){
             finfo.keyword = ""
         }

@@ -40,7 +40,6 @@ class PayRecordCollectionResource {
             return Response.ok(result.toString()).status(200).build()
         }catch (Exception e){
             restStatus = "500";
-            e.printStackTrace()
             print(e)
             result.put("rest_status", restStatus)
             result.put("rest_result", dto as JSON)
