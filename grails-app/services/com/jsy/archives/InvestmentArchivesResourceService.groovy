@@ -48,16 +48,12 @@ class InvestmentArchivesResourceService {
 //        参数：pagesize 每页数据条数
 //              startposition,查询起始位置
 //        def user = User.findAllByChinaNameLike(queryparam)
-        print("service.queryparam = "+queryparam)
         if(null == queryparam){
             queryparam = ""
         }
         def f = Fund.findAllByFundNameLike("%" +queryparam+"%")
-        print(f.size())
         def c = Customer.findAllByNameLike("%" +queryparam+"%")
-        print(c.size())
         def d = InvestmentArchives.findAllByContractNumLike("%"+queryparam+"%")
-        print(d.size())
 
 
 
@@ -65,12 +61,10 @@ class InvestmentArchivesResourceService {
         def ja = new JSONArray()
         page.each {
             JSONObject JSOB =new JSONObject((it as JSON).toString());
-            print("JSOB = "+JSOB)
             def cus=it.customer
             if (null == cus){
                 JSOB.put("customer", "{}")
             }else {
-                print(cus as JSON)
                 JSOB.put("customer", it.customer.properties)
             }
             ja.put(JSOB)
@@ -88,16 +82,12 @@ class InvestmentArchivesResourceService {
 //        参数：pagesize 每页数据条数
 //              startposition,查询起始位置
 //        def user = User.findAllByChinaNameLike(queryparam)
-        print("service.queryparam = "+queryparam)
         if(null == queryparam){
             queryparam = ""
         }
         def f = Fund.findAllByFundNameLike("%" +queryparam+"%")
-        print(f.size())
         def c = Customer.findAllByNameLike("%" +queryparam+"%")
-        print(c.size())
         def d = InvestmentArchives.findAllByContractNumLike("%"+queryparam+"%")
-        print(d.size())
         json.put("page", InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrCustomerInList(f, "%"+queryparam+"%", "%"+queryparam+"%",c, [max: pagesize, sort:"id", order:"desc", offset: startposition]))
         json.put("size", InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrCustomerInList(f, "%"+queryparam+"%", "%"+queryparam+"%",c).size())
         InvestmentArchives.listOrderByCustomer()

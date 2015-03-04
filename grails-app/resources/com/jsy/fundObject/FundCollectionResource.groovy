@@ -49,7 +49,6 @@ class FundCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             e.printStackTrace()
-            print(e)
             result.put("rest_status", restStatus)
             result.put("rest_result", fund as JSON)
             return Response.ok(result.toString()).status(500).build()
@@ -105,7 +104,6 @@ class FundCollectionResource {
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
-            print(e)
             e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", fund as JSON)
@@ -195,10 +193,7 @@ class FundCollectionResource {
 //        def funcoll = fundResourceService.readMainPage(pagesize, startposition, keyword, status, date1, date2)
             json = fundResourceService.readMainPage(f.pagesize, f.startposition, f.keyword, f.status, f.startsaledate1, f.startsaledate2)
             total = json.get("size")
-            print(total)
             rc = json.get("page")
-            print(rc)
-
 //        print(funcoll.size)
 //
         def fund_all = fundResourceService.readAll()

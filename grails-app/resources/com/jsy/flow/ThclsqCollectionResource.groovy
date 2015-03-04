@@ -92,7 +92,6 @@ class ThclsqCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("ThclsqCollectionResource.readAllForPage()")
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
@@ -100,9 +99,7 @@ class ThclsqCollectionResource {
         try {
             JSONObject json = thclsqResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             ia = json.get("page")
-            print(ia)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)

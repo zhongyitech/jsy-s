@@ -174,7 +174,6 @@ class InvestmentArchivesCollectionResource {
     @PUT
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto,@QueryParam('id') @DefaultValue("") String id) {
-        print("asdf" )
 //        测试数据
 //        {"customer":{"name":"12","credentialsNumber":"12","country":"china","phone":"12",country":"12","credentialsType":"12","telephone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"12","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T14:49:20Z","dqrq":"2014-12-23T14:49:20Z","fxfs":"12","htzt":"1","ywjl":"1"}
 //        {"customer":{"name":"12","khh":"12","yhzh":"12","country":"12","credentialsType":"12","credentialsNumber":"12","telephone":"12","phone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"122301","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T18:17:43Z","dqrq":"2014-12-23T18:17:43Z","fxfs":"12","htzt":"1","ywjl":"1"}
@@ -183,8 +182,6 @@ class InvestmentArchivesCollectionResource {
         def ia
 
         if ("" == id || null == id){
-            print("Create InvestmentArchives:" + dto.fund)
-
             try {
                 Customer cus=null
                 if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
@@ -218,7 +215,6 @@ class InvestmentArchivesCollectionResource {
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
         }else{
-            print("Update InvestmentArchives:" + dto.properties)
 //            try {
             Customer cus=null
             if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
@@ -234,7 +230,6 @@ class InvestmentArchivesCollectionResource {
             }
             dto.customer=cus
             ia = investmentArchivesResourceService.update(dto,Integer.parseInt(id))
-            print("ia = "+ia)
 //            }catch (Exception e){
 //                restStatus = REST_STATUS_FAI
 //                print(e)
@@ -330,7 +325,7 @@ class InvestmentArchivesCollectionResource {
     return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
-    //打印更新接口
+    //打印更新接口还有奖励领了，然后
     @POST
     @Path('/print1')
     Response print1(@QueryParam('archiveNum') String archiveNum){
@@ -372,27 +367,20 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("InvestmentArchivesCollectionResource.readAllForPage()")
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
         def ia
         ia = investmentArchivesResourceService.findByParm(finfo.keyword)
-        print("keyword = "+finfo.keyword)
         total = ia.size()
-        print("total = " + total)
         try {
             JSONObject json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             ia = json.get("page")
-            print(ia)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
             print(e)
         }
-        print("ia = "+ia)
         result.put("rest_status", restStatus)
         result.put("rest_result", ia)
         result.put("rest_total", total)
@@ -421,7 +409,6 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/IAOutput')
     Response IAOutput(Finfo finfo){
-        print("InvestmentArchivesCollectionResource.IAOutput()")
         if (null == finfo.keyword){
             finfo.keyword = ""
         }

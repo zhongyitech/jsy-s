@@ -56,10 +56,7 @@ class UserResourceService {
             obj.department = dto.department
         }
         if (null != dto.enabled || "" != dto.enabled){
-            print("dto.enabled = "+dto.enabled)
-            print("obj.enabled = "+obj.enabled)
             obj.enabled = dto.enabled
-            print("finished obj.enabled = "+obj.enabled)
         }
         if (null != dto.accountExpired || "" != dto.accountExpired){
             obj.accountExpired = dto.accountExpired

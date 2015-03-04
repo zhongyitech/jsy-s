@@ -30,10 +30,8 @@ class FilePackageCollectionResource {
 
     @POST
     Response create(FilePackage dto) {
-        print(dto)
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        print("Create filePackageResourceService")
 //        def fp
         try {
             dto = filePackageResourceService.create(dto)
@@ -88,9 +86,7 @@ class FilePackageCollectionResource {
         try {
             json = filePackageResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
-            print(total)
             fp = json.get("page")
-            print(fp)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)

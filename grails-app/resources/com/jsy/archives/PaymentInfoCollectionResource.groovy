@@ -60,7 +60,6 @@ class PaymentInfoCollectionResource {
     @POST
     @Path("/readAllForPage")
     Response readAllForPage(Finfo finfo) {
-        print("paymentInfoResourceService.readAllForPage()")
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         try{

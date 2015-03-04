@@ -1,4 +1,6 @@
 import com.jsy.auth.AuthenticationToken
+import com.jsy.auth.Resource
+import com.jsy.auth.ResourceRole
 import com.jsy.auth.Role
 import com.jsy.auth.User
 import com.jsy.auth.UserRole
@@ -126,6 +128,22 @@ class BootStrap {
         new TypeConfig(type: 5,mapName:"外借",mapValue: 2).save(failOnError: true)
         new TypeConfig(type: 5,mapName:"遗失",mapValue: 3).save(failOnError: true)
         new TypeConfig(type: 5,mapName:"销毁",mapValue: 4).save(failOnError: true)
+        //公司类型
+        new TypeConfig(type: 6,mapName:"普通公司",mapValue: 1).save(failOnError: true)
+        new TypeConfig(type: 6,mapName:"有限合伙",mapValue: 2).save(failOnError: true)
+        //银行类型
+        new TypeConfig(type: 7,mapName:"兑付",mapValue: 1).save(failOnError: true)
+        new TypeConfig(type: 7,mapName:"日常支出",mapValue: 2).save(failOnError: true)
+        new TypeConfig(type: 7,mapName:"募集",mapValue: 3).save(failOnError: true)
+        new TypeConfig(type: 7,mapName:"其它",mapValue: 4).save(failOnError: true)
+
+        //权限数据写入
+        Resource jj=new Resource(name:"基金",objectName: "Fund").save(failOnError: true)
+        Resource da=new Resource(name:"档案",objectName: "InvestmentArchives").save(failOnError: true)
+        Resource kh=new Resource(name:"客户",objectName: "Customer").save(failOnError: true)
+        Resource yh=new Resource(name:"用户",objectName: "User").save(failOnError: true)
+
+        new ResourceRole(role: adminRole,resource:yh)
 
     }
 

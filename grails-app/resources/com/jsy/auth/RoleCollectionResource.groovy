@@ -40,7 +40,6 @@ class RoleCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
-            e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
             return Response.ok(result.toString()).status(500).build()
@@ -112,9 +111,7 @@ class RoleCollectionResource {
         String restStatus = REST_STATUS_SUC;
         def dd
         try {
-            print("dto.id = "+dto.id)
             dto.id=id
-            print("finish dto.id = "+dto.id)
             dd=roleResourceService.update(dto)
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
@@ -122,7 +119,6 @@ class RoleCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
-            e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
             return Response.ok(result.toString()).status(500).build()
