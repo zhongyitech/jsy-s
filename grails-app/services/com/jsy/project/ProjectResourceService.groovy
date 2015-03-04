@@ -86,7 +86,7 @@ class ProjectResourceService {
     def getAllFlowPhaseInfo(TSProject project,User user){
 
         def resultObj=[:]
-        resultObj.project = project;
+        resultObj.project = project.getProjectSimpleInfo();
 
         def projectWorkflows = project.projectWorkflows
 

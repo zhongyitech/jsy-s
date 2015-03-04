@@ -2,8 +2,11 @@ package com.jsy.project
 
 import com.jsy.auth.Role
 import com.jsy.auth.User
+import com.jsy.bankConfig.BankAccount
+import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
+import com.jsy.system.TypeConfig
 import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
@@ -101,24 +104,61 @@ class WorkflowResourceService {
 
     }
 
+    def initFund(){
+        new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        new Fund(fundName:'fund2',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        new Fund(fundName:'fund3',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+    }
+
     def initCompany(){
         def admin  = User.findByUsername("admin")
+        def fund1  = Fund.findByFundName("fund1")
+        def fund2  = Fund.findByFundName("fund2")
+        def fund3  = Fund.findByFundName("fund3")
+
+
+        BankAccount bankAccount = new BankAccount()
+
         FundCompanyInformation company1 = new FundCompanyInformation(
                 companyName:"洞庭湖",
+                fund:fund1
         );
         company1.save(failOnError: true)
 
         FundCompanyInformation company2 = new FundCompanyInformation(
                 companyName:"财经阳",
+                fund:fund2
         );
         company2.save(failOnError: true)
 
         FundCompanyInformation company3 = new FundCompanyInformation(
                 companyName:"广州白云机场",
+                fund:fund3
         );
         company3.save(failOnError: true)
     }
 
+    def createProjects(){
+        def fundCompanyInformation =FundCompanyInformation.findByCompanyName("洞庭湖")
+        def admin = User.findByUsername('admin') ?: new User(
+                username: 'admin',
+                password: 'admin',
+                chainName: "张三",
+                enabled: true).save(failOnError: true)
+
+        (1..13).each { i ->
+            TSProject.findByName('project'+i) ?: new TSProject(
+                    name: 'project'+i,
+                    projectDealer: 'dealer_'+i,
+                    projectOwner: admin,
+                    creator: admin,
+                    creatorName: admin.chainName,
+                    fundNames:"fund1,fund2,fund3",
+                    company: fundCompanyInformation
+            ).save(failOnError: true)
+
+        }
+    }
 
     @Transactional
     def createFlow(def projectid){
