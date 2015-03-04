@@ -1,5 +1,6 @@
 package com.jsy.fundObject
 
+import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -139,6 +140,41 @@ class FundCompanyInformationCollectionResource {
     @Path('/listAll')
     Response listAll() {
         ok fundCompanyInformationResourceService.readAll()
+    }
+
+    @GET
+    @Path('/findByFund')
+    Response getByFund(@QueryParam('id') Long id) {
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def rtn = [:]
+        try {
+            Fund fund = Fund.get(id)
+            if(!fund){
+                restStatus = REST_STATUS_FAI;
+                result.put("rest_status", restStatus)
+                result.put("rest_result", "no such fund")
+                return Response.ok(result.toString()).status(500).build()
+            }
+            def fundCompanyInformation = FundCompanyInformation.findByFund(fund)
+            def projects = TSProject.findAllByCompany(fundCompanyInformation)
+
+
+            rtn.fundCompanyInformation=fundCompanyInformation
+            rtn.projects=projects.collect{project->
+                project.getProjectSimpleInfo()
+            }
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", rtn as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "error")
+            return Response.ok(result.toString()).status(500).build()
+        }
     }
 
     @GET
