@@ -178,6 +178,7 @@ class TSProject {
 
     def getProjectSimpleInfo(){
         def rtn = [
+                id:id,
                 name:name,
                 projectDealer:projectDealer,
                 currentStageName:currentStageName,

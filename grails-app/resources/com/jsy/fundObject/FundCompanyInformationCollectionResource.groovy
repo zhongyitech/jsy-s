@@ -161,6 +161,18 @@ class FundCompanyInformationCollectionResource {
 
 
             rtn.fundCompanyInformation=fundCompanyInformation
+            rtn.banks=fundCompanyInformation.bankAccount.collect{bank->
+                def rtn2 = [:]
+                rtn2.id=bank.id
+                rtn2.bankName=bank.bankName
+                rtn2.bankOfDeposit=bank.bankOfDeposit
+                rtn2.accountName=bank.accountName
+                rtn2.account=bank.account
+                rtn2.defaultAccount=bank.defaultAccount
+                rtn2.purposeName=bank.purposeName
+                rtn2
+            }
+
             rtn.projects=projects.collect{project->
                 project.getProjectSimpleInfo()
             }
@@ -176,6 +188,8 @@ class FundCompanyInformationCollectionResource {
             return Response.ok(result.toString()).status(500).build()
         }
     }
+
+
 
     @GET
     @Path("/findById")

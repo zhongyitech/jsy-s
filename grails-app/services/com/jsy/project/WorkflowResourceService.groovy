@@ -116,25 +116,81 @@ class WorkflowResourceService {
         def fund2  = Fund.findByFundName("fund2")
         def fund3  = Fund.findByFundName("fund3")
 
+        //目的
+        TypeConfig typeConfig1 = new TypeConfig(type: 6,mapName:"收款",mapValue: 1)
+        typeConfig1.save(failOnError: true)
+        TypeConfig typeConfig2 = new TypeConfig(type: 6,mapName:"汇款",mapValue: 2)
+        typeConfig2.save(failOnError: true)
+        TypeConfig typeConfig3 = new TypeConfig(type: 6,mapName:"国庆电商收款",mapValue: 3)
+        typeConfig3.save(failOnError: true)
+        BankAccount bankAccount1 = new BankAccount(
+                bankName:"光大银行",
+                bankOfDeposit:"黎平街支行",
+                accountName:"刘先生",
+                account:"21415212",
+                defaultAccount:false,
+                purpose:typeConfig1
+        )
+        bankAccount1.save(failOnError: true)
+        BankAccount bankAccount2 = new BankAccount(
+                bankName:"平安银行",
+                bankOfDeposit:"和哦支行",
+                accountName:"李先生",
+                account:"53462",
+                defaultAccount:false,
+                purpose:typeConfig2
+        )
+        bankAccount2.save(failOnError: true)
+        BankAccount bankAccount3 = new BankAccount(
+                bankName:"人民银行",
+                bankOfDeposit:"三个支行",
+                accountName:"和先生",
+                account:"1623623",
+                defaultAccount:true,
+                purpose:typeConfig3
+        )
+        bankAccount3.save(failOnError: true)
 
-        BankAccount bankAccount = new BankAccount()
+        BankAccount bankAccount4 = new BankAccount(
+                bankName:"人民银行",
+                bankOfDeposit:"三个支行",
+                accountName:"chen先生",
+                account:"34634",
+                defaultAccount:true,
+                purpose:typeConfig3
+        )
+        bankAccount4.save(failOnError: true)
+        BankAccount bankAccount5 = new BankAccount(
+                bankName:"人民银行",
+                bankOfDeposit:"三个支行",
+                accountName:"tian先生",
+                account:"54643",
+                defaultAccount:true,
+                purpose:typeConfig3
+        )
+        bankAccount5.save(failOnError: true)
 
         FundCompanyInformation company1 = new FundCompanyInformation(
                 companyName:"洞庭湖",
                 fund:fund1
         );
+        company1.addToBankAccount(bankAccount1)
+        company1.addToBankAccount(bankAccount2)
+        company1.addToBankAccount(bankAccount3)
         company1.save(failOnError: true)
 
         FundCompanyInformation company2 = new FundCompanyInformation(
                 companyName:"财经阳",
                 fund:fund2
         );
+        company2.addToBankAccount(bankAccount4)
         company2.save(failOnError: true)
 
         FundCompanyInformation company3 = new FundCompanyInformation(
                 companyName:"广州白云机场",
                 fund:fund3
         );
+        company3.addToBankAccount(bankAccount5)
         company3.save(failOnError: true)
     }
 
