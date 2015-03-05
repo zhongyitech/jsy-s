@@ -109,7 +109,6 @@ class DepartmentCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        print("filePackageResourceService.readAllForPage()")
         org.json.JSONObject result = new org.json.JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total

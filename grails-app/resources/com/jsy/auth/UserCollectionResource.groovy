@@ -20,6 +20,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.POST
 import javax.ws.rs.core.Response
+import static org.grails.jaxrs.response.Responses.ok
 
 @Path('/api/user')
 @Consumes(['application/xml','application/json'])
@@ -77,7 +78,7 @@ class UserCollectionResource {
     @GET
     @Path('/getUser')
     Response getUser() {
-        ok (springSecurityService.getCurrentUser())
+        ok(springSecurityService.getCurrentUser())
     }
 
     //删除用户

@@ -176,4 +176,29 @@ class TSProject {
         }
     }
 
+    def getProjectSimpleInfo(){
+        def rtn = [
+                id:id,
+                name:name,
+                projectDealer:projectDealer,
+                currentStageName:currentStageName,
+                currentStageEn:currentStageEn,
+                fundNames:fundNames,
+                creatorName:creatorName,
+                ownerName:ownerName,
+                dateCreated:dateCreated,
+                lastUpdated:lastUpdated,
+                director:director,
+                supervisor:supervisor,
+                stockStructure:stockStructure,
+                debt:debt,
+                assets:assets,
+                isEnded:isEnded,
+                archive:archive,
+                pdesc:pdesc
+
+        ]
+        return rtn;
+    }
+
 }

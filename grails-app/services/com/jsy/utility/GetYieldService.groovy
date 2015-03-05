@@ -13,7 +13,6 @@ class GetYieldService {
     }
     public static def getYield(Long fundid,Long manageid, BigDecimal investment,String vers){
         //vers指合同版本，根据不同版本，得到不同的收益率
-        print("GetYieldService.getyield")
         JSONObject json = new JSONObject()
 //        double result = 0
 //        boolean b=true
