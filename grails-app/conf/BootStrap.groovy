@@ -179,11 +179,8 @@ class BootStrap {
                     }else{
 
                     }
-
                 }
             }
         }
     }
-
-
 }

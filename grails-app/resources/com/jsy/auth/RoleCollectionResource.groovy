@@ -106,15 +106,21 @@ class RoleCollectionResource {
     }
 
     @PUT
-    Response update(Role dto,@QueryParam('id') String id) {
+    Response update(Role dto,@QueryParam('id') int id) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def dd
         try {
             dto.id=id
-            dd=roleResourceService.update(dto)
+            def map = [:]
+            map.name=dto.name
+            dd=roleResourceService.update(dto,map)
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
+
+//            def res=[:]
+//            res.rest_status=restStatus
+
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI

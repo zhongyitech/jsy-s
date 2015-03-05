@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="2020484764">
+    <data-source source="LOCAL" name="jsy dev" uuid="d94f2588-d6c9-4438-accc-771bade94ea8">
+      <driver-ref>mysql</driver-ref>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://192.168.1.59/jsytest</jdbc-url>
+      <user-name>jsy</user-name>
+      <user-password>dfc0dfd9dfd3df9bdfdbdfcbdfd0</user-password>
+      <libraries>
+        <library>
+          <url>file://$PROJECT_DIR$/lib/mysql-connector-java-5.1.27.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>
+

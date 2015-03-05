@@ -108,7 +108,6 @@ class PaymentRecordCollectionResource {
         result.put("rest_status", restStatus)
         result.put("rest_result", pr as JSON)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @GET

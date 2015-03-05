@@ -26,7 +26,27 @@ class RoleResourceService {
         if (!obj) {
             throw new DomainObjectNotFoundException(Role.class, dto.id)
         }
-        obj.properties = dto.properties
+//        obj.properties = dto.properties
+        obj.union(dto)
+        obj
+    }
+
+    def update(Role dto , map) {
+        def obj = Role.get(dto.id)
+        if (!obj) {
+            throw new DomainObjectNotFoundException(Role.class, dto.id)
+        }
+//        obj.properties = dto.properties
+        obj.unionMap(map)
+        obj
+    }
+
+    def updateName(Role dto){
+        def obj = Role.get(dto.id)
+        if (!obj) {
+            throw new DomainObjectNotFoundException(Role.class, dto.id)
+        }
+        obj.name=dto.name;
         obj
     }
 
