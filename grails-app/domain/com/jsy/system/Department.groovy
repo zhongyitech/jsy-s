@@ -36,5 +36,6 @@ class Department {
         type nullable: true
         status nullable: true
         fundCompanyInformation nullable: true
+        leader nullable: true
     }
 }
