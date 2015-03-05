@@ -43,7 +43,7 @@ class RoleResourceService {
         JSONObject json = new JSONObject()
 
         json.put("page", Role.findAllByNameLikeOrAuthorityLike("%" + queryparam + "%","%" + queryparam + "%",max: pagesize, offset: startposition))
-        json.put("size", Role.findAllByNameLikeOrAuthorityLike("%" + queryparam + "%","%" + queryparam + "%"))
+        json.put("size", Role.findAllByNameLikeOrAuthorityLike("%" + queryparam + "%","%" + queryparam + "%").size())
 
         return  json
 

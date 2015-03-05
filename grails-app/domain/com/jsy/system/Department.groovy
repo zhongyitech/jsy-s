@@ -1,5 +1,6 @@
 package com.jsy.system
 
+import com.jsy.auth.User
 import com.jsy.fundObject.FundCompanyInformation
 
 /**
@@ -20,6 +21,9 @@ class Department {
     //备注
     String memo
 
+    //负责人
+    User leader
+
     //公司
     FundCompanyInformation fundCompanyInformation
 
@@ -32,5 +36,6 @@ class Department {
         type nullable: true
         status nullable: true
         fundCompanyInformation nullable: true
+        leader nullable: true
     }
 }
