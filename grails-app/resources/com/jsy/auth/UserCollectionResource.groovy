@@ -256,6 +256,39 @@ class UserCollectionResource {
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
+
+    @GET
+    @Path('/findUserLeader')
+    Response findUserLeader(@QueryParam('uid') String uid){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def users
+        JSONObject role = new JSONObject();
+        JSONObject userAndRole = new JSONObject();
+        def leaders = [:]
+        try{
+
+            users = User.get(uid)
+            print(users.properties)
+            leaders.id = users.department.leader.id
+            leaders.chainName = users.department.leader.chainName
+            leaders.username = users.department.leader.username
+            result.put("rest_result", leaders as JSON)
+            result.put("rest_status", restStatus)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
+
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+    }
+
+
     @PUT
     Response update(User dto,@QueryParam('id') Long id,@QueryParam('rolelist') String rolelist) {
         print("id = "+id)
