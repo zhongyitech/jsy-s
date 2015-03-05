@@ -146,4 +146,26 @@ class RoleCollectionResource {
         }
     }
 
+    @GET
+    @Path("/getResourceRole")
+    Response getResourceRole(@QueryParam('id') Long id){
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def dd
+        try {
+            dd = ResourceRole.findAllByRole(Role.get(id))
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", dd as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
+
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.jsy.system
 
+import com.jsy.auth.User
 import com.jsy.fundObject.FundCompanyInformation
 
 /**
@@ -19,6 +20,9 @@ class Department {
     int status
     //备注
     String memo
+
+    //负责人
+    User leader
 
     //公司
     FundCompanyInformation fundCompanyInformation
