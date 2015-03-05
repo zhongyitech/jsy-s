@@ -81,12 +81,12 @@ class RoleCollectionResource {
         def ra
         def r
         try {
-            ra=roleResourceService.readAllForPage(finfo)
+            ra=roleResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = ra.get("size")
             print(total)
             r = ra.get("page")
             result.put("rest_status", restStatus)
-            result.put("rest_result", r)
+            result.put("rest_result", r as JSON)
             result.put("rest_total", total)
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
