@@ -31,7 +31,8 @@ class RoleResourceService {
         obj
     }
 
-    def update(Role dto , map) {
+    //更新对象的值
+    def update(Role dto , /*需要更新的字段*/map) {
         def obj = Role.get(dto.id)
         if (!obj) {
             throw new DomainObjectNotFoundException(Role.class, dto.id)
@@ -41,14 +42,6 @@ class RoleResourceService {
         obj
     }
 
-    def updateName(Role dto){
-        def obj = Role.get(dto.id)
-        if (!obj) {
-            throw new DomainObjectNotFoundException(Role.class, dto.id)
-        }
-        obj.name=dto.name;
-        obj
-    }
 
     void delete(id) {
         def obj = Role.get(id)
