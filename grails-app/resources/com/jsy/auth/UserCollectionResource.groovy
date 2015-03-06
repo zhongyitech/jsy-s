@@ -31,14 +31,12 @@ class UserCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     def userResourceService
     def springSecurityService
+    AuthorityService authorityService
 
     //创建用户
     @PUT
     @Path("/create")
     Response create(User dto,@QueryParam('rolelist') String rolelist) {
-        print("UserCollectionResource.create()")
-        print(dto)
-        print(rolelist)
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def dd
@@ -57,16 +55,13 @@ class UserCollectionResource {
             }
             jsdd.put("User",dd)
             jsdd.put("Role",rlist)
-            print(jsdd)
             result.put("rest_status", restStatus)
             result.put("rest_result", jsdd as JSON)
             print("return successful" + result.toString())
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
             print("return successful")
         }catch (Exception e){
-            print("return failed")
             restStatus = REST_STATUS_FAI
-            e.printStackTrace()
             print(e)
             result.put("rest_status", restStatus)
             result.put("rest_result", dd as JSON)
@@ -78,7 +73,8 @@ class UserCollectionResource {
     @GET
     @Path('/getUser')
     Response getUser() {
-        ok(springSecurityService.getCurrentUser())
+        ok authorityService.getAuth(User.list(),'User').toString()
+//        ok(springSecurityService.getCurrentUser())
     }
 
     //删除用户
@@ -86,7 +82,6 @@ class UserCollectionResource {
     @Path('/{id}')
     Response delete(@PathParam('id') Long id) {
         boolean result=userResourceService.delete(id)
-        print(result)
         ok('{result:'+result+'}')
     }
     //更改用户信息

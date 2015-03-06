@@ -1,4 +1,5 @@
 import com.jsy.auth.AuthenticationToken
+import com.jsy.auth.Property
 import com.jsy.auth.Resource
 import com.jsy.auth.ResourceRole
 import com.jsy.auth.Role
@@ -18,7 +19,7 @@ class BootStrap {
         if(users&&users.size()>0){
             return;
         }
-        new AuthenticationToken(username: 'liujw', token: '123123123').save(failOnError: true)
+        new AuthenticationToken(username: 'admin', token: '123123123').save(failOnError: true)
         JSON.registerObjectMarshaller(Date) {
             return it?.format("yyyy/MM/dd HH:mm:ss")
         }
@@ -94,6 +95,9 @@ class BootStrap {
         if (!user3.authorities.contains(adminRole)) {
             UserRole.create user3, adminRole
         }
+        if (!user1.authorities.contains(adminRole)) {
+            UserRole.create user1, adminRole
+        }
         if (!user1.authorities.contains(managerRole)) {
             UserRole.create user1, managerRole
         }
@@ -143,7 +147,17 @@ class BootStrap {
         Resource kh=new Resource(name:"客户",objectName: "Customer").save(failOnError: true)
         Resource yh=new Resource(name:"用户",objectName: "User").save(failOnError: true)
 
-        new ResourceRole(role: adminRole,resource:yh)
+        ResourceRole resourceRole=new ResourceRole(role: adminRole,resource:yh).save(failOnError: true)
+        Property property1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
+        Property property2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
+        Property property3=new Property(name:'skr',title:'收款人',visible:false).save(failOnError: true)
+        Property property4=new Property(name:'khh',title:'开户行',visible:false).save(failOnError: true)
+        Property property5=new Property(name:'yhzh',title:'银行账户',visible:false).save(failOnError: true)
+        resourceRole.addToPropertys(property1)
+        resourceRole.addToPropertys(property2)
+        resourceRole.addToPropertys(property3)
+        resourceRole.addToPropertys(property4)
+        resourceRole.addToPropertys(property5)
 
     }
 

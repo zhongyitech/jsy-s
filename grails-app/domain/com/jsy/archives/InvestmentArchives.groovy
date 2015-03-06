@@ -16,9 +16,12 @@ class InvestmentArchives {
 
     //投资档案编号，自动生成
     String markNum
-    //客户档案
-    Customer customer
 
+    //客户档案(客户的复件资料）
+    CustomerArchives customerArchive
+
+    //客户
+    Customer customer
 
     //档案信息
     //档案编号
