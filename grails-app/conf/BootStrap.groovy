@@ -184,7 +184,17 @@ class BootStrap {
                 }
             }
         }
+
+        Object.metaClass.unionMap = { map->
+            map.each {
+                if(delegate.delegate.hasProperty(it.key)){
+                    if(delegate.delegate.hasProperty(it.key).setter){
+                        delegate.delegate[it.key] = it.value
+                    }else{
+
+                    }
+                }
+            }
+        }
     }
-
-
 }

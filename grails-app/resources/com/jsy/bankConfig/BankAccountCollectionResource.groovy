@@ -1,6 +1,8 @@
 package com.jsy.bankConfig
 
 import com.jsy.fundObject.Finfo
+import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -93,6 +95,29 @@ class BankAccountCollectionResource {
     @GET
     Response readAll() {
         ok bankAccountResourceService.readAll()
+    }
+
+    @GET
+    @Path('/paylist')
+    Response paybankaccounts(@QueryParam('fundName') String fundName) {
+
+        Fund fund = Fund.findByFundName(fundName);
+        def resultObject;
+        def restStatus = REST_STATUS_SUC
+        try {
+            FundCompanyInformation company = FundCompanyInformation.findByFund(fund)
+            resultObject=company.bankAccount
+        }
+        catch (Exception e) {
+            restStatus = REST_STATUS_FAI
+            print(e)
+            return Response.status(Response.Status.NOT_FOUND).build()
+        }
+        def result = new HashMap()
+        result.put("rest_status", restStatus)
+        result.put("rest_result", resultObject)
+        JSON.use("deep")
+        return Response.ok(result as JSON).status(RESPONSE_STATUS_SUC).build()
     }
 
     @Path('/{id}')

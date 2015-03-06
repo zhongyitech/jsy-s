@@ -7,12 +7,11 @@ dataSource {
 //    password = ""
 
     driverClassName = "com.mysql.jdbc.Driver"
-//    username = "jsy"
-//    password = "jsy1qaz"
-    username = "root"
-    password = "surewin"
+    username = "jsy"
+    password = "jsy1qaz"
+//    username = "root"
+//    password = "surewin"
     dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-//    dialect = org.hibernate.dialect.MySQL5Dialect
 
 }
 hibernate {
@@ -29,10 +28,10 @@ environments {
         dataSource {
 //            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
-            dbCreate = "create"
-//            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+            dbCreate = "update"
+            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
 //            url = "jdbc:mysql://192.168.4.141:3306/test1?user=root&password=surewin&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
-            url = "jdbc:mysql://localhost:3306/test1?user=root&password=surewin&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+//            url = "jdbc:mysql://localhost:3306/test1?user=root&password=surewin&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             properties {
                 // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                 jmxEnabled = true
@@ -69,24 +68,24 @@ environments {
             dbCreate = "update"
             url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             properties {
-               // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
-               jmxEnabled = true
-               initialSize = 5
-               maxActive = 50
-               minIdle = 5
-               maxIdle = 25
-               maxWait = 10000
-               maxAge = 10 * 60000
-               timeBetweenEvictionRunsMillis = 5000
-               minEvictableIdleTimeMillis = 60000
-               validationQuery = "SELECT 1"
-               validationQueryTimeout = 3
-               validationInterval = 15000
-               testOnBorrow = true
-               testWhileIdle = true
-               testOnReturn = false
-               jdbcInterceptors = "ConnectionState"
-               defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
+                // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
+                jmxEnabled = true
+                initialSize = 5
+                maxActive = 50
+                minIdle = 5
+                maxIdle = 25
+                maxWait = 10000
+                maxAge = 10 * 60000
+                timeBetweenEvictionRunsMillis = 5000
+                minEvictableIdleTimeMillis = 60000
+                validationQuery = "SELECT 1"
+                validationQueryTimeout = 3
+                validationInterval = 15000
+                testOnBorrow = true
+                testWhileIdle = true
+                testOnReturn = false
+                jdbcInterceptors = "ConnectionState"
+                defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
             }
         }
     }

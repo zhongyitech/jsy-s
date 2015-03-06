@@ -29,46 +29,29 @@ class TSWorkflowCollectionResource {
     @Path('/irData')
     Response initData() {
         init_fund();
+        init_company();
         init_project();
         init_flowModel();
         init_flow();
-        init_company();
+
 
         ok "good"
     }
 
     def init_fund={
-        new Fund(fundName:'测试基金',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
-        new Fund(fundName:'巨星基金',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        workflowResourceService.initFund()
     }
 
 
     def init_project={
-        def admin = User.findByUsername('admin') ?: new User(
-                username: 'admin',
-                password: 'admin',
-                department:department,
-                chainName: "张三",
-                enabled: true).save(failOnError: true)
 
-        (1..13).each { i ->
-            TSProject.findByName('project'+i) ?: new TSProject(
-                    name: 'project'+i,
-                    projectDealer: 'dealer_'+i,
-                    projectOwner: admin,
-                    creator: admin,
-                    creatorName: admin.chainName,
-                    fundNames:"fund1,fund2,fund3"
-            ).save(failOnError: true)
-
-        }
+        workflowResourceService.createProjects()
     }
 
     def init_flow={
         TSProject.findAll().each {proj->
             workflowResourceService.createFlow(proj.id)
         }
-
     }
 
 
