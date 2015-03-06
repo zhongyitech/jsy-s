@@ -24,6 +24,9 @@ class Department {
     //负责人
     User leader
 
+    //职能
+    TypeConfig performance
+
     //公司
     FundCompanyInformation fundCompanyInformation
 
