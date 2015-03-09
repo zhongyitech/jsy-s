@@ -183,18 +183,22 @@ class InvestmentArchivesCollectionResource {
 
         if ("" == id || null == id){
             try {
-//                Customer cus=null
-//                if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
-//                    cus=Customer.findByCredentialsNumber(dto.customer.credentialsNumber)
-//                    if(!cus){
-                Customer  cus=dto.customer.save(failOnError: true)
+                Customer cus=null
+                if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
+                    cus=dto.customer.save(failOnError: true)
+                    CustomerArchives cusa=CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
+                    if(!cusa) {
+                        CustomerArchives customerArchives = new CustomerArchives()
+                        customerArchives.properties = cus.properties
+                        customerArchives.save(failOnError: true)
+                    }
 //                    }else{
 //                        cus.properties=dto.customer.properties
 //                        cus.save(failOnError: true)
 //                    }
                     dto.status=1
                     dto.username=cus.name
-//                }
+                }
                 dto.bj=dto.tzje
                 dto.customer=cus
                 StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
@@ -216,15 +220,15 @@ class InvestmentArchivesCollectionResource {
 
         }else{
 //            try {
-//            Customer cus=null
-//            if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
+            Customer cus=null
+            if(!(dto.customer.credentialsNumber==null||dto.customer.credentialsNumber=="")){
 //                cus=Customer.findByCredentialsNumber(dto.customer.credentialsNumber)
 //                if(!cus){
-            Customer cus=dto.customer.save(failOnError: true)
+                cus=dto.customer.save(failOnError: true)
 //                }else{
 //                    cus.properties=dto.customer.properties
 //                    cus.save(failOnError: true)
-//                }
+                }
                 dto.status=1
                 dto.username=cus.name
 //            }
