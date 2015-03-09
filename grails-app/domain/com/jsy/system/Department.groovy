@@ -25,14 +25,18 @@ class Department {
     User leader
 
     //职能
-    TypeConfig performance=TypeConfig.findByTypeAndMapValue(8,1)
+    TypeConfig performance
 
     //公司
     FundCompanyInformation fundCompanyInformation
 
     //belongsTo = [company:Company]
+    def beforeInsert() {
+        performance=TypeConfig.findByTypeAndMapValue(8,1)
+    }
 
     static constraints = {
+        performance nullable: true
         description nullable: true
         memo nullable: true
         buildDate nullable: true
