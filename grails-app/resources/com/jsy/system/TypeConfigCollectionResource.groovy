@@ -33,12 +33,29 @@ class TypeConfigCollectionResource {
 
     @GET
     Response readAll() {
-        MailBean mailBean=new MailBean()
-        mailBean.mailTo="my061830@163.com"
-        mailBean.subject="标题"
-        mailBean.content="111123"
-        sendMailService.toMail(mailBean)
-        ok typeConfigResourceService.readAll()
+//        MailBean mailBean=new MailBean()
+//        mailBean.mailTo="my061830@163.com"
+//        mailBean.subject="标题"
+//        mailBean.content="111123"
+//        sendMailService.toMail(mailBean)
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def tc
+        try {
+            tc = typeConfigResourceService.readAll()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", tc as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI
+            print(e.stackTrace)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", tc as JSON)
+            return Response.ok(result.toString()).status(500).build()
+        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", tc as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @Path('/{id}')
