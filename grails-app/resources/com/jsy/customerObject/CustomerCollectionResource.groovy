@@ -57,14 +57,21 @@ class CustomerCollectionResource {
 //        print(funno)
 //        rc.save(failOnError: true)
         custm = customerResourceService.create(dto)
+        result.put("rest_status", restStatus)
+        result.put("rest_result", custm as JSON)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }catch (Exception e){
         restStatus = REST_STATUS_FAI
         print(e)
+        e.printStackTrace()
+        result.put("rest_status", restStatus)
+        result.put("rest_result", custm as JSON)
+        return Response.ok(result.toString()).status(500).build()
     }
-    result.put("rest_status", restStatus)
-    result.put("rest_result", custm as JSON)
-    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//    result.put("rest_status", restStatus)
+//    result.put("rest_result", custm as JSON)
+//    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
@@ -74,13 +81,20 @@ class CustomerCollectionResource {
         def custm
         try{
             custm = customerResourceService.readAll()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", custm as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", custm as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", custm as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", custm as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
