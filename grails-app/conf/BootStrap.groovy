@@ -140,6 +140,10 @@ class BootStrap {
         new TypeConfig(type: 7,mapName:"日常支出",mapValue: 2).save(failOnError: true)
         new TypeConfig(type: 7,mapName:"募集",mapValue: 3).save(failOnError: true)
         new TypeConfig(type: 7,mapName:"其它",mapValue: 4).save(failOnError: true)
+        //部门的职能
+        new TypeConfig(type:8,mapName: "管理",mapValue: 1).save(failOnError: true)
+        new TypeConfig(type:8,mapName: "销售",mapValue: 2).save(failOnError: true)
+        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
 
         //权限数据写入
         Resource jj=new Resource(name:"基金",objectName: "Fund").save(failOnError: true)
