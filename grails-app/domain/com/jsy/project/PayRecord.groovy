@@ -1,6 +1,7 @@
 package com.jsy.project
 
 import com.jsy.auth.User
+import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
 import com.jsy.system.UploadFile
 
@@ -18,6 +19,8 @@ class PayRecord {
     String payType
 
     String pdesc;
+
+    BankAccount bankAccount
 
     //common
     Date dateCreated

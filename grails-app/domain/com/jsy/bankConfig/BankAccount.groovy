@@ -27,14 +27,14 @@ class BankAccount {
 
     def beforeInsert() {
         if (purpose) {
-            purposeName = purpose.mapValue
+            purposeName = purpose.mapName
         }
     }
 
 
     def beforeUpdate() {
         if (purpose) {
-            purposeName = purpose.mapValue
+            purposeName = purpose.mapName
         }else{
             purposeName = ""
         }

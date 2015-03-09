@@ -172,8 +172,8 @@ class WorkflowResourceService {
 
         FundCompanyInformation company1 = new FundCompanyInformation(
                 companyName:"洞庭湖",
-                fund:fund1
         );
+        company1.addToFunds(fund1)
         company1.addToBankAccount(bankAccount1)
         company1.addToBankAccount(bankAccount2)
         company1.addToBankAccount(bankAccount3)
@@ -181,38 +181,46 @@ class WorkflowResourceService {
 
         FundCompanyInformation company2 = new FundCompanyInformation(
                 companyName:"财经阳",
-                fund:fund2
         );
+        company2.addToFunds(fund2)
         company2.addToBankAccount(bankAccount4)
         company2.save(failOnError: true)
 
         FundCompanyInformation company3 = new FundCompanyInformation(
                 companyName:"广州白云机场",
-                fund:fund3
         );
+        company3.addToFunds(fund3)
         company3.addToBankAccount(bankAccount5)
         company3.save(failOnError: true)
     }
 
     def createProjects(){
         def fundCompanyInformation =FundCompanyInformation.findByCompanyName("洞庭湖")
+        def fund1  = Fund.findByFundName("fund1")
         def admin = User.findByUsername('admin') ?: new User(
                 username: 'admin',
                 password: 'admin',
                 chainName: "张三",
                 enabled: true).save(failOnError: true)
 
-        (1..13).each { i ->
+        (1..6).each { i ->
             TSProject.findByName('project'+i) ?: new TSProject(
                     name: 'project'+i,
                     projectDealer: 'dealer_'+i,
                     projectOwner: admin,
                     creator: admin,
-                    creatorName: admin.chainName,
-                    fundNames:"fund1,fund2,fund3",
-                    company: fundCompanyInformation
             ).save(failOnError: true)
+        }
 
+        (7..13).each { i ->
+            TSProject.findByName('project' + i) ?: new TSProject(
+                    name: 'project' + i,
+                    projectDealer: 'dealer_' + i,
+                    projectOwner: admin,
+                    creator: admin,
+                    company: fundCompanyInformation,
+                    fund: fund1
+            ).save(failOnError: true)
         }
     }
 
