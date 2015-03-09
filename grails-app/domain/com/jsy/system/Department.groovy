@@ -25,7 +25,7 @@ class Department {
     User leader
 
     //职能
-    TypeConfig performance
+    TypeConfig performance=TypeConfig.findByTypeAndMapValue(8,1)
 
     //公司
     FundCompanyInformation fundCompanyInformation
