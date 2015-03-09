@@ -166,7 +166,6 @@ class CustomerCollectionResource {
         new CustomerResource(customerResourceService: customerResourceService, id:id)
     }
 
-
     @GET
     @Path('/nameLike')
     Response findByNameLike(@QueryParam('params') String username){
