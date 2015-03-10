@@ -105,9 +105,10 @@ class WorkflowResourceService {
     }
 
     def initFund(){
-        new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
-        new Fund(fundName:'fund2',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
-        new Fund(fundName:'fund3',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+
+        Fund.findByFundName('fund1')?:new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        Fund.findByFundName('fund2')?:new Fund(fundName:'fund2',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        Fund.findByFundName('fund3')?:new Fund(fundName:'fund3',fundNo:'F003',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
     }
 
     def initCompany(){
@@ -209,6 +210,14 @@ class WorkflowResourceService {
                     projectDealer: 'dealer_'+i,
                     projectOwner: admin,
                     creator: admin,
+                    manage_per:0.02,
+                    community_per:0.03,
+                    penalty_per:0.04,
+                    borrow_per:0.05,
+                    interest_per:0.06,
+                    year1:1,
+                    year2:0,
+                    interestType:"costCount"
             ).save(failOnError: true)
         }
 
@@ -218,6 +227,14 @@ class WorkflowResourceService {
                     projectDealer: 'dealer_' + i,
                     projectOwner: admin,
                     creator: admin,
+                    manage_per:0.02,
+                    community_per:0.03,
+                    penalty_per:0.04,
+                    borrow_per:0.05,
+                    interest_per:0.06,
+                    year1:1,
+                    year2:0,
+                    interestType:"costCount",
                     company: fundCompanyInformation,
                     fund: fund1
             ).save(failOnError: true)

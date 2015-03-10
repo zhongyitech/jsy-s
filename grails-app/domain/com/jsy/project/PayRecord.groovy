@@ -22,6 +22,9 @@ class PayRecord {
 
     BankAccount bankAccount
 
+    double totalPayBack     //准对这笔钱，总共还款
+    double payMainBack      //本金还款
+
     //common
     Date dateCreated
     Date lastUpdated

@@ -73,6 +73,7 @@ class TSProject {
     float community_per             //渠道费率
     float penalty_per               //违约金率
     float borrow_per                //借款率
+    float interest_per                //本金的年利率
     float year1                     //期限：约定
     float year2                     //期限：缓冲
     String interestType             //利息计算方式
@@ -174,6 +175,7 @@ class TSProject {
         community_per nullable: true
         penalty_per nullable: true
         borrow_per nullable: true
+        interest_per nullable: true
         year1 nullable: true
         year2 nullable: true
         interestType  nullable: true
@@ -232,7 +234,16 @@ class TSProject {
                 assets:assets,
                 isEnded:isEnded,
                 archive:archive,
-                pdesc:pdesc
+                pdesc:pdesc,
+
+                manage_per:manage_per,               //管理费率
+                community_per:community_per,             //渠道费率
+                penalty_per:penalty_per,               //违约金率
+                borrow_per:borrow_per,               //借款率
+                interest_per:interest_per,                //本金的年利率
+                year1:year1,                    //期限：约定
+                year2:year2,                     //期限：缓冲
+                interestType:interestType             //利息计算方式
 
         ]
         return rtn;
