@@ -1,5 +1,6 @@
 package com.jsy.bankConfig
 
+//记账凭证主表
 class BankOrder {
 
     //凭证编号
