@@ -1,5 +1,6 @@
 package com.jsy.archives
 
+import com.jsy.bankConfig.BankAccount
 import com.jsy.system.UploadFile
 
 //投资档案中的客户信息(生成投资档案时的信息）
@@ -28,9 +29,6 @@ class CustomerArchives {
     //开户行
     String khh
 
-    //银行账号
-    String yhzh
-
     //联系电话
     String telephone
 
@@ -49,8 +47,8 @@ class CustomerArchives {
     //备注
     String remark
 
-    //附件
-    static hasMany = [uploadFiles:UploadFile]
+    //附件 & 银行账号
+    static hasMany = [uploadFiles:UploadFile,bankAccount:BankAccount]
     static constraints = {
         email nullable:true
         remark nullable: true

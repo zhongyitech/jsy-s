@@ -127,6 +127,7 @@ class InvestmentArchives {
         fxsj3 nullable: true
         fxsj4 nullable: true
         customer nullable: true
+        customerArchive nullable: true
 
         zjdysj nullable: true
 
