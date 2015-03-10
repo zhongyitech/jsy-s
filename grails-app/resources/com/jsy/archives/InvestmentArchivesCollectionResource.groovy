@@ -225,19 +225,21 @@ class InvestmentArchivesCollectionResource {
 //                cus=Customer.findByCredentialsNumber(dto.customer.credentialsNumber)
 //                if(!cus){
                 cus=dto.customer.save(failOnError: true)
+
 //                }else{
 //                    cus.properties=dto.customer.properties
 //                    cus.save(failOnError: true)
-                }
+//                }
                 dto.status=1
                 dto.username=cus.name
-//            }
+            }
             dto.customer=cus
             ia = investmentArchivesResourceService.update(dto,Integer.parseInt(id))
 //            }catch (Exception e){
 //                restStatus = REST_STATUS_FAI
 //                print(e)
 //            }
+
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
 
