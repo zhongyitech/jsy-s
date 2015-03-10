@@ -8,6 +8,7 @@ import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.apache.http.HttpStatus
+import org.apache.http.protocol.ResponseServer
 import org.grails.jaxrs.response.Responses
 import org.json.JSONArray
 import org.json.JSONObject
@@ -134,7 +135,7 @@ class InvestmentArchivesCollectionResource {
 
     @GET
     @Path('/getFile')
-    Response getFile(@QueryParam('archiveNum') String archiveNum) {
+    static Response getFile(@QueryParam('archiveNum') String archiveNum) {
         InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
         JSONObject result = new JSONObject();
         JSONArray fxsj = new JSONArray()
@@ -174,7 +175,7 @@ class InvestmentArchivesCollectionResource {
     }
 
     //检测传入MODEL的合法性，属性的值
-    def ValidationModel(InvestmentArchives dto) {
+    static def ValidationModel(InvestmentArchives dto) {
         def error = [:]
         if (dto.fxfs == null || dto.fxfs.length() > 1) {
             error.fxfs = "付息方式参数不合法"
@@ -189,7 +190,7 @@ class InvestmentArchivesCollectionResource {
         }
 
         if (dto.fund != null) {
-            def fund = Fund.find(dto.fund.id)
+            def fund = Fund.get(dto.fund.id)
             if (fund != null && fund.yieldRange.size() == 0) {
                 //检测收益率是否与传入的参数一致
                 error.nhsyl = "个化收益参数不合法"
@@ -206,15 +207,17 @@ class InvestmentArchivesCollectionResource {
 //        测试数据
 //        {"customer":{"name":"12","credentialsNumber":"12","country":"china","phone":"12",country":"12","credentialsType":"12","telephone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"12","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T14:49:20Z","dqrq":"2014-12-23T14:49:20Z","fxfs":"12","htzt":"1","ywjl":"1"}
 //        {"customer":{"name":"12","khh":"12","yhzh":"12","country":"12","credentialsType":"12","credentialsNumber":"12","telephone":"12","phone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"122301","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T18:17:43Z","dqrq":"2014-12-23T18:17:43Z","fxfs":"12","htzt":"1","ywjl":"1"}
-        def v = dto.hasErrors()
-        def error = ValidationModel(dto)
-        if (error.size() > 0) {
-            def result = JsonResult.failed("传递的参数不合法，请修改参数！", error)
-            return Responses.ok(result)
+        try {
+            def error = ValidationModel(dto)
+            if (error.size() > 0) {
+                def result = JsonResult.failed("传递的参数不合法，请修改参数！", error)
+                ok result
+            }
+        } catch (Exception e) {
+            ok JsonResult.failed(e.message)
         }
         // JSONObject result = new JSONObject();
         def result
-        String restStatus = REST_STATUS_SUC;
         def ia
         if ("" == id || null == id) {
             try {
@@ -247,11 +250,10 @@ class InvestmentArchivesCollectionResource {
                 result = JsonResult.success(dto)
 
             } catch (Exception e) {
-                restStatus = REST_STATUS_FAI
                 result = JsonResult.failed(e.message)
                 print(e)
             }
-            return Response.ok(result).status(RESPONSE_STATUS_SUC).build()
+            ok result
 
         } else {
 //            try {
@@ -273,31 +275,28 @@ class InvestmentArchivesCollectionResource {
 //                restStatus = REST_STATUS_FAI
 //                print(e)
 //            }
-            result.put("rest_status", restStatus)
-            result.put("rest_result", ia as JSON)
 
-            def res = JsonResult.success(result)
-
-            return Response.ok(res.toString()).status(RESPONSE_STATUS_SUC).build()
-
+            ok JsonResult.success(ia)
         }
     }
 
     @GET
     @Path('/GetById')
     Response GetById(@QueryParam('id') Long id) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
         def ia
         try {
             ia = InvestmentArchives.get(id)
+            ok JsonResult.success(ia)
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
+//            restStatus = REST_STATUS_FAI
             print(e)
+            ok JsonResult.failed(e.message)
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ia as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ia as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //根据名字模糊查询投资确认书列表
@@ -336,8 +335,8 @@ class InvestmentArchivesCollectionResource {
     @PUT
     @Path("/updateforprint")
     Response updateforprint(@QueryParam('id') Long id) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
         def ia
         try {
             ia = InvestmentArchives.get(id)
@@ -353,14 +352,16 @@ class InvestmentArchivesCollectionResource {
                     new CommissionInfo(zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
                 }
             }
+            ok JsonResult.success(ia)
 
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
+//            restStatus = REST_STATUS_FAI
             print(e)
+            ok JsonResult.failed(e.message)
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ia as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ia as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //打印更新接口还有奖励领了，然后
@@ -387,19 +388,20 @@ class InvestmentArchivesCollectionResource {
                       @QueryParam('investment') BigDecimal investment,
                       @QueryParam('vers') String vers) {
 
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
         def gy
         try {
             gy = GetYieldService.getYield(fundid, managerid, investment, vers)
+            ok JsonResult.success(gy)
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             print(e)
+            ok JsonResult.failed(e.message)
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", gy)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", gy)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @POST
@@ -422,21 +424,19 @@ class InvestmentArchivesCollectionResource {
         result.put("rest_status", restStatus)
         result.put("rest_result", ia)
         result.put("rest_total", total)
-
-
-
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 
     def formatClassToValue(JSONObject object) {
         def objectClass = object.keys()
-        return object;
+        return objectClass;
     }
 
     @GET
     Response readAll() {
-        ok investmentArchivesResourceService.readAll()
+//        ok investmentArchivesResourceService.readAll()
+        ok JsonResult.success(investmentArchivesResourceService.readAll())
     }
 
     @Path('/{id}')
@@ -481,7 +481,5 @@ class InvestmentArchivesCollectionResource {
         result.put("rest_total", total)
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
-
 }
