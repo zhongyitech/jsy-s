@@ -28,44 +28,9 @@ class TSWorkflowCollectionResource {
     @GET
     @Path('/irData')
     Response initData() {
-        init_fund();
-        init_company();
-        init_project();
-        init_flowModel();
-        init_flow();
-
-
+        workflowResourceService.initData();
         ok "good"
     }
-
-    def init_fund={
-        workflowResourceService.initFund()
-    }
-
-
-    def init_project={
-
-        workflowResourceService.createProjects()
-    }
-
-    def init_flow={
-        TSProject.findAll().each {proj->
-            workflowResourceService.createFlow(proj.id)
-        }
-    }
-
-
-
-    def init_flowModel = {
-        workflowResourceService.initFlowModel()
-    }
-
-    def init_company = {
-        workflowResourceService.initCompany()
-    }
-
-
-
 
 }
 

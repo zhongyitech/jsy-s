@@ -117,11 +117,14 @@ class PayRecordCollectionResource {
                 def over_days = dayDifferent(lastDate,nowDate)
                 if(owe_money > 0){
                     if("singleCount".equals(project.interestType)){//单利：欠款*interest_per/365*超出的天数
-                        pay_record.over_interest_pay = (owe_money * payRecord.interest_per * over_days / 365)
+                        pay_record.over_interest_pay = (owe_money * project.interest_per * over_days / 365)
                     }else if("costCount".equals(project.interestType)){//单利：(欠款+欠款*interest_per)*penalty_per/365*超出的天数
-                        pay_record.over_interest_pay = (owe_money * (1+payRecord.interest_per) * over_days / 365)
+                        pay_record.over_interest_pay = (owe_money * (1+project.interest_per) * over_days / 365)
                     }else if("dayCount".equals(project.interestType)){//复利：便历每一天，做加法：第一天:(欠款+欠款*penalty_per)*penalty_per/365*1 ,第二天：第一天的利息*penalty_per/365*1，如此类推
-
+                        pay_record.over_interest_pay=(owe_money * (1+project.interest_per) / 365);  //第一天
+                        for(int i=1;i<over_days;i++){//第二天起
+                            pay_record.over_interest_pay += (pay_record.over_interest_pay * (1+project.interest_per) / 365);
+                        }
                     }
                 }
             }else{

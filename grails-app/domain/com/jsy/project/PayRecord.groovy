@@ -14,7 +14,7 @@ class PayRecord {
     Date payDate
 
     //投资金额
-    double amount
+    BigDecimal amount
 
     String payType
 

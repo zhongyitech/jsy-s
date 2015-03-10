@@ -15,6 +15,21 @@ import java.text.SimpleDateFormat
 
 class WorkflowResourceService {
 
+    def initData = {
+        initFund()
+        initCompany()
+        createProjects()
+        initPayRecords();
+        initFlowModel()
+        init_flow();
+    }
+
+    def init_flow={
+        TSProject.findAll().each {proj->
+            createFlow(proj.id)
+        }
+    }
+
     def initRole = {
         def financialIncharger = Role.findByAuthority("FinancialIncharger")
         if(financialIncharger)
@@ -261,5 +276,29 @@ class WorkflowResourceService {
 
         def modelPhase = flow1.getNextModelPhase()
         flow1.moveToModelPhase(modelPhase)
+    }
+
+    def initPayRecords(){
+        String _date = "2013-01-01"
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd")
+        Date payDate = sf.parse(_date)
+
+        def bankAccount = BankAccount.findByBankName("光大银行");
+        def project = TSProject.findByName("project7")
+        def fund = Fund.findByFundName('fund1')
+
+        PayRecord payRecord1 = new PayRecord(payDate:payDate, amount: 200000, payType:"borrow",bankAccount:bankAccount,project:project,fund:fund)
+        payRecord1.save(failOnError: true)
+
+        String _date2 = "2012-01-01"
+        Date payDate2 = sf.parse(_date)
+        PayRecord payRecord2 = new PayRecord(payDate:payDate2, amount: 400000, payType:"borrow",bankAccount:bankAccount,project:project,fund:fund)
+        payRecord2.save(failOnError: true)
+
+        String _date3 = "2011-01-01"
+        Date payDate3 = sf.parse(_date)
+        PayRecord payRecord3 = new PayRecord(payDate:payDate3, amount: 600000, payType:"borrow",bankAccount:bankAccount,project:project,fund:fund)
+        payRecord3.save(failOnError: true)
+
     }
 }
