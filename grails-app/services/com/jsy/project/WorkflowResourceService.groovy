@@ -15,6 +15,21 @@ import java.text.SimpleDateFormat
 
 class WorkflowResourceService {
 
+    def initData = {
+        initFund()
+        initCompany()
+        createProjects()
+        initPayRecords();
+        initFlowModel()
+        init_flow();
+    }
+
+    def init_flow={
+        TSProject.findAll().each {proj->
+            createFlow(proj.id)
+        }
+    }
+
     def initRole = {
         def financialIncharger = Role.findByAuthority("FinancialIncharger")
         if(financialIncharger)
@@ -105,9 +120,10 @@ class WorkflowResourceService {
     }
 
     def initFund(){
-        new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
-        new Fund(fundName:'fund2',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
-        new Fund(fundName:'fund3',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+
+        Fund.findByFundName('fund1')?:new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        Fund.findByFundName('fund2')?:new Fund(fundName:'fund2',fundNo:'F002',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        Fund.findByFundName('fund3')?:new Fund(fundName:'fund3',fundNo:'F003',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
     }
 
     def initCompany(){
@@ -209,6 +225,14 @@ class WorkflowResourceService {
                     projectDealer: 'dealer_'+i,
                     projectOwner: admin,
                     creator: admin,
+                    manage_per:0.02,
+                    community_per:0.03,
+                    penalty_per:0.04,
+                    borrow_per:0.05,
+                    interest_per:0.06,
+                    year1:1,
+                    year2:0,
+                    interestType:"costCount"
             ).save(failOnError: true)
         }
 
@@ -218,6 +242,14 @@ class WorkflowResourceService {
                     projectDealer: 'dealer_' + i,
                     projectOwner: admin,
                     creator: admin,
+                    manage_per:0.02,
+                    community_per:0.03,
+                    penalty_per:0.04,
+                    borrow_per:0.05,
+                    interest_per:0.06,
+                    year1:1,
+                    year2:0,
+                    interestType:"costCount",
                     company: fundCompanyInformation,
                     fund: fund1
             ).save(failOnError: true)
@@ -244,5 +276,29 @@ class WorkflowResourceService {
 
         def modelPhase = flow1.getNextModelPhase()
         flow1.moveToModelPhase(modelPhase)
+    }
+
+    def initPayRecords(){
+        String _date = "2013-01-01"
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd")
+        Date payDate = sf.parse(_date)
+
+        def bankAccount = BankAccount.findByBankName("光大银行");
+        def project = TSProject.findByName("project7")
+        def fund = Fund.findByFundName('fund1')
+
+        PayRecord payRecord1 = new PayRecord(payDate:payDate, amount: 200000, payType:"borrow",bankAccount:bankAccount,project:project,fund:fund)
+        payRecord1.save(failOnError: true)
+
+        String _date2 = "2012-01-01"
+        Date payDate2 = sf.parse(_date)
+        PayRecord payRecord2 = new PayRecord(payDate:payDate2, amount: 400000, payType:"borrow",bankAccount:bankAccount,project:project,fund:fund)
+        payRecord2.save(failOnError: true)
+
+        String _date3 = "2011-01-01"
+        Date payDate3 = sf.parse(_date)
+        PayRecord payRecord3 = new PayRecord(payDate:payDate3, amount: 600000, payType:"borrow",bankAccount:bankAccount,project:project,fund:fund)
+        payRecord3.save(failOnError: true)
+
     }
 }

@@ -11,7 +11,7 @@ class ReceiveRecord {
     Date receiveDate
 
     //付款金额
-    double amount
+    BigDecimal amount
 
     //款项性质
 //    String[] allPayTargets =["本金","第一年利息","管理费","渠道费","逾期利息","违约金","借款"]

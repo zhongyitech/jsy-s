@@ -47,7 +47,7 @@ class CustomerArchives {
     //备注
     String remark
 
-    //附件
+    //附件 & 银行账号
     static hasMany = [uploadFiles:UploadFile,bankAccount:BankAccount]
     static constraints = {
         email nullable:true
