@@ -105,4 +105,10 @@ class CreateInvestmentArchivesService {
         return currYearLast;
     }
 
+    /**
+     * 本金支付
+     */
+    def playBJ(InvestmentArchives investmentArchives){
+    }
+
 }
