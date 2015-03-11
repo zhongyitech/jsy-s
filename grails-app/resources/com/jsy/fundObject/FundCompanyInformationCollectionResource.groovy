@@ -195,7 +195,7 @@ class FundCompanyInformationCollectionResource {
             }
             def projects = TSProject.findAllByFund(fund)
 
-            rtn.banks=projects.collect {project->
+            def project_banks=projects.collect {project->
                 project.company?.bankAccount?.collect {bank->
                     def rtn2 = [:]
                     rtn2.id=bank.id
@@ -209,6 +209,13 @@ class FundCompanyInformationCollectionResource {
 
                 }
             }
+
+            def banks = []
+            project_banks?.each {
+                banks.addAll(it)
+            }
+
+            rtn.banks= banks.unique();
 
             rtn.projects=projects.collect{project->
                 project.getProjectSimpleInfo()
@@ -262,12 +269,12 @@ class FundCompanyInformationCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             e.printStackTrace()
-        print(e)
+            print(e)
         }
 
-    result.put("rest_status", restStatus)
-    result.put("rest_result", fc as JSON)
-    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        result.put("rest_status", restStatus)
+        result.put("rest_result", fc as JSON)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 

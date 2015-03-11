@@ -1,5 +1,6 @@
 package com.jsy.archives
 
+import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
@@ -265,12 +266,12 @@ class InvestmentArchivesCollectionResource {
 //                }else{
 //                    cus.properties=dto.customer.properties
 //                    cus.save(failOnError: true)
+//                }
+                dto.status=1
+                dto.username=cus.name
             }
-            dto.status = 1
-            dto.username = cus.name
-//            }
-            dto.customer = cus
-            ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
+            dto.customer=cus
+            ia = investmentArchivesResourceService.update(dto,Integer.parseInt(id))
 //            }catch (Exception e){
 //                restStatus = REST_STATUS_FAI
 //                print(e)
@@ -278,6 +279,9 @@ class InvestmentArchivesCollectionResource {
 
             ok JsonResult.success(ia)
         }
+
+
+
     }
 
     @GET

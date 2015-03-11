@@ -14,13 +14,16 @@ class PayRecord {
     Date payDate
 
     //投资金额
-    double amount
+    BigDecimal amount
 
     String payType
 
     String pdesc;
 
     BankAccount bankAccount
+
+    double totalPayBack     //准对这笔钱，总共还款
+    double payMainBack      //本金还款
 
     //common
     Date dateCreated

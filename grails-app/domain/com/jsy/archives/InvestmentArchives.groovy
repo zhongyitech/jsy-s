@@ -96,7 +96,7 @@ class InvestmentArchives {
     Date zjdysj
 
     //本金
-    BigDecimal bj=tzje
+    BigDecimal bj
 
     //业务和客户收益分配
     //附件
@@ -126,6 +126,7 @@ class InvestmentArchives {
         fxsj2 nullable: true
         fxsj3 nullable: true
         fxsj4 nullable: true
+
         customer nullable: true
         customerArchive nullable: true
 

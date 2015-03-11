@@ -10,6 +10,6 @@ class AutoAddJob {
     }
 
     def execute() {
-        paymentInfoResourceService.addPaymentInfo()
+//        paymentInfoResourceService.addPaymentInfo()
     }
 }
