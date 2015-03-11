@@ -1,6 +1,7 @@
 package com.jsy.utility
 
 import com.jsy.archives.InvestmentArchives
+import com.jsy.archives.PaymentInfo
 import com.jsy.archives.UserCommision
 import com.jsy.fundObject.Fund
 import grails.transaction.Transactional
@@ -109,6 +110,31 @@ class CreateInvestmentArchivesService {
      * 本金支付
      */
     def playBJ(InvestmentArchives investmentArchives){
+        PaymentInfo paymentInfo = new PaymentInfo()
+        paymentInfo.archivesId = investmentArchives.id
+        paymentInfo.fxsj = investmentArchives.fxsj1
+        paymentInfo.fundName = investmentArchives.fund.fundName
+        paymentInfo.htbh = investmentArchives.archiveNum
+        paymentInfo.customerName = investmentArchives.customer.name
+        paymentInfo.tzje = investmentArchives.tzje
+        paymentInfo.tzqx = investmentArchives.tzqx
+        paymentInfo.syl = investmentArchives.nhsyl
+        paymentInfo.bmjl = investmentArchives.bmjl.chainName
+        //计算应付利息
+        BigDecimal yflx = 0
+        //计算应付本金
+        BigDecimal yfbj = investmentArchives.bj
+        paymentInfo.khh = investmentArchives.customer.khh
+        paymentInfo.yhzh = investmentArchives.customer.yhzh
+        paymentInfo.gj = investmentArchives.customer.country
+        paymentInfo.zjlx = investmentArchives.customer.credentialsType
+        paymentInfo.zjhm = investmentArchives.customer.credentialsNumber
+        paymentInfo.yflx = yflx
+        paymentInfo.yfbj = yfbj
+        paymentInfo.zj = yflx + yfbj
+        paymentInfo.save(failOnError: true)
+        investmentArchives.bj=0
+        investmentArchives.save(failOnError: true)
     }
 
 }
