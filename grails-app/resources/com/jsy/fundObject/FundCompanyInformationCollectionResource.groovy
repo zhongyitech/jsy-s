@@ -112,7 +112,6 @@ class FundCompanyInformationCollectionResource {
         result.put("rest_total", total)
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
 
