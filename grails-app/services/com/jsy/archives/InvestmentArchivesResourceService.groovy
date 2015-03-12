@@ -26,10 +26,11 @@ class InvestmentArchivesResourceService {
         InvestmentArchives.findAll()
     }
 
-
-
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
+        obj?.uploadFiles.each {
+            it.delete()
+        }
         if (!obj) {
             throw new DomainObjectNotFoundException(InvestmentArchives.class, id)
         }
