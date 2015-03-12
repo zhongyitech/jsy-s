@@ -27,7 +27,7 @@ class JsonResult {
      * @param result 结果（错误的结果信息）
      * @return  JSON 对象
      */
-    public static def failed(String errorMsg,def result=null){
+    public static def error(String errorMsg,def result=null){
         def resmap=[:]
         resmap.rest_result=[msg:errorMsg,result:result]
         resmap.rest_status=REST_STATUS_FAI
