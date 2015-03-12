@@ -2,27 +2,41 @@ package com.jsy.bankConfig
 
 import com.jsy.system.TypeConfig
 
-//银行账户表
+/**
+ * 银行账户表
+ */
+
 class BankAccount {
+    String bankName             //    银行名称
+    String bankOfDeposit        //    开户行
+    String accountName          //    户名
+    String account              //    账号
+    boolean defaultAccount = false      //是否默认账户
+    TypeConfig purpose          //用途
 
-    //    银行名称
-    String bankName
+    /**
+     * 冗余设计
+     */
+    String purposeName
 
-//    开户行
-    String bankOfDeposit
-
-//    户名
-    String accountName
-
-//    账号
-    String account
-
-    //用途
-    TypeConfig purpose
-
-//是否默认账户
-    boolean defaultAccount
 
     static constraints = {
+        purposeName nullable: true
+    }
+
+
+    def beforeInsert() {
+        if (purpose) {
+            purposeName = purpose.mapName
+        }
+    }
+
+
+    def beforeUpdate() {
+        if (purpose) {
+            purposeName = purpose.mapName
+        }else{
+            purposeName = ""
+        }
     }
 }

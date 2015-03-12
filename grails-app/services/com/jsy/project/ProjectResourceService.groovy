@@ -1,6 +1,7 @@
 package com.jsy.project
 
 import com.jsy.auth.User
+import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
 import com.jsy.system.UploadFile
@@ -86,7 +87,7 @@ class ProjectResourceService {
     def getAllFlowPhaseInfo(TSProject project,User user){
 
         def resultObj=[:]
-        resultObj.project = project;
+        resultObj.project = project.getProjectSimpleInfo();
 
         def projectWorkflows = project.projectWorkflows
 
@@ -314,12 +315,14 @@ class ProjectResourceService {
                         "phase": phase,
                         "accessable":accessable
                 ];
-            }else if(phase.phaseEn=='addCompany'){
-                resultObj.addCompanyBean = [
-                        "phase": phase,
-                        "accessable":accessable
-                ];
-            }else if(phase.phaseEn=='makeContact'){
+            }
+//            else if(phase.phaseEn=='addCompany'){
+//                resultObj.addCompanyBean = [
+//                        "phase": phase,
+//                        "accessable":accessable
+//                ];
+//            }
+            else if(phase.phaseEn=='makeContact'){
                 def signers = []
                 project.signers?.each{signer->
                     def record = [:]
@@ -354,10 +357,20 @@ class ProjectResourceService {
                 }
 
 
+
                 resultObj.makeContactBean = [
                         "signers":signers,
                         "attentions":attentions,
                         "other_attachments":other_attachments,
+                        "company":project.company?.id,
+                        "fund":project.fund?.id,
+                        "manage_per":project.manage_per,
+                        "community_per":project.community_per,
+                        "penalty_per":project.penalty_per,
+                        "borrow_per":project.borrow_per,
+                        "year1":project.year1,
+                        "year2":project.year2,
+                        "interestType":project.interestType,
 
                         "phase": phase,
                         "accessable":accessable
@@ -719,29 +732,50 @@ class ProjectResourceService {
 
         //设置下一个阶段
         TSWorkflow tsWorkflow = project.getProjectWorkflow()
-        def nextphase = tsWorkflow.getAddCompanyPhase()
-        tsWorkflow.moveToModelPhase(nextphase)
-        project.save(failOnError: true)
-    }
-
-    def completeAddCompany(TSProject project, def obj) {
-        FundCompanyInformation company =FundCompanyInformation.get(obj.companyid);
-        project.company=company
-
-        //设置下一个阶段
-        TSWorkflow tsWorkflow = project.getProjectWorkflow()
         def nextphase = tsWorkflow.getMakeContactPhase()
         tsWorkflow.moveToModelPhase(nextphase)
         project.save(failOnError: true)
     }
 
+//    def completeAddCompany(TSProject project, def obj) {
+//        FundCompanyInformation company =FundCompanyInformation.get(obj.companyid);
+//        project.company=company
+//
+//        //设置下一个阶段
+//        TSWorkflow tsWorkflow = project.getProjectWorkflow()
+//        def nextphase = tsWorkflow.getMakeContactPhase()
+//        tsWorkflow.moveToModelPhase(nextphase)
+//        project.save(failOnError: true)
+//    }
+
     def completeMakeContact(TSProject project, def obj) {
         def phase = project.getProjectWorkflow().getMakeContact()
 
+        project.manage_per = obj.manage_per
+        project.community_per = obj.community_per
+        project.penalty_per = obj.notNormal_per
+        project.borrow_per = obj.borrow_per
+        project.year1 = Float.parseFloat(obj.year1)
+        project.year2 = Float.parseFloat(obj.year2)
+        project.interestType = obj.interestType
+
+        FundCompanyInformation company = FundCompanyInformation.get(obj.company)
+        if(!company){
+            return false;
+        }
+        project.company=company
+        Fund fund = Fund.get(obj.fund)
+        if(!fund){
+            return false;
+        }
+        project.fund=fund
+
         obj.signers?.each{signer->
-            SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
-            simpleRecord.save(failOnError: true)
-            project.addToSigners(simpleRecord);
+            if(signer.name && signer.value){
+                SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
+                simpleRecord.save(failOnError: true)
+                project.addToSigners(simpleRecord);
+            }
         }
 
         obj.attentions?.each{attention->

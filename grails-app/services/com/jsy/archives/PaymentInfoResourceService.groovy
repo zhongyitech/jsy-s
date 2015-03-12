@@ -388,7 +388,6 @@ class PaymentInfoResourceService {
                             paymentInfo.bmjl = it.bmjl.chainName
                             if (it.fxfs == "J") {
                                 //计算应付利息
-                                //计算应付利息
                                 BigDecimal yflx = it.tzje * it.nhsyl*0.25
                                 //计算应付本金
                                 BigDecimal yfbj = 0

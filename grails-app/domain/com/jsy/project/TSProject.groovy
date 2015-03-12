@@ -7,7 +7,7 @@ import com.jsy.fundObject.FundCompanyInformation
 /**
  * 基金项目，这里记录了项目的基本信息，以及创建项目流程的所有业务数据
  * 
- * 创建项目流程: gatherInfo gatherOA research researchOA meeting otherEA addCompany makeContact makeContactOA
+ * 创建项目流程: gatherInfo gatherOA research researchOA meeting otherEA  makeContact makeContactOA
  */
 class TSProject {
 
@@ -31,7 +31,7 @@ class TSProject {
     /*****冗余字段*******/
     String currentStageName;    //当前阶段名称
     String currentStageEn;      //当前阶段英文名
-    String fundNames            //关联基金名称，格式：fund1,fund2,fund3
+    String fundName            //关联基金名称
     String creatorName;         //创建者名称
     String ownerName;           //负责人名称
 
@@ -65,13 +65,20 @@ class TSProject {
     //步骤1.6 otherEA
     TSFlowFile thirdPartyFile
 
-    //步骤2   addCompany
-    FundCompanyInformation company
 
-    //步骤3   makeContact
-//    Fund fund                //关联基金
+    //步骤2   makeContact
+    FundCompanyInformation company  //有限合伙
+    Fund fund                       //关联基金
+    BigDecimal manage_per                //管理费率
+    BigDecimal community_per             //渠道费率
+    BigDecimal penalty_per               //违约金率
+    BigDecimal borrow_per                //借款率
+    BigDecimal interest_per                //本金的年利率
+    BigDecimal year1                     //期限：约定
+    BigDecimal year2                     //期限：缓冲
+    String interestType             //利息计算方式
 
-    //步骤3.1 makeContactOA
+    //步骤2.1 makeContactOA
     String makeContactOAStatus = "working"
 
 
@@ -79,7 +86,6 @@ class TSProject {
     static hasMany = [
         /*****公共属性*****/
         projectWorkflows : TSWorkflow,  //创建流程
-        funds: Fund,                    //关联基金
         stockRights: StockRight,        //股权信息
 
         /****步骤1.1 gatherInfo****/
@@ -94,7 +100,7 @@ class TSProject {
         /****步骤1.6 otherEA****/
         thirdPartyOthersFiles:TSFlowFile,  //其他文件
 
-        /****步骤3 签署合同****/
+        /****步骤2 签署合同****/
         signers: SimpleRecord,                //签署方
         attentions: SimpleRecord,             //注意事项
         makeContactOthersFiles:TSFlowFile,    //其他文件
@@ -131,7 +137,7 @@ class TSProject {
         ownerName nullable: true
         currentStageName nullable: true
         currentStageEn nullable: true
-        fundNames nullable: true
+        fundName nullable: true
 
         certificateFile nullable: true
         debtFile nullable: true
@@ -161,7 +167,40 @@ class TSProject {
         thirdPartyOthersFiles nullable: true
 
         company nullable: true
+        fund nullable: true
+        interestType : ["singleCount", "costCount", "dayCount"] //单利  复利  日复利
 
+
+        manage_per nullable: true
+        community_per nullable: true
+        penalty_per nullable: true
+        borrow_per nullable: true
+        interest_per nullable: true
+        year1 nullable: true
+        year2 nullable: true
+        interestType  nullable: true
+
+    }
+
+    def beforeInsert() {
+        if (fund) {
+            fundName = fund.fundName
+        }
+        if (projectOwner) {
+            ownerName = projectOwner.username
+        }
+        if (creator) {
+            creatorName = creator.username
+        }
+    }
+
+
+    def beforeUpdate() {
+        if (fund) {
+            fundName = fund.fundName
+        }else{
+            fundName = ""
+        }
     }
 
     public TSWorkflow getProjectWorkflow(){
@@ -174,6 +213,40 @@ class TSProject {
         getProjectWorkflow().workflowPhases.each {phase->
             handlePhase(handlePhase,this)
         }
+    }
+
+    def getProjectSimpleInfo(){
+        def rtn = [
+                id:id,
+                name:name,
+                projectDealer:projectDealer,
+                currentStageName:currentStageName,
+                currentStageEn:currentStageEn,
+                fundName:fundName,
+                creatorName:creatorName,
+                ownerName:ownerName,
+                dateCreated:dateCreated,
+                lastUpdated:lastUpdated,
+                director:director,
+                supervisor:supervisor,
+                stockStructure:stockStructure,
+                debt:debt,
+                assets:assets,
+                isEnded:isEnded,
+                archive:archive,
+                pdesc:pdesc,
+
+                manage_per:manage_per,               //管理费率
+                community_per:community_per,             //渠道费率
+                penalty_per:penalty_per,               //违约金率
+                borrow_per:borrow_per,               //借款率
+                interest_per:interest_per,                //本金的年利率
+                year1:year1,                    //期限：约定
+                year2:year2,                     //期限：缓冲
+                interestType:interestType             //利息计算方式
+
+        ]
+        return rtn;
     }
 
 }

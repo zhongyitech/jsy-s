@@ -1,5 +1,6 @@
 package com.jsy.system
 
+import com.jsy.auth.User
 import com.jsy.fundObject.FundCompanyInformation
 
 /**
@@ -20,17 +21,28 @@ class Department {
     //备注
     String memo
 
+    //负责人
+    User leader
+
+    //职能
+    TypeConfig performance
+
     //公司
     FundCompanyInformation fundCompanyInformation
 
     //belongsTo = [company:Company]
+    def beforeInsert() {
+        performance=TypeConfig.findByTypeAndMapValue(8,1)
+    }
 
     static constraints = {
+        performance nullable: true
         description nullable: true
         memo nullable: true
         buildDate nullable: true
         type nullable: true
         status nullable: true
         fundCompanyInformation nullable: true
+        leader nullable: true
     }
 }

@@ -16,9 +16,12 @@ class InvestmentArchives {
 
     //投资档案编号，自动生成
     String markNum
-    //客户档案
-    Customer customer
 
+    //客户档案(客户的复件资料）
+    CustomerArchives customerArchive
+
+    //客户
+    Customer customer
 
     //档案信息
     //档案编号
@@ -93,7 +96,7 @@ class InvestmentArchives {
     Date zjdysj
 
     //本金
-    BigDecimal bj=tzje
+    BigDecimal bj
 
     //业务和客户收益分配
     //附件
@@ -123,7 +126,9 @@ class InvestmentArchives {
         fxsj2 nullable: true
         fxsj3 nullable: true
         fxsj4 nullable: true
+
         customer nullable: true
+        customerArchive nullable: true
 
         zjdysj nullable: true
 

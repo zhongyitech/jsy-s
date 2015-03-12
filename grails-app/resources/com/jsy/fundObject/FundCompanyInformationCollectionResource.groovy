@@ -1,5 +1,6 @@
 package com.jsy.fundObject
 
+import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -17,6 +18,8 @@ import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.POST
 import javax.ws.rs.core.Response
+
+import static org.grails.jaxrs.response.Responses.*
 
 @Path('/api/fundCompanyInformation')
 @Consumes(['application/xml', 'application/json'])
@@ -109,7 +112,6 @@ class FundCompanyInformationCollectionResource {
         result.put("rest_total", total)
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
 
@@ -149,6 +151,90 @@ class FundCompanyInformationCollectionResource {
         ok fundCompanyInformationResourceService.readAll()
     }
 
+
+    @GET
+    @Path('/getRelateFund')
+    Response getRelateFund(@QueryParam('companyid') Long companyid) {
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def rtn = [:]
+
+        try {
+            def fundCompanyInformation = FundCompanyInformation.get(companyid)
+            rtn.banks=fundCompanyInformation.funds.collect{fund->
+                def rtn2 = [:]
+                rtn2.id=fund.id
+                rtn2.fundName=fund.fundName
+                rtn2
+            }
+            result.put("rest_status", restStatus)
+            result.put("rest_result", rtn as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "error")
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
+    @GET
+    @Path('/findByFund')
+    Response getByFund(@QueryParam('id') Long id) {
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        def rtn = [:]
+        try {
+            Fund fund = Fund.get(id)
+            if(!fund){
+                restStatus = REST_STATUS_FAI;
+                result.put("rest_status", restStatus)
+                result.put("rest_result", "no such fund")
+                return Response.ok(result.toString()).status(500).build()
+            }
+            def projects = TSProject.findAllByFund(fund)
+
+            def project_banks=projects.collect {project->
+                project.company?.bankAccount?.collect {bank->
+                    def rtn2 = [:]
+                    rtn2.id=bank.id
+                    rtn2.bankName=bank.bankName
+                    rtn2.bankOfDeposit=bank.bankOfDeposit
+                    rtn2.accountName=bank.accountName
+                    rtn2.account=bank.account
+                    rtn2.defaultAccount=bank.defaultAccount
+                    rtn2.purposeName=bank.purposeName
+                    rtn2
+
+                }
+            }
+
+            def banks = []
+            project_banks?.each {
+                banks.addAll(it)
+            }
+
+            rtn.banks= banks.unique();
+
+            rtn.projects=projects.collect{project->
+                project.getProjectSimpleInfo()
+            }
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", rtn as JSON)
+            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        }catch (Exception e){
+            restStatus = REST_STATUS_FAI;
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "error")
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
+
+
     @GET
     @Path("/findById")
     Response findById(@QueryParam('id') Long id) {
@@ -183,12 +269,12 @@ class FundCompanyInformationCollectionResource {
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             e.printStackTrace()
-        print(e)
+            print(e)
         }
 
-    result.put("rest_status", restStatus)
-    result.put("rest_result", fc as JSON)
-    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        result.put("rest_status", restStatus)
+        result.put("rest_result", fc as JSON)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 

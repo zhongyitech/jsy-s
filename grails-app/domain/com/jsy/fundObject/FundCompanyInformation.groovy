@@ -8,10 +8,6 @@ import com.jsy.system.TypeConfig
 
 //基金公司信息表
 class FundCompanyInformation {
-
-    //基金
-    Fund fund
-
     //公司名称
     String companyName
 
@@ -93,6 +89,7 @@ class FundCompanyInformation {
             partner: FundCompanyInformation,
             bankAccount:BankAccount,
             othersFiles:TSFlowFile,  //其他文件
+            funds: Fund    //基金
     ]
 
     static mappedBy = [
@@ -106,7 +103,6 @@ class FundCompanyInformation {
     static constraints = {
         hhrpx nullable: true
         companyType nullable: true
-        fund nullable: true
         companyName nullable: true
         corporate nullable: true
         address nullable: true

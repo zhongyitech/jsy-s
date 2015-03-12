@@ -3,7 +3,9 @@ package com.jsy.archives
 import com.jsy.fundObject.Fund
 
 /**
- * 合同表
+ * 合同编号表
+ * 作用1：记录印刷之后的合同，管理印刷件的使用情况
+ * 作用2：创建投资档案的“合同编号”必须已经登记入表，从此处获取关联的基金对象
  */
 class Contract {
 
@@ -28,8 +30,6 @@ class Contract {
     def beforeInsert() {
         this.szbh=Integer.parseInt(htbh.substring(5))
     }
-
-
 
     static constraints = {
         djsj nullable: true
