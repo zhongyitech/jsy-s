@@ -55,8 +55,6 @@ class InvestmentArchivesResourceService {
         def c = Customer.findAllByNameLike("%" +queryparam+"%")
         def d = InvestmentArchives.findAllByContractNumLike("%"+queryparam+"%")
 
-
-
         def page = InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrCustomerInList(f, "%"+queryparam+"%", "%"+queryparam+"%",c, [sort:"id", order:"desc",max: pagesize,  offset: startposition])
         def ja = new JSONArray()
         page.each {
