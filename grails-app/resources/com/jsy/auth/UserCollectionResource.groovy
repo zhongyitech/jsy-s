@@ -227,7 +227,7 @@ class UserCollectionResource {
         }
 //        result.put("rest_status", restStatus)
 //        result.put("rest_result", users as JSON)
-        return Response.ok(result)
+        return Response.ok(result).status(RESPONSE_STATUS_SUC).build()
     }
 
     /**
