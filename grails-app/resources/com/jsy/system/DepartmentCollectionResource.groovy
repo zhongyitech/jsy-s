@@ -1,6 +1,7 @@
 package com.jsy.system
 
 import com.jsy.fundObject.Finfo
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -56,54 +57,43 @@ class DepartmentCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", bfpr as JSON)
             return Response.ok(result.toString()).status(500).build()
-
         }
-
     }
-    @POST
+    /**
+     * 创建部门信息
+     * @param dto
+     * @return
+     */
+    @PUT
     Response create(Department dto) {
-
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
         def bfpr
         try {
             bfpr = departmentResourceService.create(dto)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            ok JsonResult.success(bfpr)
         }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
             e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(500).build()
-
+            ok JsonResult.error(e.message)
         }
-
-
     }
 
-    @PUT
+    /**
+     * 更新部门的信息
+     * @param dto
+     * @param id
+     * @return
+     */
+    @POST
     Response update(Department dto,@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
         dto.id = id
         def  rc
         try {
             rc = departmentResourceService.update(dto)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", rc as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            ok JsonResult.success(rc)
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
             print(e)
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", rc as JSON)
-            return Response.ok(result.toString()).status(500).build()
+            ok JsonResult.error(e.message)
         }
-
-
     }
 
     @POST
@@ -123,7 +113,6 @@ class DepartmentCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", fp as JSON)
             result.put("rest_total", total)
-
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
@@ -132,11 +121,8 @@ class DepartmentCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", fp as JSON)
             result.put("rest_total", total)
-
             return Response.ok(result.toString()).status(500).build()
         }
-
-
     }
 
     @GET
@@ -152,41 +138,24 @@ class DepartmentCollectionResource {
             restStatus = REST_STATUS_FAI
             print(e)
         }
-
         result.put("rest_status", restStatus)
         result.put("rest_result", dp as JSON)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
     @DELETE
     Response delete(@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
         def dp
         try{
             dp = departmentResourceService.delete(id)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dp as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
+            ok JsonResult.success(dp)
         }catch (Exception e){
-            restStatus = REST_STATUS_FAI
             print(e)
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dp as JSON)
-            return Response.ok(result.toString()).status(500).build()
+            ok JsonResult.error(e.message)
         }
-
-
     }
-
 
     @Path('/{id}')
     DepartmentResource getResource(@PathParam('id') Long id) {
         new DepartmentResource(departmentResourceService: departmentResourceService, id: id)
     }
-
-
-
 }
