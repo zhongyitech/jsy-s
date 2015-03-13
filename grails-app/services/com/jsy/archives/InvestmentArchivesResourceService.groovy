@@ -26,10 +26,11 @@ class InvestmentArchivesResourceService {
         InvestmentArchives.findAll()
     }
 
-
-
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
+        obj?.uploadFiles.each {
+            it.delete()
+        }
         if (!obj) {
             throw new DomainObjectNotFoundException(InvestmentArchives.class, id)
         }
@@ -54,8 +55,6 @@ class InvestmentArchivesResourceService {
         def f = Fund.findAllByFundNameLike("%" +queryparam+"%")
         def c = Customer.findAllByNameLike("%" +queryparam+"%")
         def d = InvestmentArchives.findAllByContractNumLike("%"+queryparam+"%")
-
-
 
         def page = InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrCustomerInList(f, "%"+queryparam+"%", "%"+queryparam+"%",c, [sort:"id", order:"desc",max: pagesize,  offset: startposition])
         def ja = new JSONArray()

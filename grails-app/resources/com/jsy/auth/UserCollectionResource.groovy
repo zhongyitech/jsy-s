@@ -36,8 +36,6 @@ class UserCollectionResource {
     //创建用户
     @PUT
     Response create(User dto, @QueryParam('rolelist') String rolelist) {
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
         def dd
         JSONObject jsdd = new JSONObject()
         JSONObject rlist = new JSONObject()
@@ -54,20 +52,9 @@ class UserCollectionResource {
             }
             jsdd.put("User", dd)
             jsdd.put("Role", rlist)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", jsdd as JSON)
-//            print("return successful" + result.toString())
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//            print("return successful")
-
             ok JsonResult.success(jsdd)
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
             print(e)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dd as JSON)
-            print("return failed")
-//            return Response.ok(result.toString()).status(500).build()
             ok JsonResult.error(e.message)
         }
     }
@@ -401,8 +388,7 @@ class UserCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
             result.put("rest_total", total)
-
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            ok JsonResult.success(result)
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             print(e)
@@ -410,14 +396,8 @@ class UserCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
             result.put("rest_total", total)
-
-            return Response.ok(result.toString()).status(500).build()
+            ok JsonResult.error(e.message)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ia as JSON)
-//        result.put("rest_total", total)
-//
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 

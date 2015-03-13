@@ -3,6 +3,7 @@ package com.jsy.bankConfig
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -37,7 +38,7 @@ class BankAccountCollectionResource {
         try {
             bfpr = bankAccountResourceService.create(dto)
 
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             e.printStackTrace()
 
@@ -49,14 +50,14 @@ class BankAccountCollectionResource {
     }
 
     @PUT
-    Response update(BankAccount dto,@QueryParam('id') Long id){
+    Response update(BankAccount dto, @QueryParam('id') Long id) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         dto.id = id
-        def  rc
+        def rc
         try {
             rc = bankAccountResourceService.update(dto)
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             print(e)
         }
@@ -65,7 +66,6 @@ class BankAccountCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
-
 
 
     @POST
@@ -80,13 +80,14 @@ class BankAccountCollectionResource {
             json = bankAccountResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
             total = json.get("size")
             fp = json.get("page")
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             print(e)
         }
         result.put("rest_status", restStatus)
         result.put("rest_result", fp as JSON)
         result.put("rest_total", total)
+
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
@@ -106,7 +107,7 @@ class BankAccountCollectionResource {
         def restStatus = REST_STATUS_SUC
         try {
             FundCompanyInformation company = FundCompanyInformation.findByFund(fund)
-            resultObject=company.bankAccount
+            resultObject = company.bankAccount
         }
         catch (Exception e) {
             restStatus = REST_STATUS_FAI
@@ -120,8 +121,23 @@ class BankAccountCollectionResource {
         return Response.ok(result as JSON).status(RESPONSE_STATUS_SUC).build()
     }
 
+    /**
+     * 获取单个银行账户信息
+     * @param id
+     * @return
+     */
+    @GET
     @Path('/{id}')
-    BankAccountResource getResource(@PathParam('id') Long id) {
-        new BankAccountResource(bankAccountResourceService: bankAccountResourceService, id: id)
+    Response getResource(@PathParam('id') Long id) {
+        try {
+            def result = BankAccount.findById(id)
+
+            print(result)
+            ok JsonResult.success(result)
+        }
+        catch (Exception e) {
+            ok JsonResult.error(e.message)
+        }
+//        new BankAccountResource(bankAccountResourceService: bankAccountResourceService, id: id)
     }
 }

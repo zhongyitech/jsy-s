@@ -1,6 +1,5 @@
 package com.jsy.archives
 
-import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
@@ -8,9 +7,6 @@ import com.jsy.utility.CreateNumberService
 import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
 import grails.converters.JSON
-import org.apache.http.HttpStatus
-import org.apache.http.protocol.ResponseServer
-import org.grails.jaxrs.response.Responses
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -183,7 +179,7 @@ class InvestmentArchivesCollectionResource {
         }
         if (dto.dqrq == null || dto.dqrq <= dto.rgrq) error.dqrq = "到期日期不合法"
 
-        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编写没有登记"
+        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
 
         def contract = Contract.findByHtbh(dto.contractNum)
         if (contract != null && contract.fund.id != dto.fund.id) {
@@ -194,7 +190,7 @@ class InvestmentArchivesCollectionResource {
             def fund = Fund.get(dto.fund.id)
             if (fund != null && fund.yieldRange.size() == 0) {
                 //检测收益率是否与传入的参数一致
-                error.nhsyl = "个化收益参数不合法"
+                error.nhsyl = "年化收益参数不合法"
             }
         } else {
             error.fund = "基金对象不能为空"
@@ -211,11 +207,11 @@ class InvestmentArchivesCollectionResource {
         try {
             def error = ValidationModel(dto)
             if (error.size() > 0) {
-                def result = JsonResult.failed("传递的参数不合法，请修改参数！", error)
-                ok result
+                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
+                return  Response.ok(result).build()
             }
         } catch (Exception e) {
-            ok JsonResult.failed(e.message)
+            ok JsonResult.error(e.message)
         }
         // JSONObject result = new JSONObject();
         def result
@@ -251,7 +247,7 @@ class InvestmentArchivesCollectionResource {
                 result = JsonResult.success(dto)
 
             } catch (Exception e) {
-                result = JsonResult.failed(e.message)
+                result = JsonResult.error(e.message)
                 print(e)
             }
             ok result
@@ -296,7 +292,7 @@ class InvestmentArchivesCollectionResource {
         } catch (Exception e) {
 //            restStatus = REST_STATUS_FAI
             print(e)
-            ok JsonResult.failed(e.message)
+            ok JsonResult.error(e.message)
         }
 //        result.put("rest_status", restStatus)
 //        result.put("rest_result", ia as JSON)
@@ -361,7 +357,7 @@ class InvestmentArchivesCollectionResource {
         } catch (Exception e) {
 //            restStatus = REST_STATUS_FAI
             print(e)
-            ok JsonResult.failed(e.message)
+            ok JsonResult.error(e.message)
         }
 //        result.put("rest_status", restStatus)
 //        result.put("rest_result", ia as JSON)
@@ -401,7 +397,7 @@ class InvestmentArchivesCollectionResource {
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             print(e)
-            ok JsonResult.failed(e.message)
+            ok JsonResult.error(e.message)
         }
 //        result.put("rest_status", restStatus)
 //        result.put("rest_result", gy)
