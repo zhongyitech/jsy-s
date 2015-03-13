@@ -4,6 +4,7 @@ import com.jsy.auth.User
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
 import com.jsy.system.UploadFile
+import com.jsy.util.Utils
 
 /**
  * 付款记录
@@ -25,7 +26,7 @@ class PayRecord {
     double totalPayBack     //准对这笔钱，总共还款
     double payMainBack      //本金还款
 
-    /*固定产生的费用*/
+    /*固定产生的费用，这里是固定的参考总额*/
     BigDecimal manage_bill                //管理费
     BigDecimal community_bill             //渠道费
     boolean isOverDate=false              //是否逾期，如果是，则会产生违约金，是固定的，并且根据超过的时间，会产生逾期费
@@ -76,11 +77,11 @@ class PayRecord {
     def getOverDue(){
         def over_interest_pay = 0
         Date nowDate = new Date()
-        Date lastDate = addYears(payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
+        Date lastDate = Utils.addYears(payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
 
         if(nowDate.after(lastDate)) {//判断超出预定时间
             def owe_money = amount - payMainBack
-            def over_days = dayDifferent(lastDate,nowDate)
+            def over_days = Utils.dayDifferent(lastDate,nowDate)
             if(owe_money > 0){
                 if("singleCount".equals(project.interestType)){//单利：欠款*interest_per/365*超出的天数
                     over_interest_pay = (owe_money * project.interest_per * over_days / 365)
@@ -98,30 +99,44 @@ class PayRecord {
         over_interest_pay
     }
 
-    Date addYears(final java.sql.Timestamp date, final int years) {
-        Date calculatedDate = null;
-
-        if (date != null) {
-            final GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime(date);
-            calendar.add(Calendar.YEAR, years);
-            calculatedDate = calendar.getTime()
-        }
-
-        return calculatedDate;
+    def getInvestDays(){
+        Utils.dayDifferent(payDate,new Date())
     }
-    
-    int dayDifferent(Date dateStart,Date dateStop) {
-        if(dateStart.after(dateStop)){
-            throw new Exception("dateStart after dateStop");
-        }
 
-        //毫秒ms
-        long diff = dateStop.getTime() - dateStart.getTime();
+    def getShowProperties(){
+        def balance = 0
 
-        long diffDays = diff / (24 * 60 * 60 * 1000);
+        def rtn = [
+                id:id,
+                payDate:payDate,
+                amount:amount,
+                payType:payType,
 
-        return diffDays
+                bankName:bankAccount.bankName,              //    银行名称
+                bankOfDeposit:bankAccount.bankOfDeposit,    //    开户行
+                accountName:bankAccount.accountName,        //    户名
+                account: bankAccount.account,               //    账号
+
+                totalPayBack:totalPayBack,
+                payMainBack:payMainBack,
+                manage_bill:manage_bill,
+                community_bill:community_bill,
+                isOverDate:isOverDate,
+                penalty_bill:penalty_bill,
+                borrow_bill:borrow_bill,
+                interest_bill:interest_bill,
+
+                fundid:fund.id,
+                fundname:fund.fundName,
+                projectid:project.id,
+                projectname:project.name,
+
+
+                overDue:getOverDue(),
+                investDays:getInvestDays()
+
+        ]
+        rtn
     }
 
 }

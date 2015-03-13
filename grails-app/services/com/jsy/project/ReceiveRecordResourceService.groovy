@@ -9,8 +9,8 @@ class ReceiveRecordResourceService {
 
         //创建receive detail
         receiveDetails?.each{detail->
-            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: detail.key, amount: detail.value);
-            detailRecord.save(failOnError: true)
+            detail.receiveRecord=dto
+            detail.save(failOnError: true)
         }
 
     }
