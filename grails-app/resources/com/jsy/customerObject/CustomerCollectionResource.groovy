@@ -29,6 +29,8 @@ class CustomerCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     def customerResourceService
+
+    //新增客户
     @POST
     Response create(Customer dto) {
     JSONObject result = new JSONObject();
@@ -73,7 +75,7 @@ class CustomerCollectionResource {
 //    result.put("rest_result", custm as JSON)
 //    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
-
+//查询所有用户
     @GET
     Response readAll() {
         JSONObject result = new JSONObject();
@@ -96,7 +98,7 @@ class CustomerCollectionResource {
 //        result.put("rest_result", custm as JSON)
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
-
+    //根据ID查询客户
     @GET
     @Path('/getcustomer')
     Response getcustomer(@QueryParam('cid') Long cid){
@@ -116,7 +118,7 @@ class CustomerCollectionResource {
 
 
     }
-
+//修改客户
     @PUT
     @Path('/update')
     Response update(Customer dto,@QueryParam('id') Long id){
@@ -142,7 +144,7 @@ class CustomerCollectionResource {
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 //        return "suc"
     }
-
+//条件分页查询客户
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
@@ -179,7 +181,7 @@ class CustomerCollectionResource {
     CustomerResource getResource(@PathParam('id') Long id) {
         new CustomerResource(customerResourceService: customerResourceService, id:id)
     }
-
+//根据客户姓名模糊查询
     @GET
     @Path('/nameLike')
     Response findByNameLike(@QueryParam('params') String username){

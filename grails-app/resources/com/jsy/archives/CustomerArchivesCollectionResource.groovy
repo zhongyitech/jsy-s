@@ -26,6 +26,7 @@ class CustomerArchivesCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
+    //新建客户档案
     @POST
     Response create(CustomerArchives dto) {
         JSONObject result = new JSONObject();
@@ -48,7 +49,7 @@ class CustomerArchivesCollectionResource {
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 //        created customerArchivesResourceService.create(dto)
     }
-
+ //查询全部客户档案
     @GET
     Response readAll() {
         JSONObject result = new JSONObject();
@@ -75,6 +76,7 @@ class CustomerArchivesCollectionResource {
         new CustomerArchivesResource(customerArchivesResourceService: customerArchivesResourceService, id: id)
     }
 
+    //更新客户档案信息
     @PUT
     @Path('/update')
     Response update(CustomerArchives dto,@QueryParam('id') Long id){
@@ -100,7 +102,7 @@ class CustomerArchivesCollectionResource {
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 //        return "suc"
     }
-
+    //根据客户姓名模糊查询客户档案
     @GET
     @Path('/nameLike')
     Response findByNameLike(@QueryParam('params') String username){
