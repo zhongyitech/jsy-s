@@ -94,6 +94,9 @@ class FundResourceService {
 
     def update(Fund dto,def id) {
         def obj = Fund.get(id)
+        obj.tcfpfw.each {
+            it.delete()
+        }
         if (!obj) {
             throw new DomainObjectNotFoundException(Fund.class, dto.id)
             return false

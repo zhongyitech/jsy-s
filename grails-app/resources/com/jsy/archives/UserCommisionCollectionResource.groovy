@@ -37,7 +37,7 @@ class UserCommisionCollectionResource {
         try {
             uc = UserCommision.get(id)
             print(uc)
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             print(e)
 
