@@ -388,7 +388,7 @@ class UserCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
             result.put("rest_total", total)
-            ok JsonResult.success(result)
+            ok JsonResult.success(result.toString())
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             print(e)
@@ -398,7 +398,6 @@ class UserCollectionResource {
             result.put("rest_total", total)
             ok JsonResult.error(e.message)
         }
-
     }
 
     /**
