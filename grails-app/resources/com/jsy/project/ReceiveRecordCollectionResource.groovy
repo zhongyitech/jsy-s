@@ -60,52 +60,86 @@ class ReceiveRecordCollectionResource {
                     obj.targets?.each{target->
                         //target的顺序很重要呢
                         if("main_money".equals(target.name)){
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.amount,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
+                            ReceiveDetailRecord detailRecord
 
                             if(paytotal2>payRecord.amount){//有多余的钱
-                                payRecord.payMainBack = payRecord.amount
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.amount,payRecord:payRecord);
                                 paytotal2= paytotal2 - payRecord.amount
                             }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
                                 payRecord.payMainBack = paytotal2
                                 paytotal2= 0
                             }
 
-
-                            paytotal2= paytotal2 - payRecord.amount
-                            println paytotal2+","+payRecord.amount+","+(paytotal2 - payRecord.amount)
+                            receiveDetails.push(detailRecord)
                         }else if("interest_money".equals(target.name)){
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.interest_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
+                            ReceiveDetailRecord detailRecord
 
-                            paytotal2= paytotal2 - payRecord.interest_bill
+                            if(paytotal2>payRecord.interest_bill){//有多余的钱
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.interest_bill,payRecord:payRecord);
+                                paytotal2= paytotal2 - payRecord.interest_bill
+                            }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
+                                paytotal2= 0
+                            }
+
+                            receiveDetails.push(detailRecord)
                         }else if("manage_money".equals(target.name)){
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.manage_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
+                            ReceiveDetailRecord detailRecord
 
-                            paytotal2= paytotal2 - payRecord.manage_bill
-                            println paytotal2
+                            if(paytotal2>payRecord.manage_bill){//有多余的钱
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.manage_bill,payRecord:payRecord);
+                                paytotal2= paytotal2 - payRecord.manage_bill
+                            }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
+                                paytotal2= 0
+                            }
+                            receiveDetails.push(detailRecord)
                         }else if("community_money".equals(target.name)){
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.community_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
+                            ReceiveDetailRecord detailRecord
 
-                            paytotal2= paytotal2 - payRecord.community_bill
+                            if(paytotal2>payRecord.community_bill){//有多余的钱
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.community_bill,payRecord:payRecord);
+                                paytotal2= paytotal2 - payRecord.community_bill
+                            }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
+                                paytotal2= 0
+                            }
+                            receiveDetails.push(detailRecord)
                         }else if("borrow_money".equals(target.name)){
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.borrow_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
+                            ReceiveDetailRecord detailRecord
 
-                            paytotal2= paytotal2 - payRecord.borrow_bill
+                            if(paytotal2>payRecord.borrow_bill){//有多余的钱
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.borrow_bill,payRecord:payRecord);
+                                paytotal2= paytotal2 - payRecord.borrow_bill
+                            }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
+                                paytotal2= 0
+                            }
+                            receiveDetails.push(detailRecord)
                         }else if("penalty_money".equals(target.name)){
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.penalty_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
+                            ReceiveDetailRecord detailRecord
 
-                            paytotal2= paytotal2 - payRecord.penalty_bill
+                            if(paytotal2>payRecord.penalty_bill){//有多余的钱
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.penalty_bill,payRecord:payRecord);
+                                paytotal2= paytotal2 - payRecord.penalty_bill
+                            }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
+                                paytotal2= 0
+                            }
+                            receiveDetails.push(detailRecord)
                         }else if("over_money".equals(target.name)){
+                            ReceiveDetailRecord detailRecord
                             def dueMoney = payRecord.getOverDue()
-                            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: target.name, amount: dueMoney,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
 
-                            paytotal2= paytotal2 - dueMoney
+                            if(paytotal2>dueMoney){//有多余的钱
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: dueMoney,payRecord:payRecord);
+                                paytotal2= paytotal2 - dueMoney
+                            }else{
+                                detailRecord = new ReceiveDetailRecord(target: target.name, amount: paytotal2,payRecord:payRecord);
+                                paytotal2= 0
+                            }
+                            receiveDetails.push(detailRecord)
                         }
                     }
                 }

@@ -83,4 +83,24 @@ class CommissionInfoResourceService {
         return commissionInfo.save(failOnError: true)
     }
 
+    def initData={
+
+        (1..7).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+            );
+            commissionInfo.save(failOnError: true)
+        }
+        (8..15).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:0
+            );
+            commissionInfo.save(failOnError: true)
+        }
+
+    }
+
+
 }

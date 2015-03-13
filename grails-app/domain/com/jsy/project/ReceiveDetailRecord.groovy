@@ -33,6 +33,18 @@ class ReceiveDetailRecord {
         }
         if("original".equals(target)){
             payRecord.payMainBack+=amount
+        }else if("firstyear".equals(target)){
+            payRecord.interest_pay+=amount
+        }else if("maintain".equals(target)){
+            payRecord.manage_pay+=amount
+        }else if("channel".equals(target)){
+            payRecord.community_pay+=amount
+        }else if("overdue".equals(target)){
+            payRecord.overDue_pay+=amount
+        }else if("penalty".equals(target)){
+            payRecord.penalty_pay+=amount
+        }else if("borrow".equals(target)){
+            payRecord.borrow_pay+=amount
         }
         payRecord.totalPayBack += amount
     }

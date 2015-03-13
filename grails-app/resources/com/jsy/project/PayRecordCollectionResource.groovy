@@ -146,9 +146,8 @@ class PayRecordCollectionResource {
             Date nowDate = new Date()
             Date lastDate = Utils.addYears(payRecord.payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
 
-            if(nowDate.after(lastDate) && !payRecord.isOverDate){//判断超出预定时间，查询时发现超出，就修改penalty_pay
+            if(nowDate.after(lastDate)){//判断超出预定时间，查询时发现超出，就修改penalty_pay
                 pay_record.penalty_pay = payRecord.amount * project.penalty_per                     //违约金
-                payRecord.isOverDate=true
                 payRecord.penalty_bill=pay_record.penalty_pay
                 payRecord.save(failOnError: true)
             }

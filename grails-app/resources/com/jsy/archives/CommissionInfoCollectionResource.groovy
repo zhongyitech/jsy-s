@@ -122,4 +122,12 @@ class CommissionInfoCollectionResource {
     CommissionInfoResource getResource(@PathParam('id') Long id) {
         new CommissionInfoResource(commissionInfoResourceService: commissionInfoResourceService, id: id)
     }
+
+
+    @GET
+    @Path('/irData')
+    Response initData() {
+        commissionInfoResourceService.initData();
+        ok "good"
+    }
 }
