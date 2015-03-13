@@ -32,6 +32,7 @@ class InvestmentArchivesCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     def investmentArchivesResourceService
+    def springSecurityService
     def getYieldService
 
     //根据档案id取附件
@@ -482,4 +483,31 @@ class InvestmentArchivesCollectionResource {
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
+
+    @POST
+    @Path('getContract')
+    Response getContract(Finfo finfo){
+        if (null == finfo.keyword) {
+            finfo.keyword = ""
+        }
+        def  json
+        def jsonpage
+        try {
+             json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            jsonpage = json.get("page")
+            jsonpage.each {
+                int s=CommissionInfo.findAllByTcrAndArchivesIdAndLx(springSecurityService.getCurrentUser().chainName,it.id,1).size()
+                //
+                //
+                //    Unfinished By liujw.2015.3.13-18:05
+                //
+                //
+            }
+            ok JsonResult.success(obj,"",page)
+        } catch (Exception e) {
+            restStatus = REST_STATUS_FAI;
+            print(e)
+        }
+    }
+
 }
