@@ -4,8 +4,15 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 class ReceiveRecordResourceService {
 
-    def create(ReceiveRecord dto) {
+    def create(ReceiveRecord dto, def receiveDetails) {
         dto.save(failOnError: true)
+
+        //创建receive detail
+        receiveDetails?.each{detail->
+            ReceiveDetailRecord detailRecord = new ReceiveDetailRecord(target: detail.key, amount: detail.value);
+            detailRecord.save(failOnError: true)
+        }
+
     }
 
     def read(id) {

@@ -1,5 +1,6 @@
 package com.jsy.auth
 
+import com.jsy.bankConfig.BankAccount
 import com.jsy.system.Department
 
 class User {
@@ -27,6 +28,8 @@ class User {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
+
+    static hasMany = [bankAccount:BankAccount]
 
 	static transients = ['springSecurityService']
 

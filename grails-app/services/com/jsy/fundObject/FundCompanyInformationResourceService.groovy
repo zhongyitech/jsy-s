@@ -23,8 +23,18 @@ class FundCompanyInformationResourceService {
         FundCompanyInformation.findAll()
     }
 
+    /**
+     * 更新公司信息
+     * @param dto
+     * @return
+     */
     def update(FundCompanyInformation dto) {
         def obj = FundCompanyInformation.get(dto.id)
+        //删除公司的银行账户关联信息，再重新写入
+        obj.bankAccount.each {
+            it.delete()
+        }
+        obj.bankAccount.removeAll()
         if (!obj) {
             throw new DomainObjectNotFoundException(FundCompanyInformation.class, dto.id)
         }
@@ -38,6 +48,13 @@ class FundCompanyInformationResourceService {
             obj.delete()
         }
     }
+    /**
+     * 获取公司的列表信息
+     * @param pagesize
+     * @param startposition
+     * @param queryparam
+     * @return
+     */
     def readAllForPage(Long pagesize,Long startposition,String queryparam){
         if (null == queryparam){
             queryparam = ""
