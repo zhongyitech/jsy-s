@@ -2,6 +2,7 @@ package com.jsy.project
 
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.util.Utils
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -24,6 +25,35 @@ import javax.ws.rs.core.Response
 class PayRecordCollectionResource {
 
     def payRecordResourceService
+
+
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(String criteriaStr) {
+        org.json.JSONObject result = new org.json.JSONObject();
+        String restStatus = 200;
+        int total
+        def results
+        try {
+            if(criteriaStr && !"".equals(criteriaStr)){
+                def rtn = payRecordResourceService.readAllForPage(criteriaStr)
+                if(rtn){
+                    total = rtn.total
+                    results= rtn.results
+                }
+            }else{
+                restStatus = "500";
+            }
+        }catch (Exception e){
+            restStatus = "500";
+            print(e)
+        }
+        result.put("rest_status", restStatus)
+        result.put("rest_result", results as JSON)
+        result.put("rest_total", total)
+
+        return Response.ok(result.toString()).status(200).build()
+    }
 
     @POST
     @Path('/create')
@@ -107,14 +137,14 @@ class PayRecordCollectionResource {
 
             pay_record.interest_year1 = project.year1
             pay_record.interest_pay = payRecord.interest_bill   //第一年利率
-            pay_record.dateCount=dayDifferent(payRecord.payDate,new Date())                     //投资天数
+            pay_record.dateCount=Utils.dayDifferent(payRecord.payDate,new Date())                     //投资天数
 
 
 //            singleCount", "costCount", "dayCount
 
             //这里开始计算逾期利息
             Date nowDate = new Date()
-            Date lastDate = addYears(payRecord.payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
+            Date lastDate = Utils.addYears(payRecord.payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
 
             if(nowDate.after(lastDate) && !payRecord.isOverDate){//判断超出预定时间，查询时发现超出，就修改penalty_pay
                 pay_record.penalty_pay = payRecord.amount * project.penalty_per                     //违约金
@@ -129,31 +159,6 @@ class PayRecordCollectionResource {
         ok rtn
     }
 
-    Date addYears(final java.sql.Timestamp date, final int years) {
-        Date calculatedDate = null;
-
-        if (date != null) {
-            final GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime(date);
-            calendar.add(Calendar.YEAR, years);
-            calculatedDate = calendar.getTime()
-        }
-
-        return calculatedDate;
-    }
-
-    int dayDifferent(Date dateStart,Date dateStop) {
-        if(dateStart.after(dateStop)){
-            throw new Exception("dateStart after dateStop");
-        }
-
-        //毫秒ms
-        long diff = dateStop.getTime() - dateStart.getTime();
-
-        long diffDays = diff / (24 * 60 * 60 * 1000);
-
-        return diffDays
-    }
 
 
     @Path('/{id}')
