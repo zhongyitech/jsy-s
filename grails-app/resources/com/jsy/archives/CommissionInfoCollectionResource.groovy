@@ -102,13 +102,10 @@ class CommissionInfoCollectionResource {
     Response getcommissionInfo(String datastr) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        def ci
+        def results
         def total
         try {
             org.json.JSONObject finfo = JSON.parse(datastr)
-
-
-
 
             def criterib = new DetachedCriteria(CommissionInfo).build {
                 if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
@@ -145,7 +142,7 @@ class CommissionInfoCollectionResource {
             params.max = 10
             params.offset = finfo.startposition ? finfo.startposition : 0
 
-            ci = criterib.list(params)
+            results = criterib.list(params)
             total = criterib.size()
 
         }catch (Exception e){
@@ -154,7 +151,7 @@ class CommissionInfoCollectionResource {
 
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", ci as JSON)
+        result.put("rest_result", results as JSON)
         result.put("rest_total", total)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
