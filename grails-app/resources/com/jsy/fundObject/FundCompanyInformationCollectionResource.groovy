@@ -57,7 +57,7 @@ class FundCompanyInformationCollectionResource {
 
     @PUT
     Response update(FundCompanyInformation dto,@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
+         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         dto.id = id
         def  rc

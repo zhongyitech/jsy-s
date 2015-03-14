@@ -13,6 +13,7 @@ import org.json.JSONObject
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -241,9 +242,16 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto = investmentArchivesResourceService.create(dto)
                 dto.archiveNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
+                //付息时间新增
+                List times=investmentArchivesResourceService.scfxsj(dto.startDate,dto.qx,dto.fxfs)
+                int i=1
+                times.each {
+                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
+                    dto.addToPayTimes(payTime)
+                    i++
+                }
                 result = JsonResult.success(dto)
 
             } catch (Exception e) {
@@ -278,6 +286,20 @@ class InvestmentArchivesCollectionResource {
 
 
 
+    }
+
+    @GET
+    @Path('/GetPayTimes')
+    Response getPayTimes(@QueryParam('startTime') String startTime,
+                         @QueryParam('qx') String qx,
+                         @QueryParam('fxfs') String fxfs) {
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startTime);
+            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date,qx,fxfs))
+        } catch (Exception e) {
+            print(e)
+            ok JsonResult.error(e.message)
+        }
     }
 
     @GET
