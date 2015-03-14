@@ -28,7 +28,7 @@ class Payment {
     //发票额
     BigDecimal fpe
 
-    //兑付状态
+    //兑付状态，付款状态，0：未付，1：付款中，2：已付
     int  status=0
     //支付时间
     Date zfsj
@@ -37,6 +37,12 @@ class Payment {
 
     //生成时间
     Date scsj=new Date()
+
+    //common
+    Date dateCreated
+    Date lastUpdated
+
+
 //    def beforeInsert() {
 //        scsj=new Date()
 //    }

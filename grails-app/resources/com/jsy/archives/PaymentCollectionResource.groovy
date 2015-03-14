@@ -2,11 +2,13 @@ package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
 import grails.converters.JSON
+import grails.gorm.DetachedCriteria
 import org.json.JSONArray
 import org.json.JSONObject
 
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -85,22 +87,81 @@ class PaymentCollectionResource {
 
     @POST
     @Path('/getCommissions')
-    Response getCommissions(Finfo finfo,@QueryParam('type') String type) {
+    Response getCommissions(String datastr) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
-        def payment
+        def results
         int total
         try {
-            payment = paymentResourceService.getCommissions(finfo,type)
-            total=paymentResourceService.getCommissionsTotal(finfo,type)
+//            Payment.findAllByDflxAndStatusInListAndCustomerNameLikeAndZfsjBetween(type,[0,1],
+//                    "%"+(finfo.keyword==null?"":finfo.keyword)+"%",finfo.startsaledate1,finfo.startsaledate2)
+
+            org.json.JSONObject finfo = JSON.parse(datastr)
+
+            def criterib = new DetachedCriteria(Payment).build {
+                if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
+                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+                    Date date1=sdf.parse(finfo.startsaledate1);
+                    Date date2=sdf.parse(finfo.startsaledate2);
+
+                    between("zfsj", date1, date2)
+                }
+
+
+                if(finfo.has('keyword') && finfo.keyword && !"".equals(finfo.keyword)){
+                    or {
+                        like("fundName", "%"+finfo.keyword+"%")
+                        like("contractNum", "%"+finfo.keyword+"%")
+                        like("customerName", "%"+finfo.keyword+"%")         //业务经理
+                    }
+                }
+                eq("dflx",finfo.type)
+
+                if(finfo.has('status') && finfo.status){
+                    println finfo.status
+                    eq("status", finfo.status)
+                }else{
+                    between("status", 0, 1)
+                }
+
+                order("dateCreated", "desc")
+            }
+
+            def params = [:]
+            params.max = 10
+            params.offset = finfo.startposition ? finfo.startposition : 0
+
+            results = criterib.list(params)
+            total = criterib.size()
+
+
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", payment as JSON)
+        result.put("rest_result", results as JSON)
         result.put("rest_total", total)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
+//
+//    @POST
+//    @Path('/getCommissions')
+//    Response getCommissions(Finfo finfo,@QueryParam('type') String type) {
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def payment
+//        int total
+//        try {
+//            payment = paymentResourceService.getCommissions(finfo,type)
+//            total=paymentResourceService.getCommissionsTotal(finfo,type)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI;
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", payment as JSON)
+//        result.put("rest_total", total)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//    }
 
     //应该再加个到银行的接口
     @GET
