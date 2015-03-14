@@ -3,12 +3,15 @@ package com.jsy.archives
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jsy.fundObject.Finfo
+import com.jsy.project.TSProject
 import grails.converters.JSON
+import grails.gorm.DetachedCriteria
 import org.json.JSONArray
 import org.json.JSONObject
 
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -96,15 +99,54 @@ class CommissionInfoCollectionResource {
 
     @POST
     @Path('/getcommissionInfo')
-    Response getcommissionInfo(Finfo finfo) {
+    Response getcommissionInfo(String datastr) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def ci
         def total
         try {
-            ci = CommissionInfo.findAllByTypeNotEqualAndZfsjBetween(2,finfo.startsaledate1, finfo.startsaledate2,[max: finfo.pagesize,sort:"type", order:"asc", offset: finfo.startposition])
-//            ci = CommissionInfo.listOrderByType()
-            total = CommissionInfo.findAllByTypeNotEqualAndZfsjBetween(2,finfo.startsaledate1, finfo.startsaledate2).size()
+            org.json.JSONObject finfo = JSON.parse(datastr)
+
+
+
+
+            def criterib = new DetachedCriteria(CommissionInfo).build {
+                if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
+                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+                    Date date1=sdf.parse(finfo.startsaledate1);
+                    Date date2=sdf.parse(finfo.startsaledate2);
+
+
+                    between("zfsj", date1, date2)
+                }
+
+                if(finfo.has('keyword') && finfo.keyword && !"".equals(finfo.keyword)){
+                    or {
+                        like("fundName", "%"+finfo.keyword+"%")
+                        like("customer", "%"+finfo.keyword+"%")
+                        like("ywjl", "%"+finfo.keyword+"%")         //业务经理
+                        like("khh", "%"+finfo.keyword+"%")          //开户行
+                        like("yhzh", "%"+finfo.keyword+"%")         //银行帐号
+                    }
+                }
+                if(finfo.type){
+                    eq("type",finfo.type)
+                }else{                                              //不等于申请已处理的
+                    or {
+                        eq("type",0)
+                        eq("type",1)
+                    }
+                }
+
+                order("dateCreated", "desc")
+            }
+
+            def params = [:]
+            params.max = 10
+            params.offset = finfo.startposition ? finfo.startposition : 0
+
+            ci = criterib.list(params)
+            total = criterib.size()
 
         }catch (Exception e){
             restStatus = REST_STATUS_FAI
