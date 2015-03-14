@@ -241,9 +241,16 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto = investmentArchivesResourceService.create(dto)
                 dto.archiveNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
+                //付息时间新增
+                List times=investmentArchivesResourceService.scfxsj(dto.startDate,dto.qx,dto.fxfs)
+                int i=1
+                times.each {
+                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
+                    dto.addToPayTimes(payTime)
+                    i++
+                }
                 result = JsonResult.success(dto)
 
             } catch (Exception e) {
@@ -278,6 +285,19 @@ class InvestmentArchivesCollectionResource {
 
 
 
+    }
+
+    @GET
+    @Path('/GetPayTimes')
+    Response GetPayTimes(@QueryParam('startTime') Date startTime,
+                         @QueryParam('qx') Date qx,
+                         @QueryParam('fxfs') Date fxfs) {
+        try {
+            ok JsonResult.success(investmentArchivesResourceService.scfxsj(startTime,qx,fxfs))
+        } catch (Exception e) {
+            print(e)
+            ok JsonResult.error(e.message)
+        }
     }
 
     @GET

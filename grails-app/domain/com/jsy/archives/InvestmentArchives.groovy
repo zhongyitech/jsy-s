@@ -80,14 +80,14 @@ class InvestmentArchives {
     Date startDate
     //计息结束日期
     Date endDate
-    //第一次付息时间
-    Date fxsj1
-    //第二次付息时间
-    Date fxsj2
-    //第三次付息时间
-    Date fxsj3
-    //第四次付息时间
-    Date fxsj4
+//    //第一次付息时间
+//    Date fxsj1
+//    //第二次付息时间
+//    Date fxsj2
+//    //第三次付息时间
+//    Date fxsj3
+//    //第四次付息时间
+//    Date fxsj4
     //全部付完了或者转投结束，不在付款
     boolean  stopPay=false
     //打印次数
@@ -100,7 +100,7 @@ class InvestmentArchives {
 
     //业务和客户收益分配
     //附件
-    static hasMany = [ywtcs:UserCommision,gltcs:UserCommision,customerCommision:CustomerCommision,uploadFiles:UploadFile]
+    static hasMany = [ywtcs:UserCommision,gltcs:UserCommision,customerCommision:CustomerCommision,uploadFiles:UploadFile,payTimes:PayTime]
 
     //档案状态 //0是正常的//1到期转投2未到期转投3基金续投申请4退伙申请
     int dazt=0
