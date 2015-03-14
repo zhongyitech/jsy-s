@@ -93,9 +93,6 @@ class PaymentCollectionResource {
         def results
         int total
         try {
-//            Payment.findAllByDflxAndStatusInListAndCustomerNameLikeAndZfsjBetween(type,[0,1],
-//                    "%"+(finfo.keyword==null?"":finfo.keyword)+"%",finfo.startsaledate1,finfo.startsaledate2)
-
             org.json.JSONObject finfo = JSON.parse(datastr)
 
             def criterib = new DetachedCriteria(Payment).build {

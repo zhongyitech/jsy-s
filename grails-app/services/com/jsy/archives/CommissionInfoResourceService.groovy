@@ -193,6 +193,26 @@ class CommissionInfoResourceService {
         );
         commissionInfo4.save(failOnError: true)
 
+
+
+        (1..9).each {
+            PaymentInfo paymentInfo = new PaymentInfo(fundName:'fund'+it,htbh:'1000',customerName:'sss'+it,tzje:12,
+                    tzqx:'2015-05-14',syl:0.1,yflx:0.1,yfbj:100,
+                    zj:100,khh:'211111',yhzh:'aaaaa',gj:'bbb',zjlx:'dd',zjhm:'ddd',bmjl:'ddd',
+                    archivesId:archives1.id,fxsj:new Date(),type:0)
+            paymentInfo.save(failOnError: true)
+        }
+
+        (10..19).each {
+            PaymentInfo paymentInfo = new PaymentInfo(fundName:'fund'+it,htbh:'1000',customerName:'sss'+it,tzje:12,
+                    tzqx:'2015-05-14',syl:0.1,yflx:0.1,yfbj:100,
+                    zj:100,khh:'211111',yhzh:'aaaaa',gj:'bbb',zjlx:'dd',zjhm:'ddd',bmjl:'ddd',
+                    archivesId:archives1.id,fxsj:new Date(),type:1)
+            paymentInfo.save(failOnError: true)
+        }
+
+
+
     }
 
 
