@@ -68,19 +68,52 @@ class PaymentCollectionResource {
 
     @POST
     @Path('/getPayments')
-    Response getPayments(Finfo finfo,@QueryParam('type') String type) {
+    Response getPayments(String datastr) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         int total
-        def payment
+        def results
         try {
-            payment = paymentResourceService.getPayments(finfo,type)
-            total=paymentResourceService.getPaymentsTotal(finfo,type)
+            org.json.JSONObject finfo = JSON.parse(datastr)
+
+            def criterib = new DetachedCriteria(Payment).build {
+                if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
+                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+                    Date date1=sdf.parse(finfo.startsaledate1);
+                    Date date2=sdf.parse(finfo.startsaledate2);
+
+                    between("zfsj", date1, date2)
+                }
+
+
+                if(finfo.has('keyword') && finfo.keyword && !"".equals(finfo.keyword)){
+                    or {
+                        like("fundName", "%"+finfo.keyword+"%")
+                        like("customerName", "%"+finfo.keyword+"%")         //业务经理
+                    }
+                }
+                eq("dflx",finfo.type)
+
+                if(finfo.has('status') && finfo.status){
+                    eq("status", finfo.status)
+                }else{
+                    between("status", 0, 1)
+                }
+
+                order("dateCreated", "desc")
+            }
+
+            def params = [:]
+            params.max = 10
+            params.offset = finfo.startposition ? finfo.startposition : 0
+
+            results = criterib.list(params)
+            total = criterib.size()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", payment as JSON)
+        result.put("rest_result", results as JSON)
         result.put("rest_total", total)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
@@ -115,7 +148,6 @@ class PaymentCollectionResource {
                 eq("dflx",finfo.type)
 
                 if(finfo.has('status') && finfo.status){
-                    println finfo.status
                     eq("status", finfo.status)
                 }else{
                     between("status", 0, 1)
