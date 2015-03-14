@@ -13,6 +13,7 @@ import org.json.JSONObject
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -289,11 +290,12 @@ class InvestmentArchivesCollectionResource {
 
     @GET
     @Path('/GetPayTimes')
-    Response GetPayTimes(@QueryParam('startTime') Date startTime,
-                         @QueryParam('qx') Date qx,
-                         @QueryParam('fxfs') Date fxfs) {
+    Response getPayTimes(@QueryParam('startTime') String startTime,
+                         @QueryParam('qx') String qx,
+                         @QueryParam('fxfs') String fxfs) {
         try {
-            ok JsonResult.success(investmentArchivesResourceService.scfxsj(startTime,qx,fxfs))
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startTime);
+            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date,qx,fxfs))
         } catch (Exception e) {
             print(e)
             ok JsonResult.error(e.message)

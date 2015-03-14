@@ -8,7 +8,12 @@ class Role {
 		cache true
 	}
 
+    def beforeInsert() {
+        authority=UUID.randomUUID().toString()
+    }
+
 	static constraints = {
-		authority blank: false, unique: true
+        name blank: false,unique: true
+		authority nullable: true, unique: true
 	}
 }
