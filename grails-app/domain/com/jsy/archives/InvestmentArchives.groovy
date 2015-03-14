@@ -80,14 +80,14 @@ class InvestmentArchives {
     Date startDate
     //计息结束日期
     Date endDate
-//    //第一次付息时间
-//    Date fxsj1
-//    //第二次付息时间
-//    Date fxsj2
-//    //第三次付息时间
-//    Date fxsj3
-//    //第四次付息时间
-//    Date fxsj4
+    //第一次付息时间
+    Date fxsj1
+    //第二次付息时间
+    Date fxsj2
+    //第三次付息时间
+    Date fxsj3
+    //第四次付息时间
+    Date fxsj4
     //全部付完了或者转投结束，不在付款
     boolean  stopPay=false
     //打印次数
