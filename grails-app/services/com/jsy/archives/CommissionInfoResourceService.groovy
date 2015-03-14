@@ -83,4 +83,48 @@ class CommissionInfoResourceService {
         return commissionInfo.save(failOnError: true)
     }
 
+    def initData={
+
+        (1..3).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+            );
+            commissionInfo.save(failOnError: true)
+        }
+        (4..8).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:0
+            );
+            commissionInfo.save(failOnError: true)
+        }
+
+        CommissionInfo commissionInfo1=new CommissionInfo(fundName:'myfund',customer:'zhangjia',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'likequn',
+                tcr:'ss',skr:'bb',khh:'1111111',yhzh:'aaaaaaa',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+        );
+        commissionInfo1.save(failOnError: true)
+
+        CommissionInfo commissionInfo2=new CommissionInfo(fundName:'changjiagnyihao',customer:'liuzhen',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'saterday',
+                tcr:'ss',skr:'bb',khh:'222222',yhzh:'bbbbbbb',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+        );
+        commissionInfo2.save(failOnError: true)
+
+        CommissionInfo commissionInfo3=new CommissionInfo(fundName:'tiaozhan',customer:'zhanshen',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'lusifa',
+                tcr:'ss',skr:'bb',khh:'3333333',yhzh:'cccccc',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+        );
+        commissionInfo3.save(failOnError: true)
+
+        CommissionInfo commissionInfo4=new CommissionInfo(fundName:'laiba',customer:'songzai',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:1,ywjl:'cheme',
+                tcr:'ss',skr:'bb',khh:'444444',yhzh:'ddddddd',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+        );
+        commissionInfo4.save(failOnError: true)
+
+    }
+
+
 }

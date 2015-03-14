@@ -56,7 +56,12 @@ class CommissionInfo {
 
     //类型0为业务，1为管理
     int lx
-    //递交给OA的状态,1为已经提交到oa
+    /**
+     * 递交给OA的状态
+     * 0：未提成申请
+     * 1:为已经提交到oa，提成申请
+     * 2:申请已处理
+     */
     int type=0
 
     //支付时间
@@ -64,6 +69,11 @@ class CommissionInfo {
 
     //对应待办任务id
     Long todoId
+
+    /**common字段**/
+    Date dateCreated
+    Date lastUpdated
+
     def beforeInsert() {
         TodoConfig todoConfig=TodoConfig.findByMkbs(1)
         ToDoTask toDoTask=ToDoTask.create(todoConfig.mkmc,todoConfig.cljs,todoConfig.url)

@@ -7,14 +7,20 @@ class User {
 
 	transient springSecurityService
 
+    //登陆名称
 	String username
+
 	String password
+
     //中文名
     String chainName
+
     //收款人
     String skr=""
+
     //开户行
     String khh
+
     //银行账号
     String yhzh
 
@@ -29,7 +35,7 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static hasMany = [bankAccount:BankAccount]
+//    static hasMany = [bankAccount:BankAccount]
 
 	static transients = ['springSecurityService']
 
