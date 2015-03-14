@@ -1,6 +1,7 @@
 package com.jsy.auth
 
 import com.jsy.fundObject.Finfo
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -152,7 +153,28 @@ class RoleCollectionResource {
         }
     }
 
+    /**
+     * 获取用户的角色列表
+     * @param uid
+     * @return
+     */
     @GET
+    @Path("/userRoleList")
+    Response getReoleListForUser(@QueryParam("id") Long uid){
+        try{
+            def user=User.get(uid)
+            if(user!=null){
+                def rolelist=UserRole.getRoleListForUser(user)
+                ok JsonResult.success(rolelist)
+            }else{
+                ok JsonResult.error("没有此用户ID")
+            }
+        }
+        catch (Exception e){
+            ok JsonResult.error(e.message)
+        }
+    }
+
     @Path("/getResourceRole")
     Response getResourceRole(@QueryParam('id') Long id){
         JSONObject result = new JSONObject();
