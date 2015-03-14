@@ -38,11 +38,12 @@ class CustomerArchives {
     //邮政编码
     String postalcode
 
-    //email
-    String email
-
     //通讯地址
     String callAddress
+
+
+    //email
+    String email
 
     //备注
     String remark

@@ -2,11 +2,13 @@ package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
 import grails.converters.JSON
+import grails.gorm.DetachedCriteria
 import org.json.JSONArray
 import org.json.JSONObject
 
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -59,28 +61,62 @@ class PaymentInfoCollectionResource {
 
     @POST
     @Path("/readAllForPage")
-    Response readAllForPage(Finfo finfo) {
+    Response readAllForPage(String datastr) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
+
+        //查询生成对付记录
         try{
             paymentInfoResourceService.addPaymentInfo()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
         }
-        if (null == finfo.keyword){
-            finfo.keyword = ""
-        }
+
         def total
-        def pi
+        def results
         try {
-            pi =    PaymentInfo.findAllByZfsjBetweenAndIsAllow(finfo.startsaledate1, finfo.startsaledate2, false,[max: finfo.pagesize,sort:"type", order:"asc", offset:finfo.startposition])
-            total = PaymentInfo.findAllByZfsjBetweenAndIsAllow(finfo.startsaledate1, finfo.startsaledate2, false).size()
+
+            org.json.JSONObject finfo = JSON.parse(datastr)
+
+            def criterib = new DetachedCriteria(PaymentInfo).build {
+                if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
+                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+                    Date date1=sdf.parse(finfo.startsaledate1);
+                    Date date2=sdf.parse(finfo.startsaledate2);
+
+                    between("zfsj", date1, date2)
+                }
+
+
+                if(finfo.has('keyword') && finfo.keyword && !"".equals(finfo.keyword)){
+                    or {
+                        like("fundName", "%"+finfo.keyword+"%")
+                        like("customerName", "%"+finfo.keyword+"%")         //业务经理
+                    }
+                }
+                eq("isAllow",false)
+
+                if(finfo.has('type') && finfo.type){
+                    eq("type", finfo.type)
+                }else{
+                    between("type", 0, 1)
+                }
+
+                order("dateCreated", "desc")
+            }
+
+            def params = [:]
+            params.max = 10
+            params.offset = finfo.startposition ? finfo.startposition : 0
+
+            results = criterib.list(params)
+            total = criterib.size()
         }catch (Exception e){
             restStatus = REST_STATUS_FAI;
             print(e)
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", pi as JSON)
+        result.put("rest_result", results as JSON)
         result.put("rest_total", total)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
