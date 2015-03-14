@@ -107,6 +107,9 @@ class InvestmentArchives {
     //档案状态 //0新建，1正常，2存档
     int status=0
 
+    //能否兑付，要入库后
+    boolean yrk=false
+
     static constraints = {
         archiveNum unique: true
         contractNum unique: true

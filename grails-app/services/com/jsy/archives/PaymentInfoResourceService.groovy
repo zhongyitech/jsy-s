@@ -276,13 +276,13 @@ class PaymentInfoResourceService {
                             paymentInfo.tzqx = it.tzqx
                             paymentInfo.syl = it.nhsyl
                             paymentInfo.bmjl = it.bmjl.chainName
-                            //计算应付利息
-                            BigDecimal yflx = it.tzje * it.nhsyl
                             paymentInfo.khh = it.customer.khh
                             paymentInfo.yhzh = it.customer.yhzh
                             paymentInfo.gj = it.customer.country
                             paymentInfo.zjlx = it.customer.credentialsType
                             paymentInfo.zjhm = it.customer.credentialsNumber
+                            //计算应付利息
+                            BigDecimal yflx = (it.tzje * it.nhsyl)/it.payTimes.size()
                             paymentInfo.yflx = yflx
                             //计算应付本金
                             BigDecimal yfbj=0
