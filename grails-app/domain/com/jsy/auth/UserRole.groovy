@@ -17,6 +17,14 @@ class UserRole implements Serializable {
 		other.user?.id == user?.id &&
 		other.role?.id == role?.id
 	}
+    /**
+     * 返回指定用户的角色列表
+     * @param user
+     * @return 角色列表
+     */
+    static def getRoleListForUser(User user){
+        return  UserRole.findAllByUser(user).collect{it.role}
+    }
 
 	int hashCode() {
 		def builder = new HashCodeBuilder()
@@ -37,11 +45,12 @@ class UserRole implements Serializable {
 			user == User.load(userId) &&
 			role == Role.load(roleId)
 		}.count() > 0
+
 	}
 
 	static UserRole create(User user, Role role, boolean flush = false) {
 		def instance = new UserRole(user: user, role: role)
-		instance.save(flush: flush, insert: true)
+		instance.save(failOnError: true, insert: true)
 		instance
 	}
 
