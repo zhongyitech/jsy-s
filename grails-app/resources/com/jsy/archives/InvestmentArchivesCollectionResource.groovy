@@ -180,7 +180,7 @@ class InvestmentArchivesCollectionResource {
         }
         if (dto.dqrq == null || dto.dqrq <= dto.rgrq) error.dqrq = "到期日期不合法"
 
-        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
+//        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
 
         def contract = Contract.findByHtbh(dto.contractNum)
         if (contract != null && contract.fund.id != dto.fund.id) {
@@ -222,10 +222,13 @@ class InvestmentArchivesCollectionResource {
                 Customer cus = null
                 if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
+
                     CustomerArchives cusa = CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
+
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
+                        customerArchives.zch=""
                         customerArchives.save(failOnError: true)
                     }
 //                    }else{
@@ -245,7 +248,7 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
                 //付息时间新增
-                List times=investmentArchivesResourceService.scfxsj(dto.startDate,dto.qx,dto.fxfs)
+                List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
                 int i=1
                 times.each {
                     PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)

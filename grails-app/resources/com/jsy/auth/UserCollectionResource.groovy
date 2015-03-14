@@ -284,7 +284,7 @@ class UserCollectionResource {
      */
     @GET
     @Path('/findUserLeader')
-    Response findUserLeader(@QueryParam('uid') String uid) {
+    Response findUserLeader(@QueryParam('uid') Long uid) {
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
         def users

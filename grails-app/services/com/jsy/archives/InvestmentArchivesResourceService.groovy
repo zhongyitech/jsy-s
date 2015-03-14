@@ -28,15 +28,15 @@ class InvestmentArchivesResourceService {
 
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
-        obj?.uploadFiles.each {
-            it.delete()
-        }
-        obj?.payTimes.each {
-            obj?.removeFromPayTimes(it)
-            it.delete()
-        }
+
+//        obj?.payTimes.clear()
+//        obj?.save(flush: true)
+//        obj?.payTimes.each {
+//            it.delete(flush: true)
+//        }
+
         //付息时间新增
-        List times=scfxsj(dto.startDate,dto.qx,dto.fxfs)
+        List times=scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
         int i=1
         times.each {
             PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
@@ -124,7 +124,7 @@ class InvestmentArchivesResourceService {
         //设置当前日期
         calendar.setTime(startTime);
         //获取期限的数值
-        Double t=Double.valueOf(qx.substring(0,qx.size()-1))
+        Double t=Double.valueOf(qx.substring(0,qx.length()-1))
         if(fxfs=="N"){
             if(qx.contains("天")){
                 calendar.add(Calendar.DATE, (int)t)
