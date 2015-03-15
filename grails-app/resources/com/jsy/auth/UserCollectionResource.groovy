@@ -295,13 +295,18 @@ class UserCollectionResource {
 
             users = User.get(uid)
             print(users.properties)
-            leaders.id = users.department.leader.id
-            leaders.chainName = users.department.leader.chainName
-            leaders.username = users.department.leader.username
+            if (users && users.department && users.department.leader) {
+                leaders.id = users.department.leader.id
+                leaders.chainName = users.department.leader.chainName
+                leaders.username = users.department.leader.username
+                ok JsonResult.success(leaders)
+
+            }else{
+                ok JsonResult.success(null)
+            }
 //            result.put("rest_result", leaders as JSON)
 //            result.put("rest_status", restStatus)
 //            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-            ok JsonResult.success(leaders)
 
         } catch (Exception e) {
 //            restStatus = REST_STATUS_FAI
@@ -324,19 +329,19 @@ class UserCollectionResource {
     @POST
     Response update(User dto, @QueryParam('id') Long id, @QueryParam('rolelist') String rolelist) {
 
-        if(id==null || id==0){
-            return  Response.ok(JsonResult.error("id is null or 0"))
+        if (id == null || id == 0) {
+            return Response.ok(JsonResult.error("id is null or 0"))
         }
         try {
 
-            def roles=new ArrayList<Long>()
-            if(rolelist!=null && rolelist!=""){
+            def roles = new ArrayList<Long>()
+            if (rolelist != null && rolelist != "") {
                 rolelist.split(",")
-                .each {
+                        .each {
                     roles.add(Long.parseLong(it))
                 }
             }
-            def obj = userResourceService.update(dto, id,roles)
+            def obj = userResourceService.update(dto, id, roles)
             ok JsonResult.success(obj)
 
         } catch (Exception e) {

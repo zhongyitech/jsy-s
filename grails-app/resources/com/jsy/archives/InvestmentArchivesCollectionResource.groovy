@@ -229,6 +229,7 @@ class InvestmentArchivesCollectionResource {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
                         customerArchives.zch=""
+                        customerArchives.fddbr=""
                         customerArchives.save(failOnError: true)
                     }
 //                    }else{
@@ -407,26 +408,25 @@ class InvestmentArchivesCollectionResource {
     }
 
     @GET
+    @Path('/getyy')
+    Response Getyy(){
+        ok JsonResult.success("ok")
+    }
+
+    @GET
     @Path('/getYield')
     Response getYield(@QueryParam('fundid') Long fundid,
                       @QueryParam('managerid') Long managerid,
                       @QueryParam('investment') BigDecimal investment,
                       @QueryParam('vers') String vers) {
-
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
         def gy
         try {
             gy = GetYieldService.getYield(fundid, managerid, investment, vers)
             ok JsonResult.success(gy)
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
             print(e)
             ok JsonResult.error(e.message)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", gy)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @POST
