@@ -29,7 +29,9 @@ class InvestmentArchivesResourceService {
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
         obj.customer.delete()
+
         obj?.payTimes.each {
+            obj.payTimes.remove(it)
             it.delete(flush: true)
         }
 
