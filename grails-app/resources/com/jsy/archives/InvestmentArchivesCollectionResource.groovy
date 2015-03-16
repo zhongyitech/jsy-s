@@ -228,8 +228,8 @@ class InvestmentArchivesCollectionResource {
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
-                        customerArchives.zch=""
-                        customerArchives.fddbr=""
+                        customerArchives.zch=cus.zch
+                        customerArchives.fddbr=cus.fddbr
                         customerArchives.save(failOnError: true)
                     }
 //                    }else{
@@ -252,7 +252,7 @@ class InvestmentArchivesCollectionResource {
                 List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
                 int i=1
                 times.each {
-                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
+                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false,investmentArchives:dto).save(failOnError: true)
                     dto.addToPayTimes(payTime)
                     i++
                 }

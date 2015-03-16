@@ -10,6 +10,8 @@ class PayTime {
     //是否已付息
     boolean sffx
 
+    static belongsTo = [investmentArchives:InvestmentArchives]
+
     static constraints = {
     }
 }
