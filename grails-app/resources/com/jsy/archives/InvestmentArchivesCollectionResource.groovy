@@ -3,6 +3,7 @@ package com.jsy.archives
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
+import com.jsy.system.TypeConfig
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
@@ -228,9 +229,9 @@ class InvestmentArchivesCollectionResource {
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
-                        customerArchives.zch=cus.zch
-                        customerArchives.fddbr=cus.fddbr
                         customerArchives.save(failOnError: true)
+                        TypeConfig typeConfig=TypeConfig.findByTypeAndMapValue(7,2)
+                        customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig)
                     }
 //                    }else{
 //                        cus.properties=dto.customer.properties
