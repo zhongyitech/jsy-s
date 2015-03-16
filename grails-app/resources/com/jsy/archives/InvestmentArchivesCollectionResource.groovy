@@ -231,7 +231,7 @@ class InvestmentArchivesCollectionResource {
                         customerArchives.properties = cus.properties
                         customerArchives.save(failOnError: true)
                         TypeConfig typeConfig=TypeConfig.findByTypeAndMapValue(7,2)
-                        customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig)
+                        customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig).save(failOnError: true)
                     }
 //                    }else{
 //                        cus.properties=dto.customer.properties
@@ -254,7 +254,7 @@ class InvestmentArchivesCollectionResource {
                 int i=1
                 times.each {
                     PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false,investmentArchives:dto).save(failOnError: true)
-                    dto.addToPayTimes(payTime)
+                    dto.addToPayTimes(payTime).save(failOnError: true)
                     i++
                 }
                 result = JsonResult.success(dto)
