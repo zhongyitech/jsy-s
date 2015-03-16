@@ -129,8 +129,8 @@ class PayRecord {
     }
 
     def totalBalance(){
-        BigDecimal should_pay;
-        BigDecimal already_pay;
+        BigDecimal should_pay=0;
+        BigDecimal already_pay=0;
 
         should_pay+=amount;
         should_pay+=manage_bill;

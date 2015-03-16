@@ -190,10 +190,12 @@ class ReceiveRecordCollectionResource {
                 return Response.ok(result.toString()).status(500).build()
             }
 
+
             def receiveDetails = ReceiveDetailRecord.findAllByPayRecord(payRecord)
 
             result.put("rest_status", restStatus)
             result.put("rest_result", receiveDetails as JSON)
+            result.put("rest_totalBalance", payRecord.totalBalance())
             return Response.ok(result.toString()).status(200).build()
         }catch (Exception e){
             restStatus = "500";
