@@ -180,7 +180,7 @@ class InvestmentArchivesCollectionResource {
         }
         if (dto.dqrq == null || dto.dqrq <= dto.rgrq) error.dqrq = "到期日期不合法"
 
-        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
+//        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
 
         def contract = Contract.findByHtbh(dto.contractNum)
         if (contract != null && contract.fund.id != dto.fund.id) {
@@ -222,10 +222,14 @@ class InvestmentArchivesCollectionResource {
                 Customer cus = null
                 if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
+
                     CustomerArchives cusa = CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
+
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
+                        customerArchives.zch=""
+                        customerArchives.fddbr=""
                         customerArchives.save(failOnError: true)
                     }
 //                    }else{
@@ -245,7 +249,7 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
                 //付息时间新增
-                List times=investmentArchivesResourceService.scfxsj(dto.startDate,dto.qx,dto.fxfs)
+                List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
                 int i=1
                 times.each {
                     PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
@@ -404,26 +408,25 @@ class InvestmentArchivesCollectionResource {
     }
 
     @GET
+    @Path('/getyy')
+    Response Getyy(){
+        ok JsonResult.success("ok")
+    }
+
+    @GET
     @Path('/getYield')
     Response getYield(@QueryParam('fundid') Long fundid,
                       @QueryParam('managerid') Long managerid,
                       @QueryParam('investment') BigDecimal investment,
                       @QueryParam('vers') String vers) {
-
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
         def gy
         try {
             gy = GetYieldService.getYield(fundid, managerid, investment, vers)
             ok JsonResult.success(gy)
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
             print(e)
             ok JsonResult.error(e.message)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", gy)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @POST

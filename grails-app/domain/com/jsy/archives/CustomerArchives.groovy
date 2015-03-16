@@ -51,7 +51,12 @@ class CustomerArchives {
     //附件 & 银行账号
     static hasMany = [uploadFiles:UploadFile,bankAccount:BankAccount]
     static constraints = {
+        fddbr nullable: true
+        zch unllable: true
+        callAddress unllable: true
         email nullable:true
         remark nullable: true
+        telephone  nullable: true
+        postalcode  nullable: true
     }
 }
