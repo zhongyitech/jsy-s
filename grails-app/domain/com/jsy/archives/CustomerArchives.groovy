@@ -24,7 +24,7 @@ class CustomerArchives {
     String fddbr
 
     //注册号
-    String zch
+    String zch='empty'
 
     //开户行
     String khh
@@ -52,11 +52,16 @@ class CustomerArchives {
     static hasMany = [uploadFiles:UploadFile,bankAccount:BankAccount]
     static constraints = {
         fddbr nullable: true
-        zch unllable: true
         callAddress unllable: true
         email nullable:true
         remark nullable: true
         telephone  nullable: true
         postalcode  nullable: true
+        zch unllable: true
+    }
+
+
+    static mapping = {
+        zch column: 'zch_me'
     }
 }

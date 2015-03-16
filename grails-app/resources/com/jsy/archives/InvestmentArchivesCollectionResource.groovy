@@ -229,6 +229,10 @@ class InvestmentArchivesCollectionResource {
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
+                        if(!customerArchives.zch){
+                            customerArchives.zch = ""
+                        }
+
                         customerArchives.save(failOnError: true)
                         TypeConfig typeConfig=TypeConfig.findByTypeAndMapValue(7,2)
                         customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig).save(failOnError: true)
