@@ -1,5 +1,6 @@
 package com.jsy.project
 
+import com.jsy.archives.CommissionInfoResourceService
 import com.jsy.auth.Role
 import com.jsy.auth.User
 import com.jsy.bankConfig.BankAccount
@@ -14,12 +15,16 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class WorkflowResourceService {
+    CommissionInfoResourceService commissionInfoResourceService
 
     def initData = {
+        commissionInfoResourceService.initData()
+
         initFund()
         initCompany()
         createProjects()
         initPayRecords();
+        initRole();
         initFlowModel()
         init_flow();
     }
@@ -31,20 +36,13 @@ class WorkflowResourceService {
     }
 
     def initRole = {
-        def financialIncharger = Role.findByAuthority("FinancialIncharger")
-        if(financialIncharger)
-            return;
-
-        Role role1 = new Role(authority:"FinancialIncharger", name:"财务部负责人");
-        Role role2 = new Role(authority:"ProjectIncharger", name:"项目部负责人");
-        Role role3 = new Role(authority:"MinistryIncharger", name:"法务部负责人");
-        role1.save(failOnError: true)
-        role2.save(failOnError: true)
-        role3.save(failOnError: true)
+        Role role1 = Role.findByAuthority("FinancialIncharger")?:new Role(authority:"FinancialIncharger", name:"财务部负责人").save(failOnError: true);
+        Role role2 = Role.findByAuthority("ProjectIncharger")?:new Role(authority:"ProjectIncharger", name:"项目部负责人").save(failOnError: true);
+        Role role3 = Role.findByAuthority("MinistryIncharger")?:new Role(authority:"MinistryIncharger", name:"法务部负责人").save(failOnError: true);
     }
 
     def initFlowModel(){
-        initRole();
+
 
         def tsWorkflowModel = TSWorkflowModel.findByModelName("projectCreateFlow")
         if(tsWorkflowModel){
@@ -64,8 +62,8 @@ class WorkflowResourceService {
         //SortedSet phaseParticipants;
 //        static hasMany = [phaseParticipants : Role];
         def financialIncharger = Role.findByAuthority("FinancialIncharger")
-        def projectIncharger = Role.findByAuthority("projectIncharger")
-        def ministryIncharger = Role.findByAuthority("ministryIncharger")
+        def projectIncharger = Role.findByAuthority("ProjectIncharger")
+        def ministryIncharger = Role.findByAuthority("MinistryIncharger")
 
         TSWorkflowModelPhase phase1 = new TSWorkflowModelPhase(phaseModel:tsWorkflow,phaseIndex:1,phaseEn:"gatherInfo",phaseName:"步骤1.1：资料采集（项目部负责并填写）");
         phase1.addToPhaseParticipants(projectIncharger)

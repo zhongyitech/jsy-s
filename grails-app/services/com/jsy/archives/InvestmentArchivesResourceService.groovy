@@ -28,8 +28,21 @@ class InvestmentArchivesResourceService {
 
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
-        obj?.uploadFiles.each {
-            it.delete()
+
+//        obj?.payTimes.clear()
+//        obj?.save(flush: true)
+//        obj?.payTimes.each {
+//            it.delete(flush: true)
+//        }
+
+        //付息时间新增
+
+        List times=scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
+        int i=1
+        times.each {
+            PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
+            dto.addToPayTimes(payTime)
+            i++
         }
         if (!obj) {
             throw new DomainObjectNotFoundException(InvestmentArchives.class, id)
@@ -102,5 +115,45 @@ class InvestmentArchivesResourceService {
 //        InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrUsernameLike(f, "%"+queryparam+"%", "%"+queryparam+"%", "%"+queryparam+"%")
         def ia = InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrUsernameLike(f, "%"+queryparam+"%", "%"+queryparam+"%", "%"+queryparam+"%")
         return ia
+    }
+
+    //根据付息起始时间、期限、付息方式，生成对应多个付息时间
+    def scfxsj(Date startTime,String qx,String fxfs){
+        List list=new ArrayList()
+        //日历对象
+        Calendar calendar = Calendar.getInstance();
+        //设置当前日期
+        calendar.setTime(startTime);
+        //获取期限的数值
+        Double t=Double.valueOf(qx.substring(0,qx.length()-1))
+        if(fxfs=="N"){
+            if(qx.contains("天")){
+                calendar.add(Calendar.DATE, (int)t)
+            }else if(qx.contains("年")){
+                calendar.add(Calendar.MONTH,(int)(t*12))
+            }
+            list.add(calendar.getTime())
+        }else if(fxfs=="J"){
+            (1..(int)(t*4)).each {
+                calendar.add(Calendar.MONTH,3)
+                list.add(calendar.getTime())
+            }
+        }else if(fxfs=="B"){
+            (1..(int)(t*2)).each {
+                calendar.add(Calendar.MONTH,6)
+                list.add(calendar.getTime())
+            }
+        }else if(fxfs=="Y"){
+            (1..(int)t).each {
+                calendar.add(Calendar.YEAR,1)
+                list.add(calendar.getTime())
+            }
+        }else if(fxfs=="M") {
+            (1..(int) t*12).each {
+                calendar.add(Calendar.MONTH, 1)
+                list.add(calendar.getTime())
+            }
+        }
+        return list
     }
 }

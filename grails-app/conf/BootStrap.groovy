@@ -29,6 +29,14 @@ class BootStrap {
 
         Department department=Department.findByDeptName("销售部")?:new Department(deptName:"销售部",buildDate:new Date()).save(failOnError: true)
 
+//        /* 添加角色数据  */
+//        [
+//                new Role(name: '总监'),new Role(name: '经理')
+//        ]
+//        .each {
+//            it.save(flush: true)
+//        }
+
         def user1 = User.findByUsername('admin') ?: new User(
                 username: 'admin',
                 password: 'admin',
@@ -141,9 +149,9 @@ class BootStrap {
         new TypeConfig(type: 7,mapName:"募集",mapValue: 3).save(failOnError: true)
         new TypeConfig(type: 7,mapName:"其它",mapValue: 4).save(failOnError: true)
         //部门的职能
-        new TypeConfig(type:8,mapName: "管理",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type:8,mapName: "销售",mapValue: 2).save(failOnError: true)
-        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
+        new TypeConfig(type:8,mapName: "管理",mapValue: 1,description: "默认职能").save(failOnError: true)
+        new TypeConfig(type:8,mapName: "销售",mapValue: 2,description: "基金销售部门选择此职能").save(failOnError: true)
+//        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
 
         //权限数据写入
         Resource jj=new Resource(name:"基金",objectName: "Fund").save(failOnError: true)

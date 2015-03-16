@@ -13,6 +13,7 @@ import org.json.JSONObject
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -180,7 +181,7 @@ class InvestmentArchivesCollectionResource {
         }
         if (dto.dqrq == null || dto.dqrq <= dto.rgrq) error.dqrq = "到期日期不合法"
 
-        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
+//        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
 
         def contract = Contract.findByHtbh(dto.contractNum)
         if (contract != null && contract.fund.id != dto.fund.id) {
@@ -222,10 +223,14 @@ class InvestmentArchivesCollectionResource {
                 Customer cus = null
                 if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
+
                     CustomerArchives cusa = CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
+
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
+                        customerArchives.zch=""
+                        customerArchives.fddbr=""
                         customerArchives.save(failOnError: true)
                     }
 //                    }else{
@@ -242,9 +247,16 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto = investmentArchivesResourceService.create(dto)
                 dto.archiveNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
+                //付息时间新增
+                List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
+                int i=1
+                times.each {
+                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
+                    dto.addToPayTimes(payTime)
+                    i++
+                }
                 result = JsonResult.success(dto)
 
             } catch (Exception e) {
@@ -279,6 +291,20 @@ class InvestmentArchivesCollectionResource {
 
 
 
+    }
+
+    @GET
+    @Path('/GetPayTimes')
+    Response getPayTimes(@QueryParam('startTime') String startTime,
+                         @QueryParam('qx') String qx,
+                         @QueryParam('fxfs') String fxfs) {
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startTime);
+            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date,qx,fxfs))
+        } catch (Exception e) {
+            print(e)
+            ok JsonResult.error(e.message)
+        }
     }
 
     @GET
@@ -383,26 +409,25 @@ class InvestmentArchivesCollectionResource {
     }
 
     @GET
+    @Path('/getyy')
+    Response Getyy(){
+        ok JsonResult.success("ok")
+    }
+
+    @GET
     @Path('/getYield')
     Response getYield(@QueryParam('fundid') Long fundid,
                       @QueryParam('managerid') Long managerid,
                       @QueryParam('investment') BigDecimal investment,
                       @QueryParam('vers') String vers) {
-
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
         def gy
         try {
             gy = GetYieldService.getYield(fundid, managerid, investment, vers)
             ok JsonResult.success(gy)
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
             print(e)
             ok JsonResult.error(e.message)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", gy)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @POST

@@ -122,7 +122,6 @@ class FundCollectionResource {
         def fund
         String s="1"
         try {
-            print("read all fund")
             print(fundResourceService.seachByCriteria("fundNo='F201501311'",[max: 10, offset: 5]))
             fund = fundResourceService.readAll()
         }catch (Exception e){

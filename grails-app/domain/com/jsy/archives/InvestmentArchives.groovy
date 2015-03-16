@@ -100,12 +100,15 @@ class InvestmentArchives {
 
     //业务和客户收益分配
     //附件
-    static hasMany = [ywtcs:UserCommision,gltcs:UserCommision,customerCommision:CustomerCommision,uploadFiles:UploadFile]
+    static hasMany = [ywtcs:UserCommision,gltcs:UserCommision,customerCommision:CustomerCommision,uploadFiles:UploadFile,payTimes:PayTime]
 
     //档案状态 //0是正常的//1到期转投2未到期转投3基金续投申请4退伙申请
     int dazt=0
     //档案状态 //0新建，1正常，2存档
     int status=0
+
+    //能否兑付，要入库后
+    boolean yrk=false
 
     static constraints = {
         archiveNum unique: true

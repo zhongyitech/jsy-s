@@ -40,13 +40,13 @@ class UserCollectionResource {
         JSONObject jsdd = new JSONObject()
         JSONObject rlist = new JSONObject()
         try {
+//            JSONArray ja = new JSONArray(rolelist)
             dd = userResourceService.create(dto)
-            print(dd.properties)
-            JSONArray ja = new JSONArray(rolelist)
-            print("ja.size = " + ja.length())
-            for (int i = 0; i < ja.length(); i++) {
+            String[] ia = rolelist.split(',')
+            print("ja.size = " + ia.length)
+            for (int i = 0; i < ia.length; i++) {
                 def r
-                r = Role.get(ja.get(i).getAt("id"))
+                r = Role.get(ia[i])
                 UserRole.create(dd, r).save(failOnError: true)
                 rlist.put("" + i + "", r)
             }
@@ -119,7 +119,7 @@ class UserCollectionResource {
 
     @GET
     @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String username,@QueryParam('deparmentid') int id) {
+    Response findByNameLike(@QueryParam('params') String username, @QueryParam('deparmentid') int id) {
         def users = User.findAllByUsernameLikeOrChainNameLike("%" + username + "%", "%" + username + "%")
         JSONArray jsonArray = new JSONArray()
         users.each {
@@ -156,11 +156,12 @@ class UserCollectionResource {
     Response allDepartmentLeader() {
         try {
             //职能为销售部门
-            def typeconfig = TypeConfig.findByTypeAndMapValue(8,2)
+            def typeconfig = TypeConfig.findByTypeAndMapValue(8, 2)
             def dep = Department.findAllByPerformance(typeconfig);
             def result = new ArrayList<User>();
             dep.each {
-                result.add(it.leader);
+                if (it.leader != null)
+                    result.add(it.leader);
             }
             ok JsonResult.success(result)
         }
@@ -227,7 +228,7 @@ class UserCollectionResource {
         }
 //        result.put("rest_status", restStatus)
 //        result.put("rest_result", users as JSON)
-        return Response.ok(result)
+        return Response.ok(result).status(RESPONSE_STATUS_SUC).build()
     }
 
     /**
@@ -283,7 +284,7 @@ class UserCollectionResource {
      */
     @GET
     @Path('/findUserLeader')
-    Response findUserLeader(@QueryParam('uid') String uid) {
+    Response findUserLeader(@QueryParam('uid') Long uid) {
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
         def users
@@ -294,13 +295,18 @@ class UserCollectionResource {
 
             users = User.get(uid)
             print(users.properties)
-            leaders.id = users.department.leader.id
-            leaders.chainName = users.department.leader.chainName
-            leaders.username = users.department.leader.username
+            if (users && users.department && users.department.leader) {
+                leaders.id = users.department.leader.id
+                leaders.chainName = users.department.leader.chainName
+                leaders.username = users.department.leader.username
+                ok JsonResult.success(leaders)
+
+            }else{
+                ok JsonResult.success(null)
+            }
 //            result.put("rest_result", leaders as JSON)
 //            result.put("rest_status", restStatus)
 //            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-            ok JsonResult.success(leaders)
 
         } catch (Exception e) {
 //            restStatus = REST_STATUS_FAI
@@ -322,52 +328,24 @@ class UserCollectionResource {
      */
     @POST
     Response update(User dto, @QueryParam('id') Long id, @QueryParam('rolelist') String rolelist) {
-        print("id = " + id)
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def dd
-        JSONObject jsdd = new JSONObject()
-        JSONObject rlist = new JSONObject()
+
+        if (id == null || id == 0) {
+            return Response.ok(JsonResult.error("id is null or 0"))
+        }
         try {
-            dd = userResourceService.update(dto, id)
-            def ur = UserRole.findAllByUser(User.get(id))
-            if (ur) {
-                ur.each {
-                    print("delete " + it)
-                    it.delete()
 
+            def roles = new ArrayList<Long>()
+            if (rolelist != null && rolelist != "") {
+                rolelist.split(",")
+                        .each {
+                    roles.add(Long.parseLong(it))
                 }
             }
+            def obj = userResourceService.update(dto, id, roles)
+            ok JsonResult.success(obj)
 
-            JSONArray ja = new JSONArray(rolelist)
-            print("ja.size = " + ja.length())
-            for (int i = 0; i < ja.length(); i++) {
-                def r
-                r = Role.get(ja.get(i).getAt("id"))
-                print("r = " + r)
-                if (UserRole.exists(dd.id, r.id)) {
-                    print("UserRole: " + dd + " and " + r + " allready exist!")
-//                    UserRole.create(dd,r,true).save(failOnError: true)
-                } else {
-                    print(UserRole.findByUserAndRole(dd, r) + " " + UserRole.exists(dd.id, r.id))
-//                    print("UserRole: "+dd+" and "+r+" allready exist!")
-                    UserRole.create(dd, r)//.save(failOnError: true)
-                }
-
-                rlist.put("" + i + "", r as JSON)
-            }
-            jsdd.put("User", dd as JSON)
-            jsdd.put("Role", rlist)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", jsdd)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
         } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dd as JSON)
-            return Response.ok(result.toString()).status(500).build()
+            ok JsonResult.error(e.message)
         }
     }
 
@@ -388,7 +366,7 @@ class UserCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", ia as JSON)
             result.put("rest_total", total)
-            ok JsonResult.success(result)
+            ok JsonResult.success(result.toString())
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             print(e)
@@ -398,7 +376,6 @@ class UserCollectionResource {
             result.put("rest_total", total)
             ok JsonResult.error(e.message)
         }
-
     }
 
     /**

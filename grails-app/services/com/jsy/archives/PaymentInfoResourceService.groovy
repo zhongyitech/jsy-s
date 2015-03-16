@@ -256,19 +256,19 @@ class PaymentInfoResourceService {
         }
     }
 
-    //检测投资档案是否生成兑换申请
+    //新的生成兑付申请
     def addPaymentInfo(){
         List<InvestmentArchives> investmentArchives=InvestmentArchives.findAllByStopPay(false)
         investmentArchives.each {
-            int i=PaymentInfo.findAllByArchivesId(it.id).size()
-            if(it.customerCommision.size()==0&&it.customer!=null&&it.status==1){
-                if (i == 0) {
-                    if (it.fxsj1 && it.fxsj1.before(new Date())) {
-                        //根据档案的客户分配
-                            //新增一条记录
+            int t=PaymentInfo.findAllByArchivesId(it.id).size()
+            if(it.customerCommision.size()==0&&it.customer!=null&&it.status==1&&it.payTimes.size()>t){
+                it.payTimes.each {p->
+                    if(p.px==t+1&&p.sffx==false){
+                        if (p.fxsj.before(new Date())) {
+                            //根据档案的客户分配，新增一条记录
                             PaymentInfo paymentInfo = new PaymentInfo()
                             paymentInfo.archivesId = it.id
-                            paymentInfo.fxsj = it.fxsj1
+                            paymentInfo.fxsj = p.fxsj
                             paymentInfo.fundName = it.fund.fundName
                             paymentInfo.htbh = it.archiveNum
                             paymentInfo.customerName = it.customer.name
@@ -276,349 +276,29 @@ class PaymentInfoResourceService {
                             paymentInfo.tzqx = it.tzqx
                             paymentInfo.syl = it.nhsyl
                             paymentInfo.bmjl = it.bmjl.chainName
-                            if (it.fxfs == "N") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl
-                                //计算应付本金
-                                BigDecimal yfbj = it.bj
-                                paymentInfo.khh = it.customer.khh
-                                paymentInfo.yhzh = it.customer.yhzh
-                                paymentInfo.gj = it.customer.country
-                                paymentInfo.zjlx = it.customer.credentialsType
-                                paymentInfo.zjhm = it.customer.credentialsNumber
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
+                            paymentInfo.khh = it.customer.khh
+                            paymentInfo.yhzh = it.customer.yhzh
+                            paymentInfo.gj = it.customer.country
+                            paymentInfo.zjlx = it.customer.credentialsType
+                            paymentInfo.zjhm = it.customer.credentialsNumber
+                            //计算应付利息
+                            BigDecimal yflx = (it.tzje * it.nhsyl)/it.payTimes.size()
+                            paymentInfo.yflx = yflx
+                            //计算应付本金
+                            BigDecimal yfbj=0
+                            if(t==p.px+1) {
+                                yfbj = it.bj
+                            }
+                            paymentInfo.yfbj = yfbj
+                            paymentInfo.zj = yflx + yfbj
+                            paymentInfo.save(failOnError: true)
+                            //将这次付息改为已付
+                            p.sffx=true
+                            p.save(failOnError: true)
+                            if(t==p.px+1){
                                 //将档案表的付款状态改为付款完成
                                 it.stopPay = true
                                 it.save(failOnError: true)
-                            } else if (it.fxfs == "W") {
-                                //计算应付利息
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl*0.5
-                                //计算应付本金
-                                BigDecimal yfbj = 0
-                                paymentInfo.khh = it.customer.khh
-                                paymentInfo.yhzh = it.customer.yhzh
-                                paymentInfo.gj = it.customer.country
-                                paymentInfo.zjlx = it.customer.credentialsType
-                                paymentInfo.zjhm = it.customer.credentialsNumber
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            } else if (it.fxfs == "J") {
-                                //计算应付利息
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl*0.25
-                                //计算应付本金
-                                BigDecimal yfbj = 0
-                                paymentInfo.khh = it.customer.khh
-                                paymentInfo.yhzh = it.customer.yhzh
-                                paymentInfo.gj = it.customer.country
-                                paymentInfo.zjlx = it.customer.credentialsType
-                                paymentInfo.zjhm = it.customer.credentialsNumber
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            }
-                    }
-                } else if (i == 1) {
-                    if (it.fxsj2 && it.fxsj2.before(new Date())) {
-                        //根据档案的客户分配
-                            //新增一条记录
-                            PaymentInfo paymentInfo = new PaymentInfo()
-                            paymentInfo.archivesId = it.id
-                            paymentInfo.fxsj = it.fxsj1
-                            paymentInfo.fundName = it.fund.fundName
-                            paymentInfo.htbh = it.archiveNum
-                            paymentInfo.customerName = it.customer.name
-                            paymentInfo.tzje = it.tzje
-                            paymentInfo.tzqx = it.tzqx
-                            paymentInfo.syl = it.nhsyl
-                            paymentInfo.bmjl = it.bmjl.chainName
-                            if (it.fxfs == "W") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl*0.5
-                                //计算应付本金
-                                BigDecimal yfbj = it.bj
-                                paymentInfo.khh = it.customer.khh
-                                paymentInfo.yhzh = it.customer.yhzh
-                                paymentInfo.gj = it.customer.country
-                                paymentInfo.zjlx = it.customer.credentialsType
-                                paymentInfo.zjhm = it.customer.credentialsNumber
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                                //将档案表的付款状态改为付款完成
-                                it.stopPay = true
-                                it.save(failOnError: true)
-                            } else if (it.fxfs == "J") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl*0.25
-                                //计算应付本金
-                                BigDecimal yfbj = 0
-                                paymentInfo.khh = it.customer.khh
-                                paymentInfo.yhzh = it.customer.yhzh
-                                paymentInfo.gj = it.customer.country
-                                paymentInfo.zjlx = it.customer.credentialsType
-                                paymentInfo.zjhm = it.customer.credentialsNumber
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            }
-                    }
-                } else if (i == 2) {
-                    if (it.fxsj3 && it.fxsj3.before(new Date())) {
-                        //根据档案的客户分配
-                            //新增一条记录
-                            PaymentInfo paymentInfo = new PaymentInfo()
-                            paymentInfo.archivesId = it.id
-                            paymentInfo.fxsj = it.fxsj1
-                            paymentInfo.fundName = it.fund.fundName
-                            paymentInfo.htbh = it.archiveNum
-                            paymentInfo.customerName = it.customer.name
-                            paymentInfo.tzje = it.tzje
-                            paymentInfo.tzqx = it.tzqx
-                            paymentInfo.syl = it.nhsyl
-                            paymentInfo.bmjl = it.bmjl.chainName
-                            if (it.fxfs == "J") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl*0.25
-                                //计算应付本金
-                                BigDecimal yfbj = 0
-                                paymentInfo.khh = it.customer.khh
-                                paymentInfo.yhzh = it.customer.yhzh
-                                paymentInfo.gj = it.customer.country
-                                paymentInfo.zjlx = it.customer.credentialsType
-                                paymentInfo.zjhm = it.customer.credentialsNumber
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            }
-                    }
-                } else if (i == 3) {
-                    if (it.fxsj4 && it.fxsj4.before(new Date())) {
-                        if (it.fxsj3 && it.fxsj3.before(new Date())) {
-                            //根据档案的客户分配
-                            it.customerCommision.each { cc ->
-                                //新增一条记录
-                                PaymentInfo paymentInfo = new PaymentInfo()
-                                paymentInfo.archivesId = it.id
-                                paymentInfo.fxsj = it.fxsj1
-                                paymentInfo.fundName = it.fund.fundName
-                                paymentInfo.htbh = it.archiveNum
-                                paymentInfo.customerName = it.customer.name
-                                paymentInfo.tzje = it.tzje
-                                paymentInfo.tzqx = it.tzqx
-                                paymentInfo.syl = it.nhsyl
-                                paymentInfo.bmjl = it.bmjl.chainName
-                                if (it.fxfs == "J") {
-                                    //计算应付利息
-                                    BigDecimal yflx = it.tzje * it.nhsyl*0.25
-                                    //计算应付本金
-                                    BigDecimal yfbj = it.bj
-                                    paymentInfo.khh = it.customer.khh
-                                    paymentInfo.yhzh = it.customer.yhzh
-                                    paymentInfo.gj = it.customer.country
-                                    paymentInfo.zjlx = it.customer.credentialsType
-                                    paymentInfo.zjhm = it.customer.credentialsNumber
-                                    paymentInfo.yflx = yflx
-                                    paymentInfo.yfbj = yfbj
-                                    paymentInfo.zj = yflx + yfbj
-                                    paymentInfo.save(failOnError: true)
-                                    //将档案表的付款状态改为付款完成
-                                    it.stopPay = true
-                                    it.save(failOnError: true)
-                                }
-                            }
-                        }
-                    }
-                }
-            }else {
-                if (i == 0) {
-                    if (it.fxsj1 && it.fxsj1.before(new Date())) {
-                        //根据档案的客户分配
-                        it.customerCommision.each { cc ->
-                            //新增一条记录
-                            PaymentInfo paymentInfo = new PaymentInfo()
-                            paymentInfo.archivesId = it.id
-                            paymentInfo.fxsj = it.fxsj1
-                            paymentInfo.fundName = it.fund.fundName
-                            paymentInfo.htbh = it.archiveNum
-                            paymentInfo.customerName = it.customer.name
-                            paymentInfo.tzje = it.tzje
-                            paymentInfo.tzqx = it.tzqx
-                            paymentInfo.syl = it.nhsyl
-                            paymentInfo.bmjl = it.bmjl.chainName
-                            if (it.fxfs == "N") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl
-                                //计算应付本金
-                                BigDecimal yfbj = it.tzje * cc.bjbl
-                                paymentInfo.khh = cc.khh
-                                paymentInfo.yhzh = cc.yhzh
-                                paymentInfo.gj = cc.gj
-                                paymentInfo.zjlx = cc.zjlx
-                                paymentInfo.zjhm = cc.zjhm
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                                //将档案表的付款状态改为付款完成
-                                it.stopPay = true
-                                it.save(failOnError: true)
-                            } else if (it.fxfs == "W") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.5
-                                //计算应付本金
-                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.5
-                                paymentInfo.khh = cc.khh
-                                paymentInfo.yhzh = cc.yhzh
-                                paymentInfo.gj = cc.gj
-                                paymentInfo.zjlx = cc.zjlx
-                                paymentInfo.zjhm = cc.zjhm
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            } else if (it.fxfs == "J") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
-                                //计算应付本金
-                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
-                                paymentInfo.khh = cc.khh
-                                paymentInfo.yhzh = cc.yhzh
-                                paymentInfo.gj = cc.gj
-                                paymentInfo.zjlx = cc.zjlx
-                                paymentInfo.zjhm = cc.zjhm
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            }
-                        }
-                    }
-                } else if (i == 1) {
-                    if (it.fxsj2 && it.fxsj2.before(new Date())) {
-                        //根据档案的客户分配
-                        it.customerCommision.each { cc ->
-                            //新增一条记录
-                            PaymentInfo paymentInfo = new PaymentInfo()
-                            paymentInfo.archivesId = it.id
-                            paymentInfo.fxsj = it.fxsj1
-                            paymentInfo.fundName = it.fund.fundName
-                            paymentInfo.htbh = it.archiveNum
-                            paymentInfo.customerName = it.customer.name
-                            paymentInfo.tzje = it.tzje
-                            paymentInfo.tzqx = it.tzqx
-                            paymentInfo.syl = it.nhsyl
-                            paymentInfo.bmjl = it.bmjl.chainName
-                            if (it.fxfs == "W") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.5
-                                //计算应付本金
-                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.5
-                                paymentInfo.khh = cc.khh
-                                paymentInfo.yhzh = cc.yhzh
-                                paymentInfo.gj = cc.gj
-                                paymentInfo.zjlx = cc.zjlx
-                                paymentInfo.zjhm = cc.zjhm
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                                //将档案表的付款状态改为付款完成
-                                it.stopPay = true
-                                it.save(failOnError: true)
-                            } else if (it.fxfs == "J") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
-                                //计算应付本金
-                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
-                                paymentInfo.khh = cc.khh
-                                paymentInfo.yhzh = cc.yhzh
-                                paymentInfo.gj = cc.gj
-                                paymentInfo.zjlx = cc.zjlx
-                                paymentInfo.zjhm = cc.zjhm
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            }
-                        }
-                    }
-                } else if (i == 2) {
-                    if (it.fxsj3 && it.fxsj3.before(new Date())) {
-                        //根据档案的客户分配
-                        it.customerCommision.each { cc ->
-                            //新增一条记录
-                            PaymentInfo paymentInfo = new PaymentInfo()
-                            paymentInfo.archivesId = it.id
-                            paymentInfo.fxsj = it.fxsj1
-                            paymentInfo.fundName = it.fund.fundName
-                            paymentInfo.htbh = it.archiveNum
-                            paymentInfo.customerName = it.customer.name
-                            paymentInfo.tzje = it.tzje
-                            paymentInfo.tzqx = it.tzqx
-                            paymentInfo.syl = it.nhsyl
-                            paymentInfo.bmjl = it.bmjl.chainName
-                            if (it.fxfs == "J") {
-                                //计算应付利息
-                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
-                                //计算应付本金
-                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
-                                paymentInfo.khh = cc.khh
-                                paymentInfo.yhzh = cc.yhzh
-                                paymentInfo.gj = cc.gj
-                                paymentInfo.zjlx = cc.zjlx
-                                paymentInfo.zjhm = cc.zjhm
-                                paymentInfo.yflx = yflx
-                                paymentInfo.yfbj = yfbj
-                                paymentInfo.zj = yflx + yfbj
-                                paymentInfo.save(failOnError: true)
-                            }
-                        }
-                    }
-                } else if (i == 3) {
-                    if (it.fxsj4 && it.fxsj4.before(new Date())) {
-                        if (it.fxsj3 && it.fxsj3.before(new Date())) {
-                            //根据档案的客户分配
-                            it.customerCommision.each { cc ->
-                                //新增一条记录
-                                PaymentInfo paymentInfo = new PaymentInfo()
-                                paymentInfo.archivesId = it.id
-                                paymentInfo.fxsj = it.fxsj1
-                                paymentInfo.fundName = it.fund.fundName
-                                paymentInfo.htbh = it.archiveNum
-                                paymentInfo.customerName = it.customer.name
-                                paymentInfo.tzje = it.tzje
-                                paymentInfo.tzqx = it.tzqx
-                                paymentInfo.syl = it.nhsyl
-                                paymentInfo.bmjl = it.bmjl.chainName
-                                if (it.fxfs == "J") {
-                                    //计算应付利息
-                                    BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
-                                    //计算应付本金
-                                    BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
-                                    paymentInfo.khh = cc.khh
-                                    paymentInfo.yhzh = cc.yhzh
-                                    paymentInfo.gj = cc.gj
-                                    paymentInfo.zjlx = cc.zjlx
-                                    paymentInfo.zjhm = cc.zjhm
-                                    paymentInfo.yflx = yflx
-                                    paymentInfo.yfbj = yfbj
-                                    paymentInfo.zj = yflx + yfbj
-                                    paymentInfo.save(failOnError: true)
-                                    //将档案表的付款状态改为付款完成
-                                    it.stopPay = true
-                                    it.save(failOnError: true)
-                                }
                             }
                         }
                     }
@@ -626,6 +306,377 @@ class PaymentInfoResourceService {
             }
         }
     }
+
+    //检测投资档案是否生成兑换申请
+//    def addPaymentInfo(){
+//        List<InvestmentArchives> investmentArchives=InvestmentArchives.findAllByStopPay(false)
+//        investmentArchives.each {
+//            int i=PaymentInfo.findAllByArchivesId(it.id).size()
+//            if(it.customerCommision.size()==0&&it.customer!=null&&it.status==1){
+//                if (i == 0) {
+//                    if (it.fxsj1 && it.fxsj1.before(new Date())) {
+//                        //根据档案的客户分配
+//                            //新增一条记录
+//                            PaymentInfo paymentInfo = new PaymentInfo()
+//                            paymentInfo.archivesId = it.id
+//                            paymentInfo.fxsj = it.fxsj1
+//                            paymentInfo.fundName = it.fund.fundName
+//                            paymentInfo.htbh = it.archiveNum
+//                            paymentInfo.customerName = it.customer.name
+//                            paymentInfo.tzje = it.tzje
+//                            paymentInfo.tzqx = it.tzqx
+//                            paymentInfo.syl = it.nhsyl
+//                            paymentInfo.bmjl = it.bmjl.chainName
+//                            if (it.fxfs == "N") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.bj
+//                                paymentInfo.khh = it.customer.khh
+//                                paymentInfo.yhzh = it.customer.yhzh
+//                                paymentInfo.gj = it.customer.country
+//                                paymentInfo.zjlx = it.customer.credentialsType
+//                                paymentInfo.zjhm = it.customer.credentialsNumber
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                                //将档案表的付款状态改为付款完成
+//                                it.stopPay = true
+//                                it.save(failOnError: true)
+//                            } else if (it.fxfs == "W") {
+//                                //计算应付利息
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl*0.5
+//                                //计算应付本金
+//                                BigDecimal yfbj = 0
+//                                paymentInfo.khh = it.customer.khh
+//                                paymentInfo.yhzh = it.customer.yhzh
+//                                paymentInfo.gj = it.customer.country
+//                                paymentInfo.zjlx = it.customer.credentialsType
+//                                paymentInfo.zjhm = it.customer.credentialsNumber
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            } else if (it.fxfs == "J") {
+//                                //计算应付利息
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl*0.25
+//                                //计算应付本金
+//                                BigDecimal yfbj = 0
+//                                paymentInfo.khh = it.customer.khh
+//                                paymentInfo.yhzh = it.customer.yhzh
+//                                paymentInfo.gj = it.customer.country
+//                                paymentInfo.zjlx = it.customer.credentialsType
+//                                paymentInfo.zjhm = it.customer.credentialsNumber
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            }
+//                    }
+//                } else if (i == 1) {
+//                    if (it.fxsj2 && it.fxsj2.before(new Date())) {
+//                        //根据档案的客户分配
+//                            //新增一条记录
+//                            PaymentInfo paymentInfo = new PaymentInfo()
+//                            paymentInfo.archivesId = it.id
+//                            paymentInfo.fxsj = it.fxsj1
+//                            paymentInfo.fundName = it.fund.fundName
+//                            paymentInfo.htbh = it.archiveNum
+//                            paymentInfo.customerName = it.customer.name
+//                            paymentInfo.tzje = it.tzje
+//                            paymentInfo.tzqx = it.tzqx
+//                            paymentInfo.syl = it.nhsyl
+//                            paymentInfo.bmjl = it.bmjl.chainName
+//                            if (it.fxfs == "W") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl*0.5
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.bj
+//                                paymentInfo.khh = it.customer.khh
+//                                paymentInfo.yhzh = it.customer.yhzh
+//                                paymentInfo.gj = it.customer.country
+//                                paymentInfo.zjlx = it.customer.credentialsType
+//                                paymentInfo.zjhm = it.customer.credentialsNumber
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                                //将档案表的付款状态改为付款完成
+//                                it.stopPay = true
+//                                it.save(failOnError: true)
+//                            } else if (it.fxfs == "J") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl*0.25
+//                                //计算应付本金
+//                                BigDecimal yfbj = 0
+//                                paymentInfo.khh = it.customer.khh
+//                                paymentInfo.yhzh = it.customer.yhzh
+//                                paymentInfo.gj = it.customer.country
+//                                paymentInfo.zjlx = it.customer.credentialsType
+//                                paymentInfo.zjhm = it.customer.credentialsNumber
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            }
+//                    }
+//                } else if (i == 2) {
+//                    if (it.fxsj3 && it.fxsj3.before(new Date())) {
+//                        //根据档案的客户分配
+//                            //新增一条记录
+//                            PaymentInfo paymentInfo = new PaymentInfo()
+//                            paymentInfo.archivesId = it.id
+//                            paymentInfo.fxsj = it.fxsj1
+//                            paymentInfo.fundName = it.fund.fundName
+//                            paymentInfo.htbh = it.archiveNum
+//                            paymentInfo.customerName = it.customer.name
+//                            paymentInfo.tzje = it.tzje
+//                            paymentInfo.tzqx = it.tzqx
+//                            paymentInfo.syl = it.nhsyl
+//                            paymentInfo.bmjl = it.bmjl.chainName
+//                            if (it.fxfs == "J") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl*0.25
+//                                //计算应付本金
+//                                BigDecimal yfbj = 0
+//                                paymentInfo.khh = it.customer.khh
+//                                paymentInfo.yhzh = it.customer.yhzh
+//                                paymentInfo.gj = it.customer.country
+//                                paymentInfo.zjlx = it.customer.credentialsType
+//                                paymentInfo.zjhm = it.customer.credentialsNumber
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            }
+//                    }
+//                } else if (i == 3) {
+//                    if (it.fxsj4 && it.fxsj4.before(new Date())) {
+//                        if (it.fxsj3 && it.fxsj3.before(new Date())) {
+//                            //根据档案的客户分配
+//                            it.customerCommision.each { cc ->
+//                                //新增一条记录
+//                                PaymentInfo paymentInfo = new PaymentInfo()
+//                                paymentInfo.archivesId = it.id
+//                                paymentInfo.fxsj = it.fxsj1
+//                                paymentInfo.fundName = it.fund.fundName
+//                                paymentInfo.htbh = it.archiveNum
+//                                paymentInfo.customerName = it.customer.name
+//                                paymentInfo.tzje = it.tzje
+//                                paymentInfo.tzqx = it.tzqx
+//                                paymentInfo.syl = it.nhsyl
+//                                paymentInfo.bmjl = it.bmjl.chainName
+//                                if (it.fxfs == "J") {
+//                                    //计算应付利息
+//                                    BigDecimal yflx = it.tzje * it.nhsyl*0.25
+//                                    //计算应付本金
+//                                    BigDecimal yfbj = it.bj
+//                                    paymentInfo.khh = it.customer.khh
+//                                    paymentInfo.yhzh = it.customer.yhzh
+//                                    paymentInfo.gj = it.customer.country
+//                                    paymentInfo.zjlx = it.customer.credentialsType
+//                                    paymentInfo.zjhm = it.customer.credentialsNumber
+//                                    paymentInfo.yflx = yflx
+//                                    paymentInfo.yfbj = yfbj
+//                                    paymentInfo.zj = yflx + yfbj
+//                                    paymentInfo.save(failOnError: true)
+//                                    //将档案表的付款状态改为付款完成
+//                                    it.stopPay = true
+//                                    it.save(failOnError: true)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }else {
+//                if (i == 0) {
+//                    if (it.fxsj1 && it.fxsj1.before(new Date())) {
+//                        //根据档案的客户分配
+//                        it.customerCommision.each { cc ->
+//                            //新增一条记录
+//                            PaymentInfo paymentInfo = new PaymentInfo()
+//                            paymentInfo.archivesId = it.id
+//                            paymentInfo.fxsj = it.fxsj1
+//                            paymentInfo.fundName = it.fund.fundName
+//                            paymentInfo.htbh = it.archiveNum
+//                            paymentInfo.customerName = it.customer.name
+//                            paymentInfo.tzje = it.tzje
+//                            paymentInfo.tzqx = it.tzqx
+//                            paymentInfo.syl = it.nhsyl
+//                            paymentInfo.bmjl = it.bmjl.chainName
+//                            if (it.fxfs == "N") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.tzje * cc.bjbl
+//                                paymentInfo.khh = cc.khh
+//                                paymentInfo.yhzh = cc.yhzh
+//                                paymentInfo.gj = cc.gj
+//                                paymentInfo.zjlx = cc.zjlx
+//                                paymentInfo.zjhm = cc.zjhm
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                                //将档案表的付款状态改为付款完成
+//                                it.stopPay = true
+//                                it.save(failOnError: true)
+//                            } else if (it.fxfs == "W") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.5
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.5
+//                                paymentInfo.khh = cc.khh
+//                                paymentInfo.yhzh = cc.yhzh
+//                                paymentInfo.gj = cc.gj
+//                                paymentInfo.zjlx = cc.zjlx
+//                                paymentInfo.zjhm = cc.zjhm
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            } else if (it.fxfs == "J") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
+//                                paymentInfo.khh = cc.khh
+//                                paymentInfo.yhzh = cc.yhzh
+//                                paymentInfo.gj = cc.gj
+//                                paymentInfo.zjlx = cc.zjlx
+//                                paymentInfo.zjhm = cc.zjhm
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            }
+//                        }
+//                    }
+//                } else if (i == 1) {
+//                    if (it.fxsj2 && it.fxsj2.before(new Date())) {
+//                        //根据档案的客户分配
+//                        it.customerCommision.each { cc ->
+//                            //新增一条记录
+//                            PaymentInfo paymentInfo = new PaymentInfo()
+//                            paymentInfo.archivesId = it.id
+//                            paymentInfo.fxsj = it.fxsj1
+//                            paymentInfo.fundName = it.fund.fundName
+//                            paymentInfo.htbh = it.archiveNum
+//                            paymentInfo.customerName = it.customer.name
+//                            paymentInfo.tzje = it.tzje
+//                            paymentInfo.tzqx = it.tzqx
+//                            paymentInfo.syl = it.nhsyl
+//                            paymentInfo.bmjl = it.bmjl.chainName
+//                            if (it.fxfs == "W") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.5
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.5
+//                                paymentInfo.khh = cc.khh
+//                                paymentInfo.yhzh = cc.yhzh
+//                                paymentInfo.gj = cc.gj
+//                                paymentInfo.zjlx = cc.zjlx
+//                                paymentInfo.zjhm = cc.zjhm
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                                //将档案表的付款状态改为付款完成
+//                                it.stopPay = true
+//                                it.save(failOnError: true)
+//                            } else if (it.fxfs == "J") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
+//                                paymentInfo.khh = cc.khh
+//                                paymentInfo.yhzh = cc.yhzh
+//                                paymentInfo.gj = cc.gj
+//                                paymentInfo.zjlx = cc.zjlx
+//                                paymentInfo.zjhm = cc.zjhm
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            }
+//                        }
+//                    }
+//                } else if (i == 2) {
+//                    if (it.fxsj3 && it.fxsj3.before(new Date())) {
+//                        //根据档案的客户分配
+//                        it.customerCommision.each { cc ->
+//                            //新增一条记录
+//                            PaymentInfo paymentInfo = new PaymentInfo()
+//                            paymentInfo.archivesId = it.id
+//                            paymentInfo.fxsj = it.fxsj1
+//                            paymentInfo.fundName = it.fund.fundName
+//                            paymentInfo.htbh = it.archiveNum
+//                            paymentInfo.customerName = it.customer.name
+//                            paymentInfo.tzje = it.tzje
+//                            paymentInfo.tzqx = it.tzqx
+//                            paymentInfo.syl = it.nhsyl
+//                            paymentInfo.bmjl = it.bmjl.chainName
+//                            if (it.fxfs == "J") {
+//                                //计算应付利息
+//                                BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
+//                                //计算应付本金
+//                                BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
+//                                paymentInfo.khh = cc.khh
+//                                paymentInfo.yhzh = cc.yhzh
+//                                paymentInfo.gj = cc.gj
+//                                paymentInfo.zjlx = cc.zjlx
+//                                paymentInfo.zjhm = cc.zjhm
+//                                paymentInfo.yflx = yflx
+//                                paymentInfo.yfbj = yfbj
+//                                paymentInfo.zj = yflx + yfbj
+//                                paymentInfo.save(failOnError: true)
+//                            }
+//                        }
+//                    }
+//                } else if (i == 3) {
+//                    if (it.fxsj4 && it.fxsj4.before(new Date())) {
+//                        if (it.fxsj3 && it.fxsj3.before(new Date())) {
+//                            //根据档案的客户分配
+//                            it.customerCommision.each { cc ->
+//                                //新增一条记录
+//                                PaymentInfo paymentInfo = new PaymentInfo()
+//                                paymentInfo.archivesId = it.id
+//                                paymentInfo.fxsj = it.fxsj1
+//                                paymentInfo.fundName = it.fund.fundName
+//                                paymentInfo.htbh = it.archiveNum
+//                                paymentInfo.customerName = it.customer.name
+//                                paymentInfo.tzje = it.tzje
+//                                paymentInfo.tzqx = it.tzqx
+//                                paymentInfo.syl = it.nhsyl
+//                                paymentInfo.bmjl = it.bmjl.chainName
+//                                if (it.fxfs == "J") {
+//                                    //计算应付利息
+//                                    BigDecimal yflx = it.tzje * it.nhsyl * cc.lxbl * 0.25
+//                                    //计算应付本金
+//                                    BigDecimal yfbj = it.tzje * cc.bjbl * 0.25
+//                                    paymentInfo.khh = cc.khh
+//                                    paymentInfo.yhzh = cc.yhzh
+//                                    paymentInfo.gj = cc.gj
+//                                    paymentInfo.zjlx = cc.zjlx
+//                                    paymentInfo.zjhm = cc.zjhm
+//                                    paymentInfo.yflx = yflx
+//                                    paymentInfo.yfbj = yfbj
+//                                    paymentInfo.zj = yflx + yfbj
+//                                    paymentInfo.save(failOnError: true)
+//                                    //将档案表的付款状态改为付款完成
+//                                    it.stopPay = true
+//                                    it.save(failOnError: true)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     //同意生成兑付申请
     def toPay(Long payId) throws Exception{
