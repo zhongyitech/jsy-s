@@ -28,12 +28,10 @@ class InvestmentArchivesResourceService {
 
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
-
-//        obj?.payTimes.clear()
-//        obj?.save(flush: true)
-//        obj?.payTimes.each {
-//            it.delete(flush: true)
-//        }
+        obj.customer.delete()
+        obj?.payTimes.each {
+            it.delete(flush: true)
+        }
 
         //付息时间新增
 
