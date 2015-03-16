@@ -38,11 +38,12 @@ class CustomerArchives {
     //邮政编码
     String postalcode
 
-    //email
-    String email
-
     //通讯地址
     String callAddress
+
+
+    //email
+    String email
 
     //备注
     String remark
@@ -50,7 +51,12 @@ class CustomerArchives {
     //附件 & 银行账号
     static hasMany = [uploadFiles:UploadFile,bankAccount:BankAccount]
     static constraints = {
+        fddbr nullable: true
+        zch unllable: true
+        callAddress unllable: true
         email nullable:true
         remark nullable: true
+        telephone  nullable: true
+        postalcode  nullable: true
     }
 }

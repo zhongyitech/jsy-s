@@ -29,6 +29,14 @@ class BootStrap {
 
         Department department=Department.findByDeptName("销售部")?:new Department(deptName:"销售部",buildDate:new Date()).save(failOnError: true)
 
+//        /* 添加角色数据  */
+//        [
+//                new Role(name: '总监'),new Role(name: '经理')
+//        ]
+//        .each {
+//            it.save(flush: true)
+//        }
+
         def user1 = User.findByUsername('admin') ?: new User(
                 username: 'admin',
                 password: 'admin',

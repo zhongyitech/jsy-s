@@ -44,9 +44,9 @@ class PaymentInfo {
     //付息生产时间
     Date fxsj
 
-    //兑付状态
+    //兑付状态，true:已申请，false:未申请
     boolean  isAllow=false
-    //递交给OA的状态
+    //递交给OA的状态，0：未申请，1：已申请，2：申请处理了
     int type=0
 
     //备注
@@ -59,6 +59,13 @@ class PaymentInfo {
     Date zfsj=new Date()
     //对应待办任务id
     Long todoId
+
+
+    //common
+    Date dateCreated
+    Date lastUpdated
+
+
     def beforeInsert() {
         TodoConfig todoConfig=TodoConfig.findByMkbs(2)
         ToDoTask toDoTask=ToDoTask.create(todoConfig.mkmc,todoConfig.cljs,todoConfig.url)

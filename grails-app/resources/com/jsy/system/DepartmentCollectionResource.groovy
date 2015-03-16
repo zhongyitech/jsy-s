@@ -69,7 +69,7 @@ class DepartmentCollectionResource {
         def bfpr
         try {
             bfpr = departmentResourceService.create(dto)
-            ok JsonResult.success(bfpr)
+                ok JsonResult.success(bfpr)
         }catch (Exception e){
             e.printStackTrace()
             ok JsonResult.error(e.message)
@@ -90,7 +90,6 @@ class DepartmentCollectionResource {
             rc = departmentResourceService.update(dto)
             ok JsonResult.success(rc)
         }catch (Exception e){
-            restStatus = REST_STATUS_FAI
             print(e)
             ok JsonResult.error(e.message)
         }

@@ -9,7 +9,9 @@ class Role {
 	}
 
     def beforeInsert() {
-        authority=UUID.randomUUID().toString()
+		if(!authority){
+        	authority=UUID.randomUUID().toString()
+		}
     }
 
 	static constraints = {
