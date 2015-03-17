@@ -1,5 +1,7 @@
 package com.jsy.project
 
+import GsonTools.GsonTool
+import Models.MsgModel
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
@@ -14,6 +16,8 @@ import grails.gorm.*
 import org.json.JSONObject
 
 class ProjectResourceService {
+    public static String TAG = "ProjectResourceService ";
+
     WorkflowResourceService workflowResourceService
 
     def readAllForPage(String criteriaStr){
@@ -844,5 +848,46 @@ class ProjectResourceService {
         }
     }
 
+    /**
+     * 获取
+     * @param projectId
+     */
+    def getWorkflowTimeLimit(int projectId){
+        TSProject project;
+        try{
+            project = TSProject.get(projectId);
+            if(null == project){
+                return MsgModel.getErrorMsg(TAG + "TSProject Not Found  projectId "+projectId);
+            }
+        }catch (Exception ex){
+            println(TAG + " " + ex);
+            return MsgModel.getErrorMsg(TAG + ex);
+        }
 
+        try{
+            List<TSWorkflow> workflowList = TSWorkflow.findAllWhere(workflowProject:project);
+            if(workflowList == null){
+                return MsgModel.getErrorMsg(TAG + "TSWorkflow Not Found  projectId "+projectId);
+            }
+
+            if(workflowList.size() == 0){
+                return MsgModel.getErrorMsg(TAG + "TSWorkflow List size = 0 projectId "+projectId);
+            }
+
+            TSWorkflow workflow = workflowList.get(0);
+
+            List<TSWorkflowPhase> workflowPhaseList = TSWorkflowPhase.findAllWhere(phaseWorkflow:workflow);
+
+            if(workflowPhaseList == null){
+                return MsgModel.getErrorMsg(TAG + "TSWorkflowPhase not found TSWorkflow workflowId "+workflow.id);
+            }
+
+            String json = GsonTool.getTSWrolflowJson(workflowPhaseList);
+            return MsgModel.getSuccessMsg(json);
+        }catch (Exception ex){
+            println(TAG + " " + ex);
+            return MsgModel.getErrorMsg(TAG + ex);
+        }
+
+    }
 }

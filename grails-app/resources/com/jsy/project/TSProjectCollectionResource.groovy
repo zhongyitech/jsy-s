@@ -1,5 +1,7 @@
 package com.jsy.project
 
+import GsonTools.GsonTool
+import Models.MsgModel
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateNumberService
@@ -454,13 +456,8 @@ class TSProjectCollectionResource {
         JSONObject result = new JSONObject();
         JSONArray table = new JSONArray();
         String restStatus = "200";
-
-
         try{
-
-
 //            projectResourceService.completeGather(project,obj)
-
             result.put("rest_status", restStatus)
             result.put("rest_result", "")
             return Response.ok(result.toString()).status(200).build()
@@ -473,6 +470,16 @@ class TSProjectCollectionResource {
         }
     }
 
+    @GET
+    @Path('/getProjectWorkflow')
+    Response getProjectWorkflow(@QueryParam("projectId") int id){
+        MsgModel msg = projectResourceService.getWorkflowTimeLimit(id);
+        if(msg.isSuccess()){
+            return Response.ok(GsonTool.getMsgModelJson(msg)).status(200).build();
+        }else{
+            return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
+        }
+    }
 }
 
 
