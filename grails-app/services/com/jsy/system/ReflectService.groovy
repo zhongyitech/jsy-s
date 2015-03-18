@@ -59,7 +59,8 @@ class ReflectService {
                 if(obj.metaClass.hasProperty(obj,field))
                     result[field] = obj[field]
         }
-        return result.isEmpty() ? obj : result
+        if(result.isEmpty()) return obj;
+        if(!result.id&&obj.metaClass.hasProperty(obj,"id")) result["id"] = obj["id"]
+        return result;
     }
-
 }
