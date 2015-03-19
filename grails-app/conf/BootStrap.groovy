@@ -25,9 +25,13 @@ class BootStrap {
         }
 
 //        def users = User.findAllByUsername('')
+        //部门的职能
+        TypeConfig performance1 = new TypeConfig(type:8,mapName: "管理",mapValue: 1,description: "默认职能").save(failOnError: true)
+        TypeConfig performance2 = new TypeConfig(type:8,mapName: "销售",mapValue: 2,description: "基金销售部门选择此职能").save(failOnError: true)
+//        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
+        Department department=Department.findByDeptName("销售部")?:new Department(deptName:"销售部",buildDate:new Date(),performance:performance2)
+        department.save(failOnError: true)
 
-
-        Department department=Department.findByDeptName("销售部")?:new Department(deptName:"销售部",buildDate:new Date()).save(failOnError: true)
 
 //        /* 添加角色数据  */
 //        [
@@ -38,24 +42,36 @@ class BootStrap {
 //        }
 
         def user1 = User.findByUsername('admin') ?: new User(
+                skr:'oswaldl',
+                khh:'平安银行',
+                yhzh:'136541615646156',
                 username: 'admin',
                 password: 'admin',
                 department:department,
                 chainName: "张三",
                 enabled: true).save(flush: true)
         def user2 = User.findByUsername('pengyh') ?: new User(
+                skr:'rela',
+                khh:'平安银行',
+                yhzh:'52624623',
                 username: 'zhangj',
                 chainName: '张五',
                 password: 'zhangj',
                 department:department,
                 enabled: true).save(flush: true)
         def user3 = User.findByUsername('liujw') ?: new User(
+                skr:'zbua',
+                khh:'平安银行',
+                yhzh:'436461352352',
                 username: 'liujw',
                 chainName: '刘六',
                 password: 'liujw',
                 department:department,
                 enabled: true).save(flush: true)
         def user4 = User.findByUsername('li') ?: new User(
+                skr:'kgs',
+                khh:'平安银行',
+                yhzh:'465742632',
                 username: 'li',
                 chainName: '李四',
                 password: 'li',
@@ -148,10 +164,8 @@ class BootStrap {
         new TypeConfig(type: 7,mapName:"日常支出",mapValue: 2).save(failOnError: true)
         new TypeConfig(type: 7,mapName:"募集",mapValue: 3).save(failOnError: true)
         new TypeConfig(type: 7,mapName:"其它",mapValue: 4).save(failOnError: true)
-        //部门的职能
-        new TypeConfig(type:8,mapName: "管理",mapValue: 1,description: "默认职能").save(failOnError: true)
-        new TypeConfig(type:8,mapName: "销售",mapValue: 2,description: "基金销售部门选择此职能").save(failOnError: true)
-//        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
+
+
 
         //权限数据写入
         Resource jj=new Resource(name:"基金",objectName: "Fund").save(failOnError: true)
