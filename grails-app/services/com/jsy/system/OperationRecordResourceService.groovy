@@ -1,7 +1,8 @@
 package com.jsy.system
 
-import org.codehaus.groovy.grails.web.json.JSONObject
+import com.jsy.utility.DomainHelper
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
+
 
 class OperationRecordResourceService {
 
@@ -37,16 +38,8 @@ class OperationRecordResourceService {
         }
     }
 
-    def readAllForPage(Long pagesize,Long startposition,String queryparam){
-        if (null == queryparam){
-            queryparam = ""
-        }
-        JSONObject json = new JSONObject()
-//        OperationRecord.findAllByCzrLikeOrParamsLikeOrUrlLike("%"+queryparam+"%","%"+queryparam+"%","%"+queryparam+"%",[max: pagesize, offset: startposition])
-        json.put("page", OperationRecord.findAllByCzrLikeOrParamsLikeOrUrlLike("%"+queryparam+"%","%"+queryparam+"%","%"+queryparam+"%",[max: pagesize,sort: "id", order: "desc", offset: startposition]))
-        json.put("size", OperationRecord.findAllByCzrLikeOrParamsLikeOrUrlLike("%"+queryparam+"%","%"+queryparam+"%","%"+queryparam+"%").size())
-
-        return  json
-
+    def readAllForPage(int pagesize, int offset, def query) {
+        def dc = DomainHelper.getDetachedCriteria(OperationRecord, query)
+        return [data: dc.list([max: pagesize,offset: offset]),total:pagesize == 0 ? 0 : dc.count()]
     }
 }
