@@ -1,6 +1,7 @@
 package com.jsy.system
 
 import com.jsy.fundObject.Finfo
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 
 import static org.grails.jaxrs.response.Responses.*
@@ -39,28 +40,14 @@ class OperationRecordCollectionResource {
 
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
+    Response readAllForPage(Map arg) {
         print("operationRecordResourceService.readAllForPage()")
-        org.json.JSONObject result = new org.json.JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        org.json.JSONObject json
-        def fp
         try {
-            json = operationRecordResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            fp = json.get("page")
-            print(fp)
+            def result = operationRecordResourceService.readAllForPage(arg.pagesize, arg.startposition, arg.query)
+            ok JsonResult.success(result.data,result.total)
         }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
             print(e)
+            ok JsonResult.error(e.message)
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", fp as JSON)
-        result.put("rest_total", total)
-
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 }
