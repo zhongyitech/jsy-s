@@ -173,6 +173,7 @@ class BootStrap {
         Resource kh=new Resource(name:"客户",objectName: "Customer").save(failOnError: true)
         Resource yh=new Resource(name:"用户",objectName: "User").save(failOnError: true)
 
+        //User资源
         ResourceRole resourceRole=new ResourceRole(role: adminRole,resource:yh).save(failOnError: true)
         Property property1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
         Property property2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
@@ -184,6 +185,19 @@ class BootStrap {
         resourceRole.addToPropertys(property3)
         resourceRole.addToPropertys(property4)
         resourceRole.addToPropertys(property5)
+        //基金资源
+        ResourceRole resourceRole1=new ResourceRole(role: adminRole,resource:jj).save(failOnError: true)
+        Property property11=new Property(name:'fundName',title:'基金名',visible:true).save(failOnError: true)
+        Property property12=new Property(name:'fundNo',title:'基金编号',visible:true).save(failOnError: true)
+        Property property13=new Property(name:'raiseFunds',title:'预募规模',visible:true).save(failOnError: true)
+        Property property14=new Property(name:'khh',title:'开户行',visible:true).save(failOnError: true)
+        Property property15=new Property(name:'yhzh',title:'银行账户',visible:true).save(failOnError: true)
+        resourceRole1.addToPropertys(property11)
+        resourceRole1.addToPropertys(property12)
+        resourceRole1.addToPropertys(property13)
+        resourceRole1.addToPropertys(property14)
+        resourceRole1.addToPropertys(property15)
+        //客户资源
 
     }
 

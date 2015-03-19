@@ -73,6 +73,7 @@ class Customer {
     }
 
     static constraints = {
+        credentialsAddr nullable: true
         name nullable: true
         country nullable: true
         credentialsType nullable: true
