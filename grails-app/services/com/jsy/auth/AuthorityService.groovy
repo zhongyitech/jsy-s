@@ -24,7 +24,7 @@ class AuthorityService {
         }
         JSONArray jsonArray=new JSONArray()
         list.each {obj->
-            JSONObject jsonObject=new JSONObject()
+            def jsonObject=[:]
             obj.properties.each {
                 if(map.containsKey(it.key)){
                     jsonObject.put(it.key,it.value)
@@ -34,7 +34,6 @@ class AuthorityService {
             }
             jsonArray.put(jsonObject)
         }
-
         return jsonArray
     }
 
@@ -52,7 +51,7 @@ class AuthorityService {
                 }
             }
         }
-        JSONObject jsonObject=new JSONObject()
+        def jsonObject=[:]
         obj.properties.each {
             if(map.containsKey(it.key)){
                 jsonObject.put(it.key,it.value)
