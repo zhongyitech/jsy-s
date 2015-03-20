@@ -112,6 +112,6 @@ class UserResourceService {
         //todo: other code
 
         //按分页要求返回数据格式 [数据,总页数]
-        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total: pagesize == 0 ? 0 : dc.count()]
+        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total: query.startposition == 0 ? dc.count():0]
     }
 }
