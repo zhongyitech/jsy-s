@@ -1,6 +1,6 @@
 package com.jsy.auth
 
-import org.codehaus.groovy.grails.web.json.JSONObject
+import com.jsy.utility.DomainHelper
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 class UserResourceService {
@@ -27,13 +27,13 @@ class UserResourceService {
     }
 
     /**
-     *更新用户的信息
-     * @param dto   传递的参数
-     * @param id    用户的ID
-     * @roles       角色信息
-     * @return      返回用户信息
+     * 更新用户的信息
+     * @param dto 传递的参数
+     * @param id 用户的ID
+     * @roles 角色信息
+     * @return 返回用户信息
      */
-    def update(User dto, Long uid,List role) {
+    def update(User dto, Long uid, List role) {
         def obj = User.get(uid)
         if (!obj) {
             throw new DomainObjectNotFoundException(User.class, dto.id)
@@ -86,43 +86,32 @@ class UserResourceService {
         print(role)
 //        obj.save()
         role.each {
-            if(!Role.exists(it)){
-                throw new Exception("ID:"+it +" Not found!")
+            if (!Role.exists(it)) {
+                throw new Exception("ID:" + it + " Not found!")
             }
             print(uid)
-            if(!UserRole.exists(uid,it)){
-                def r=Role.get(it)
+            if (!UserRole.exists(uid, it)) {
+                def r = Role.get(it)
                 print(r)
-                UserRole.create(obj,r)
+                UserRole.create(obj, r)
             }
         }
         obj
     }
 
-    def delete(def id) {
+    def delete(Long id) {
         def obj = User.get(id)
-        if (obj) {
-            obj.delete()
-            return true
-        } else {
-            return false;
-        }
+        if (obj == null) return false
+        obj.delete()
+        return  true
     }
 
-    def readAllForPage(Long pagesize, Long startposition, String queryparam) {
-        JSONObject json = new JSONObject()
-        if (null == queryparam) {
+    def readAllForPage(def query) {
 
-            queryparam = ""
-        }
-//        参数：pagesize 每页数据条数
-//              startposition,查询起始位置
-//        def user = User.findAllByChinaNameLike(queryparam)
-        json.put("page", User.findAllByChainNameLikeOrUsernameLike("%" + queryparam + "%", "%" + queryparam + "%", [max: pagesize, sort: "id", order: "desc", offset: startposition]))
-        json.put("size", User.findAllByChainNameLikeOrUsernameLike("%" + queryparam + "%", "%" + queryparam + "%").size())
+        def dc = DomainHelper.getDetachedCriteria(User, query)
+        //todo: other code
 
-        return json
-
+        //按分页要求返回数据格式 [数据,总页数]
+        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total: pagesize == 0 ? 0 : dc.count()]
     }
-
 }

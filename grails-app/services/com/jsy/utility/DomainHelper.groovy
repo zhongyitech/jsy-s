@@ -8,11 +8,14 @@ import grails.gorm.DetachedCriteria
 class DomainHelper {
     public static DetachedCriteria getDetachedCriteria(Class domain, def query) {
         DetachedCriteria dc = new DetachedCriteria(domain)
-        Map condition = query.condition
-
+        if(query==null){
+            return dc;
+        }
         Map orderArg = query.order
+
         return dc.where {
             if (query.type == 'and') {
+                Map condition = query.condition
                 if (condition && condition != "") {
                     and {
                         condition.each {
@@ -27,12 +30,12 @@ class DomainHelper {
                     }
                 }
             } else {
-                def value = condition.value
-                if (value && value != "") {
+                //or
+                if (query.value && query.value != "") {
                     or {
-                        condition.fields.each {
+                        query.fields.each {
                             String item ->
-                                like(item, "%${condition.value}%")
+                                like(item, "%${query.value}%")
                         }
                     }
                 }
