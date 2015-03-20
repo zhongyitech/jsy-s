@@ -154,7 +154,7 @@ class FundCompanyInformationCollectionResource {
 
     @GET
     @Path('/getRelateFund')
-    Response getRelateFund(@QueryParam('companyid') Long companyid) {
+    Response getRelateFund(@QueryParam('companyid') Long companyid, @QueryParam('projectid') Long projectid) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def rtn = [:]
@@ -162,11 +162,14 @@ class FundCompanyInformationCollectionResource {
         try {
             def fundCompanyInformation = FundCompanyInformation.get(companyid)
             rtn.banks=fundCompanyInformation.funds.collect{fund->
-                def rtn2 = [:]
-                rtn2.id=fund.id
-                rtn2.fundName=fund.fundName
-                rtn2
+                if(!fund.project){
+                    def rtn2 = [:]
+                    rtn2.id=fund.id
+                    rtn2.fundName=fund.fundName
+                    rtn2
+                }
             }
+            rtn.banks=rtn.banks.unique()
             result.put("rest_status", restStatus)
             result.put("rest_result", rtn as JSON)
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
