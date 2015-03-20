@@ -67,16 +67,16 @@ class TSProject {
 
 
     //步骤2   makeContact
-    FundCompanyInformation company  //有限合伙
-    Fund fund                       //关联基金
+    FundCompanyInformation company       //有限合伙
+    Fund fund                            //关联基金
     BigDecimal manage_per                //管理费率
     BigDecimal community_per             //渠道费率
     BigDecimal penalty_per               //违约金率
     BigDecimal borrow_per                //借款率
-    BigDecimal interest_per                //本金的年利率
+    BigDecimal interest_per              //本金的年利率
     BigDecimal year1                     //期限：约定
     BigDecimal year2                     //期限：缓冲
-    String interestType             //利息计算方式
+    String interestType                  //利息计算方式
 
     //步骤2.1 makeContactOA
     String makeContactOAStatus = "working"

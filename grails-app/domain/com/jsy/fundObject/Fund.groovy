@@ -1,11 +1,15 @@
 package com.jsy.fundObject
 
+import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 
 /**
  * 基金信息表
  */
 class Fund {
+    //关联项目
+    TSProject project
+
     //基金名称
     String fundName
     //基金编号
@@ -93,6 +97,7 @@ class Fund {
     }
 
     static constraints = {
+        project nullable: true
         fundName unique: true,nullable: false
         fundNo nullable: true
         startSaleDate nullable: false

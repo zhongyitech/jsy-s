@@ -769,6 +769,8 @@ class ProjectResourceService {
             return false;
         }
         project.fund=fund
+        fund.project=project        // 一对一关系
+        fund.save(failOnError: true)
 
         obj.signers?.each{signer->
             if(signer.name && signer.value){
