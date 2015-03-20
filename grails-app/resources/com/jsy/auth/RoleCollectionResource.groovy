@@ -30,21 +30,38 @@ class RoleCollectionResource {
 
     @POST
     Response create(Role dto) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def dd
+
         try {
-            dd=roleResourceService.create(dto)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dd as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//            ok JsonResult.success(roleResourceService.create(dto))
+
+            print JsonResult.Run {
+
+                throw new Exception("safalfjlajf")
+
+                print('run')
+                print('rund')
+                def result=""
+                return result
+            }
+
         }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dd as JSON)
-            return Response.ok(result.toString()).status(500).build()
+
         }
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def dd
+//        try {
+//            dd=roleResourceService.create(dto)
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", dd as JSON)
+//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", dd as JSON)
+//            return Response.ok(result.toString()).status(500).build()
+//        }
     }
 
     @GET

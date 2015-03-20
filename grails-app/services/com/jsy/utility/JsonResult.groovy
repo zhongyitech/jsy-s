@@ -1,5 +1,6 @@
 package com.jsy.utility
 
+import com.jsy.auth.AuthorityService
 import grails.converters.JSON
 
 /**
@@ -7,7 +8,7 @@ import grails.converters.JSON
  * 封装返回的结果
  */
 class JsonResult {
-    public static final String REST_STATUS_SUC = "suc";
+    public static final String REST_STATUS_SUC = "suc"
     public static final String REST_STATUS_FAI = "err"
 
     /**
@@ -18,7 +19,7 @@ class JsonResult {
      * @return
      */
     //返回成功的操作结果
-    public static def success(/*结果*/def result,def total=null,/*附加的消息*/String msg="OK"){
+    public static def success(/*结果*/def result,def total=null){
         def map=[:]
         map.rest_result=result
         if(total){

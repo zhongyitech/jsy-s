@@ -4,9 +4,7 @@
     <data-source source="LOCAL" name="jsy dev" uuid="d94f2588-d6c9-4438-accc-771bade94ea8">
       <driver-ref>mysql</driver-ref>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://192.168.1.59/jsytest</jdbc-url>
-      <user-name>jsy</user-name>
-      <user-password>dfc0dfd9dfd3df9bdfdbdfcbdfd0</user-password>
+      <jdbc-url>jdbc:mysql://localhost:3306/jsy?user=root&amp;password=root&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false</jdbc-url>
       <libraries>
         <library>
           <url>file://$PROJECT_DIR$/lib/mysql-connector-java-5.1.27.jar</url>
