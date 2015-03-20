@@ -26,11 +26,15 @@ class BootStrap {
 
 //        def users = User.findAllByUsername('')
         //部门的职能
-        TypeConfig performance1 = new TypeConfig(type:8,mapName: "管理",mapValue: 1,description: "默认职能").save(failOnError: true)
-        TypeConfig performance2 = new TypeConfig(type:8,mapName: "销售",mapValue: 2,description: "基金销售部门选择此职能").save(failOnError: true)
+        TypeConfig performance1 = new TypeConfig(type:8,mapName: "管理",mapValue: 1,description: "默认职能")
+        performance1.save(failOnError: true)
+        TypeConfig performance2 = new TypeConfig(type:8,mapName: "销售",mapValue: 2,description: "基金销售部门选择此职能")
+        performance2.save(failOnError: true)
 //        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
-        Department department=Department.findByDeptName("销售部")?:new Department(deptName:"销售部",buildDate:new Date(),performance:performance2)
+        Department department=new Department(deptName:"销售部",buildDate:new Date(),performance:performance2)
         department.save(failOnError: true)
+        Department department2=new Department(deptName:"行政管理部",buildDate:new Date(),performance:performance1)
+        department2.save(failOnError: true)
 
 
 //        /* 添加角色数据  */
