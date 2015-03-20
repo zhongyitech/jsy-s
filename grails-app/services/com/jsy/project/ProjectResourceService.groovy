@@ -1,5 +1,7 @@
 package com.jsy.project
 
+import GsonTools.GsonTool
+import Models.MsgModel
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
@@ -14,6 +16,8 @@ import grails.gorm.*
 import org.json.JSONObject
 
 class ProjectResourceService {
+    public static String TAG = "ProjectResourceService ";
+
     WorkflowResourceService workflowResourceService
 
     def readAllForPage(String criteriaStr){
@@ -846,5 +850,55 @@ class ProjectResourceService {
         }
     }
 
+    /**
+     * 获取特殊访问时间信息
+     * @param projectId
+     * @param phaseIndex
+     */
+    def getSpecailAccess(int projectId, int phaseIndex){
+        SpecailAccess specailAccess = SpecailAccess.findWhere(projectId: projectId,phaseIndex: phaseIndex);
+        if(!specailAccess){
+            return  MsgModel.getErrorMsg(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
+        }
 
+        String json = specailAccess as JSON;
+        return MsgModel.getSuccessMsg(json);
+    }
+
+    /**
+     * 添加限制访问列表
+     * @param specailAccesses
+     */
+    def setSpecailAccess(SpecailAccess specailAccesses){
+        if(!specailAccesses){
+            return MsgModel.getErrorMsg(TAG + "SpecailAccess List Error, null pointer");
+        }
+
+        int projectId = specailAccesses.projectId;
+        if(projectId == 0){
+            return MsgModel.getErrorMsg(TAG + "add SpecailAccess Error projectId is 0");
+        }
+
+        int phaseIndex = specailAccesses.phaseIndex;
+        if(phaseIndex == 0){
+            return MsgModel.getErrorMsg(TAG + "add SpecailAccess Error phaseIndex is 0");
+        }
+
+        SpecailAccess specailAccess = SpecailAccess.findWhere(projectId: projectId,phaseIndex: phaseIndex);
+        if(specailAccess){
+            specailAccess.properties = specailAccesses;
+            specailAccess.save(failOnError: true);
+
+            if(specailAccess.hasErrors()){
+                return MsgModel.getErrorMsg(TAG + specailAccess.getErrors().toString());
+            }
+        }else{
+
+            specailAccesses.save(failOnError: true);
+            if(specailAccesses.hasErrors()){
+                return MsgModel.getErrorMsg(TAG + specailAccesses.getErrors().toString());
+            }
+        }
+        return MsgModel.getSuccessMsg("save success");
+    }
 }

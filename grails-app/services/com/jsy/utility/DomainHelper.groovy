@@ -13,9 +13,11 @@ class DomainHelper {
         Map orderArg = query.order
         return dc.where {
             if (query.type == 'and') {
-                and {
-                    condition.each {
-                        entity -> eq(entity.key, entity.value)
+                if (condition && condition != "") {
+                    and {
+                        condition.each {
+                            entity -> eq(entity.key, entity.value)
+                        }
                     }
                 }
                 if (orderArg) {
@@ -26,7 +28,7 @@ class DomainHelper {
                 }
             } else {
                 def value = condition.value
-                if(value&&value!=""){
+                if (value && value != "") {
                     or {
                         condition.fields.each {
                             String item ->
