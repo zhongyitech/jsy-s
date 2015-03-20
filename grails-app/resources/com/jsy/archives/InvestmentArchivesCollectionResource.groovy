@@ -208,11 +208,11 @@ class InvestmentArchivesCollectionResource {
 //        {"customer":{"name":"12","credentialsNumber":"12","country":"china","phone":"12",country":"12","credentialsType":"12","telephone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"12","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T14:49:20Z","dqrq":"2014-12-23T14:49:20Z","fxfs":"12","htzt":"1","ywjl":"1"}
 //        {"customer":{"name":"12","khh":"12","yhzh":"12","country":"12","credentialsType":"12","credentialsNumber":"12","telephone":"12","phone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"122301","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T18:17:43Z","dqrq":"2014-12-23T18:17:43Z","fxfs":"12","htzt":"1","ywjl":"1"}
         try {
-            def error = ValidationModel(dto)
-            if (error.size() > 0) {
-                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
-                return  Response.ok(result).build()
-            }
+//            def error = ValidationModel(dto)
+//            if (error.size() > 0) {
+//                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
+//                return  Response.ok(result).build()
+//            }
         } catch (Exception e) {
             ok JsonResult.error(e.message)
         }

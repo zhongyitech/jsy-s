@@ -7,13 +7,19 @@ import org.apache.commons.lang.builder.HashCodeBuilder
  * 特殊时间段的访问
  */
 class SpecailAccess implements Serializable{
-    Date fromDate
-    Date toDate
+    String fromDate
+    String toDate
     String accessor
     int projectId
+    int phaseIndex;
     String phaseEn
 
     static constraints = {
+        fromDate nullable: true
+        toDate   nullable: true
+        accessor nullable: true
+        projectId nullable: true
+        phaseIndex nullable: true
         phaseEn nullable: true
     }
 
