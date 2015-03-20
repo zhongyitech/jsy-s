@@ -32,7 +32,9 @@ class Department {
 
     //belongsTo = [company:Company]
     def beforeInsert() {
-        performance=TypeConfig.findByTypeAndMapValue(8,1)
+        if(!performance){//默认值！
+            performance=TypeConfig.findByTypeAndMapValue(8,1)
+        }
     }
 
     static constraints = {

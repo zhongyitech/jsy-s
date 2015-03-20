@@ -1,5 +1,7 @@
 package com.jsy.project
 
+import GsonTools.GsonTool
+import Models.MsgModel
 import com.jsy.archives.CustomerArchives
 import com.jsy.archives.InvestmentArchives
 import com.jsy.archives.PaymentInfo
@@ -10,6 +12,9 @@ import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
+import sun.misc.resources.Messages_sv
+
+import javax.ws.rs.QueryParam
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -74,6 +79,13 @@ class TSWorkflowCollectionResource {
         ok "good2"
     }
 
+    @GET
+    @Path('/setFundCompanyInformation')
+    Response setFundCompanyInformation(){
+        workflowResourceService.initFundCompanyInformation();
+
+        ok "init FundCompanyInformation ok";
+    }
 }
 
 

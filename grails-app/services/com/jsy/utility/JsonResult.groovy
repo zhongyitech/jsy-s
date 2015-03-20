@@ -19,13 +19,13 @@ class JsonResult {
      */
     //返回成功的操作结果
     public static def success(/*结果*/def result,def total=null,/*附加的消息*/String msg="OK"){
-        def resmap=[:]
-        resmap.rest_result=result
+        def map=[:]
+        map.rest_result=result
         if(total){
-            resmap.rest_total=total
+            map.rest_total=total
         }
-        resmap.rest_status=REST_STATUS_SUC
-        return resmap as JSON
+        map.rest_status=REST_STATUS_SUC
+        return map as JSON
     }
 
     /**
@@ -35,9 +35,9 @@ class JsonResult {
      * @return  JSON 对象
      */
     public static def error(String errorMsg="error",def result=null){
-        def resmap=[:]
-        resmap.rest_result=[msg:errorMsg,result:result]
-        resmap.rest_status=REST_STATUS_FAI
-        return resmap as JSON
+        def map=[:]
+        map.rest_result=[msg:errorMsg,result:result]
+        map.rest_status=REST_STATUS_FAI
+        return map as JSON
     }
 }
