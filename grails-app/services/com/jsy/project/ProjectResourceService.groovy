@@ -849,45 +849,54 @@ class ProjectResourceService {
     }
 
     /**
-     * 获取
+     * 获取特殊访问时间信息
      * @param projectId
+     * @param phaseIndex
      */
-    def getWorkflowTimeLimit(int projectId){
-        TSProject project;
-        try{
-            project = TSProject.get(projectId);
-            if(null == project){
-                return MsgModel.getErrorMsg(TAG + "TSProject Not Found  projectId "+projectId);
-            }
-        }catch (Exception ex){
-            println(TAG + " " + ex);
-            return MsgModel.getErrorMsg(TAG + ex);
+    def getSpecailAccess(int projectId, int phaseIndex){
+        SpecailAccess specailAccess = SpecailAccess.findWhere(projectId: projectId,phaseIndex: phaseIndex);
+        if(!specailAccess){
+            return  MsgModel.getErrorMsg(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
         }
 
-        try{
-            List<TSWorkflow> workflowList = TSWorkflow.findAllWhere(workflowProject:project);
-            if(workflowList == null){
-                return MsgModel.getErrorMsg(TAG + "TSWorkflow Not Found  projectId "+projectId);
-            }
+        String json = specailAccess as JSON;
+        return MsgModel.getSuccessMsg(json);
+    }
 
-            if(workflowList.size() == 0){
-                return MsgModel.getErrorMsg(TAG + "TSWorkflow List size = 0 projectId "+projectId);
-            }
-
-            TSWorkflow workflow = workflowList.get(0);
-
-            List<TSWorkflowPhase> workflowPhaseList = TSWorkflowPhase.findAllWhere(phaseWorkflow:workflow);
-
-            if(workflowPhaseList == null){
-                return MsgModel.getErrorMsg(TAG + "TSWorkflowPhase not found TSWorkflow workflowId "+workflow.id);
-            }
-
-            String json = GsonTool.getTSWrolflowJson(workflowPhaseList);
-            return MsgModel.getSuccessMsg(json);
-        }catch (Exception ex){
-            println(TAG + " " + ex);
-            return MsgModel.getErrorMsg(TAG + ex);
+    /**
+     * 添加限制访问列表
+     * @param specailAccesses
+     */
+    def setSpecailAccess(SpecailAccess specailAccesses){
+        if(!specailAccesses){
+            return MsgModel.getErrorMsg(TAG + "SpecailAccess List Error, null pointer");
         }
 
+        int projectId = specailAccesses.projectId;
+        if(projectId == 0){
+            return MsgModel.getErrorMsg(TAG + "add SpecailAccess Error projectId is 0");
+        }
+
+        int phaseIndex = specailAccesses.phaseIndex;
+        if(phaseIndex == 0){
+            return MsgModel.getErrorMsg(TAG + "add SpecailAccess Error phaseIndex is 0");
+        }
+
+        SpecailAccess specailAccess = SpecailAccess.findWhere(projectId: projectId,phaseIndex: phaseIndex);
+        if(specailAccess){
+            specailAccess.properties = specailAccesses;
+            specailAccess.save(failOnError: true);
+
+            if(specailAccess.hasErrors()){
+                return MsgModel.getErrorMsg(TAG + specailAccess.getErrors().toString());
+            }
+        }else{
+
+            specailAccesses.save(failOnError: true);
+            if(specailAccesses.hasErrors()){
+                return MsgModel.getErrorMsg(TAG + specailAccesses.getErrors().toString());
+            }
+        }
+        return MsgModel.getSuccessMsg("save success");
     }
 }

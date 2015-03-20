@@ -6,13 +6,19 @@ import com.jsy.auth.Role
 class TSWorkflowPhase implements Comparable {
 
     int phaseIndex;// copy from model
+
     String phaseName='';// copy from model
+
     String phaseEn;
+
     String phaseType='';
+
     String phaseComment='';
 
     User phaseExe;
+
     boolean phaseFinished=false;
+
     boolean phaseRejected=false;
 
     Date phaseExcutedDate;

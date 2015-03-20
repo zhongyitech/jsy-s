@@ -5,6 +5,7 @@ import Models.MsgModel
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateNumberService
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -427,14 +428,15 @@ class TSProjectCollectionResource {
         try{
             //校验
             if(!fileName || "".equals(fileName) || !filePath || "".equals(filePath)){
-                restStatus = "500";
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "lack of fileName or filePath")
-                return Response.ok(result.toString()).status(500).build()
+//                restStatus = "500";
+//                result.put("rest_status", restStatus)
+//                result.put("rest_result", "lack of fileName or filePath")
+//                return Response.ok(result.toString()).status(500).build()
+                return  Response.ok(JsonResult.success("lack of fileName or filePath")).build()
             }
 
 
-
+//
 
 //            projectResourceService.completeGather(project,obj)
 
@@ -442,43 +444,85 @@ class TSProjectCollectionResource {
             result.put("rest_result", "")
             return Response.ok(result.toString()).status(200).build()
         }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
+            ok JsonResult.error(e.message)
         }
+
     }
 
     @POST
     @Path('/delTsFile')
     Response delTsFile(@QueryParam('id') int  id) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
+//        JSONObject result = new JSONObject();
+//        JSONArray table = new JSONArray();
+//        String restStatus = "200";
         try{
 //            projectResourceService.completeGather(project,obj)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", "")
+//            return Response.ok(result.toString()).status(200).build()
+            ok JsonResult.success()
         }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
+//            restStatus = "500";
+//            e.printStackTrace()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", e.getLocalizedMessage())
+//            return Response.ok(result.toString()).status(500).build()
         }
     }
 
+    /**
+     * 获取工作流节点信息
+     * @param projectId    项目ID
+     * @param phaseIndex   节点Index
+     * @return
+     */
     @GET
-    @Path('/getProjectWorkflow')
-    Response getProjectWorkflow(@QueryParam("projectId") int id){
-        MsgModel msg = projectResourceService.getWorkflowTimeLimit(id);
-        if(msg.isSuccess()){
-            return Response.ok(GsonTool.getMsgModelJson(msg)).status(200).build();
-        }else{
+    @Path('/getSpecailAccess')
+    Response getSpecailAccess(@QueryParam("projectId") int projectId,@QueryParam("phaseIndex") int phaseIndex){
+        MsgModel msgModel = projectResourceService.getSpecailAccess(projectId,phaseIndex);
+
+        if(!msgModel){
+            MsgModel msg = MsgModel.getErrorMsg("JAVA ERROR!");
             return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
         }
+
+        if(msgModel.isSuccess()){
+            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(200).build();
+        }else{
+            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(500).build();
+        }
+    }
+
+    /**
+     * 保存限时访问信息
+     * @param specailAccesses
+     * @return
+     */
+    @POST
+    @Path('/setSpecailAccess')
+    Response setSpecailAccess(SpecailAccess specailAccess){
+        try{
+            def msgModel = projectResourceService.setSpecailAccess(specailAccess);
+
+            ok JsonResult.success(msgModel)
+        }catch (Exception e){
+            ok JsonResult.error(e.message)
+        }
+
+
+//
+//        if(msgModel == null){
+//            MsgModel msg = MsgModel.getErrorMsg("JAVA ERROR");
+//            return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
+//        }
+//
+//        if(msgModel.isSuccess()){
+//            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(200).build()
+//        }else{
+//            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(500).build();
+//        }
+
+
     }
 }
 
