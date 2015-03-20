@@ -1,10 +1,7 @@
 package com.jsy.system
 
-import com.jsy.fundObject.Finfo
-import com.jsy.utility.JsonResult
-import grails.converters.JSON
-
-import static org.grails.jaxrs.response.Responses.*
+import com.jsy.utility.DomainHelper
+import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -25,12 +22,12 @@ class OperationRecordCollectionResource {
 
     @POST
     Response create(OperationRecord dto) {
-        created operationRecordResourceService.create(dto)
+        ok { operationRecordResourceService.create(dto) }
     }
 
     @GET
     Response readAll() {
-        ok operationRecordResourceService.readAll()
+        ok { operationRecordResourceService.readAll() }
     }
 
     @Path('/{id}')
@@ -41,13 +38,11 @@ class OperationRecordCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Map arg) {
-        print("operationRecordResourceService.readAllForPage()")
-        try {
-            def result = operationRecordResourceService.readAllForPage(arg.pagesize, arg.startposition, arg.query)
-            ok JsonResult.success(result.data,result.total)
-        }catch (Exception e){
-            print(e)
-            ok JsonResult.error(e.message)
-        }
+        page
+                {
+                    def dc = DomainHelper.getDetachedCriteria(OperationRecord, arg)
+                    return [data : dc.list([max: arg.pagesize, offset: arg.startposition]),
+                            total: arg.startposition == 0 ? dc.count() : 0]
+                }
     }
 }
