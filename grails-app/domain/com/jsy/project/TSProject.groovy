@@ -20,6 +20,7 @@ class TSProject {
 
     boolean isEnded=false;   //创建流程是否结束
     boolean archive=false;   //项目是否归档
+    String endSummary        //项目结算描述
 
     String director          //董事
     String supervisor        //监事
@@ -179,6 +180,8 @@ class TSProject {
         year1 nullable: true
         year2 nullable: true
         interestType  nullable: true
+
+        endSummary  nullable: true
 
     }
 
