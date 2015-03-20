@@ -3,6 +3,7 @@ package com.jsy.archives
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
+import com.jsy.system.TypeConfig
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
@@ -228,9 +229,13 @@ class InvestmentArchivesCollectionResource {
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
-                        customerArchives.zch=""
-                        customerArchives.fddbr=""
+                        if(!customerArchives.zch){
+                            customerArchives.zch = ""
+                        }
+
                         customerArchives.save(failOnError: true)
+                        TypeConfig typeConfig=TypeConfig.findByTypeAndMapValue(7,2)
+                        customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig).save(failOnError: true)
                     }
 //                    }else{
 //                        cus.properties=dto.customer.properties
@@ -252,8 +257,8 @@ class InvestmentArchivesCollectionResource {
                 List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
                 int i=1
                 times.each {
-                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false).save(failOnError: true)
-                    dto.addToPayTimes(payTime)
+                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false,investmentArchives:dto).save(failOnError: true)
+                    dto.addToPayTimes(payTime).save(failOnError: true)
                     i++
                 }
                 result = JsonResult.success(dto)
