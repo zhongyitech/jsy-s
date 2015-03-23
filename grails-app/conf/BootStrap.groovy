@@ -13,29 +13,26 @@ import grails.converters.JSON
 
 class BootStrap {
 
-    def init = { servletContext ->
-        init_metaExtend();
-        def users=User.findAllByUsername('admin')
-        if(users&&users.size()>0){
-            return;
-        }
-        new AuthenticationToken(username: 'admin', token: '123123123').save(failOnError: true)
-        JSON.registerObjectMarshaller(Date) {
-            return it?.format("yyyy/MM/dd HH:mm:ss")
-        }
+    def init = {
+        servletContext ->
+            init_metaExtend();
+            def users = User.findAllByUsername('admin')
+            if (users && users.size() > 0) {
+                return;
+            }
+            new AuthenticationToken(username: 'admin', token: '123123123').save(failOnError: true)
 
 //        def users = User.findAllByUsername('')
-        //部门的职能
-        TypeConfig performance1 = new TypeConfig(type:8,mapName: "管理",mapValue: 1,description: "默认职能")
-        performance1.save(failOnError: true)
-        TypeConfig performance2 = new TypeConfig(type:8,mapName: "销售",mapValue: 2,description: "基金销售部门选择此职能")
-        performance2.save(failOnError: true)
+            //部门的职能
+            TypeConfig performance1 = new TypeConfig(type: 8, mapName: "管理", mapValue: 1, description: "默认职能")
+            performance1.save(failOnError: true)
+            TypeConfig performance2 = new TypeConfig(type: 8, mapName: "销售", mapValue: 2, description: "基金销售部门选择此职能")
+            performance2.save(failOnError: true)
 //        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
-        Department department=new Department(deptName:"销售部",buildDate:new Date(),performance:performance2)
-        department.save(failOnError: true)
-        Department department2=new Department(deptName:"行政管理部",buildDate:new Date(),performance:performance1)
-        department2.save(failOnError: true)
-
+            Department department = new Department(deptName: "销售部", buildDate: new Date(), performance: performance2)
+            department.save(failOnError: true)
+            Department department2 = new Department(deptName: "行政管理部", buildDate: new Date(), performance: performance1)
+            department2.save(failOnError: true)
 
 //        /* 添加角色数据  */
 //        [
@@ -324,23 +321,25 @@ class BootStrap {
 
     }
 
-
     def destroy = {
 
 
     }
 
-
-
     def init_metaExtend = {
+        print("set Date out format")
+        JSON.registerObjectMarshaller(Date) {
+            return it?.format("yyyy/MM/dd HH:mm:ss")
+        }
+
         println "init_metaExtend start"
-        Object.metaClass.union = { obj->
+        Object.metaClass.union = { obj ->
             obj.properties.each { prop, val ->
-                if(prop in ["metaClass","class"]) return
-                if(delegate.delegate.hasProperty(prop) && val){
-                    if(delegate.delegate.hasProperty(prop).setter){
+                if (prop in ["metaClass", "class"]) return
+                if (delegate.delegate.hasProperty(prop) && val) {
+                    if (delegate.delegate.hasProperty(prop).setter) {
                         delegate.delegate[prop] = val
-                    }else{
+                    } else {
 
                     }
 
@@ -348,12 +347,12 @@ class BootStrap {
             }
         }
 
-        Object.metaClass.unionMap = { map->
+        Object.metaClass.unionMap = { map ->
             map.each {
-                if(delegate.delegate.hasProperty(it.key)){
-                    if(delegate.delegate.hasProperty(it.key).setter){
+                if (delegate.delegate.hasProperty(it.key)) {
+                    if (delegate.delegate.hasProperty(it.key).setter) {
                         delegate.delegate[it.key] = it.value
-                    }else{
+                    } else {
 
                     }
                 }
