@@ -145,7 +145,7 @@ class UserCollectionResource {
         ok {
             def typeConfig = TypeConfig.findByTypeAndMapValue(8, 2)
             def dep = Department.findAllByPerformance(typeConfig);
-            def result = new ArrayList<User>();
+            def result = []
             dep.each {
                 if (it.leader != null)
                     result.add(it.leader);
@@ -270,7 +270,6 @@ class UserCollectionResource {
 
         //分页数据的调用方式
         page {
-
             def result = userResourceService.readAllForPage(arg)
             return result
         }

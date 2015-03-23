@@ -1,6 +1,6 @@
 package com.jsy.auth
 
-import org.codehaus.groovy.grails.web.json.JSONObject
+import com.jsy.utility.DomainHelper
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 class RoleResourceService {
@@ -32,7 +32,7 @@ class RoleResourceService {
     }
 
     //更新对象的值
-    def update(Role dto , /*需要更新的字段*/map) {
+    def update(Role dto, /*需要更新的字段*/ map) {
         def obj = Role.get(dto.id)
         if (!obj) {
             throw new DomainObjectNotFoundException(Role.class, dto.id)
@@ -43,22 +43,16 @@ class RoleResourceService {
     }
 
 
-    void delete(id) {
+    def delete(Long id) {
         def obj = Role.get(id)
         if (obj) {
             obj.delete()
         }
+        return true
     }
-    def readAllForPage(Long pagesize,Long startposition,String queryparam){
-        if (null == queryparam){
-            queryparam = ""
-        }
-        JSONObject json = new JSONObject()
 
-        json.put("page", Role.findAllByNameLikeOrAuthorityLike("%" + queryparam + "%","%" + queryparam + "%",max: pagesize, offset: startposition))
-        json.put("size", Role.findAllByNameLikeOrAuthorityLike("%" + queryparam + "%","%" + queryparam + "%").size())
-
-        return  json
-
+    def readAllForPage(def arg) {
+        def dc = DomainHelper.getDetachedCriteria(Role, arg)
+        return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
     }
 }

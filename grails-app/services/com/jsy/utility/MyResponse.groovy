@@ -19,7 +19,13 @@ class MyResponse {
         }
         //数据入库时的字段规则验证异常
         catch (ValidationException ve) {
-            return Response.ok(JsonResult.error(ve.message, ve.errors)).build()
+            def msg=""
+            def result=null
+            if(ve){
+                msg=ve.message
+                result=ve.errors
+            }
+            return Response.ok(JsonResult.error(msg, result)).build()
         }
         catch (Exception e) {
             //todo:write log

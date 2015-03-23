@@ -1,6 +1,8 @@
 package com.jsy.system
 
 import com.jsy.utility.DomainHelper
+import grails.converters.JSON
+
 import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
@@ -26,6 +28,19 @@ class OperationRecordCollectionResource {
     }
 
     @GET
+    @Path('/test')
+    Response testDate() {
+
+        ok {
+            def d = new Date()
+            def r = [:]
+            r.t = d
+            print(r)
+            return r
+        }
+    }
+
+    @GET
     Response readAll() {
         ok { operationRecordResourceService.readAll() }
     }
@@ -38,11 +53,9 @@ class OperationRecordCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Map arg) {
-        page
-                {
-                    def dc = DomainHelper.getDetachedCriteria(OperationRecord, arg)
-                    return [data : dc.list([max: arg.pagesize, offset: arg.startposition]),
-                            total: arg.startposition == 0 ? dc.count() : 0]
-                }
+        page {
+            def dc = DomainHelper.getDetachedCriteria(OperationRecord, arg)
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
+        }
     }
 }
