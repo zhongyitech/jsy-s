@@ -54,6 +54,15 @@ class BootStrap {
                 department:department,
                 chainName: "张三",
                 enabled: true).save(flush: true)
+        def ordinary = User.findByUsername('ordinary') ?: new User(
+                skr:'oswaldl',
+                khh:'平安银行',
+                yhzh:'136541615646156',
+                username: 'ordinary',
+                password: 'ordinary',
+                department:department,
+                chainName: "张四",
+                enabled: true).save(flush: true)
         def user2 = User.findByUsername('pengyh') ?: new User(
                 skr:'rela',
                 khh:'平安银行',
@@ -141,6 +150,9 @@ class BootStrap {
         if (!user4.authorities.contains(manager3)) {
             UserRole.create user4, manager3
         }
+        if (!ordinary.authorities.contains(userRole)) {
+            UserRole.create ordinary, userRole
+        }
         //基金状态
         new TypeConfig(type: 1,mapName:"待售",mapValue: 1).save(failOnError: true)
         new TypeConfig(type: 1,mapName:"在售",mapValue: 2).save(failOnError: true)
@@ -181,14 +193,26 @@ class BootStrap {
         ResourceRole resourceRole=new ResourceRole(role: adminRole,resource:yh).save(failOnError: true)
         Property property1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
         Property property2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
-        Property property3=new Property(name:'skr',title:'收款人',visible:false).save(failOnError: true)
-        Property property4=new Property(name:'khh',title:'开户行',visible:false).save(failOnError: true)
-        Property property5=new Property(name:'yhzh',title:'银行账户',visible:false).save(failOnError: true)
+        Property property3=new Property(name:'skr',title:'收款人',visible:true).save(failOnError: true)
+        Property property4=new Property(name:'khh',title:'开户行',visible:true).save(failOnError: true)
+        Property property5=new Property(name:'yhzh',title:'银行账户',visible:true).save(failOnError: true)
         resourceRole.addToPropertys(property1)
         resourceRole.addToPropertys(property2)
         resourceRole.addToPropertys(property3)
         resourceRole.addToPropertys(property4)
         resourceRole.addToPropertys(property5)
+
+        ResourceRole resourceRoleUR=new ResourceRole(role: userRole,resource:yh).save(failOnError: true)
+        Property propertyUR1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
+        Property propertyUR2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
+        Property propertyUR3=new Property(name:'skr',title:'收款人',visible:false).save(failOnError: true)
+        Property propertyUR4=new Property(name:'khh',title:'开户行',visible:false).save(failOnError: true)
+        Property propertyUR5=new Property(name:'yhzh',title:'银行账户',visible:false).save(failOnError: true)
+        resourceRoleUR.addToPropertys(propertyUR1)
+        resourceRoleUR.addToPropertys(propertyUR2)
+        resourceRoleUR.addToPropertys(propertyUR3)
+        resourceRoleUR.addToPropertys(propertyUR4)
+        resourceRoleUR.addToPropertys(propertyUR5)
         //基金资源
         ResourceRole resourceRole1=new ResourceRole(role: adminRole,resource:jj).save(failOnError: true)
         Property property11=new Property(name:'fundName',title:'基金名',visible:true).save(failOnError: true)
