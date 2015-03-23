@@ -1,10 +1,14 @@
+import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
+import com.jsy.auth.Menus
 import com.jsy.auth.Property
 import com.jsy.auth.Resource
 import com.jsy.auth.ResourceRole
 import com.jsy.auth.Role
 import com.jsy.auth.User
 import com.jsy.auth.UserRole
+import com.jsy.customerObject.Customer
+import com.jsy.fundObject.Fund
 import com.jsy.system.Department
 import com.jsy.system.TodoConfig
 import com.jsy.system.TypeConfig
@@ -181,10 +185,10 @@ class BootStrap {
 
 
         //权限数据写入
-        Resource jj=new Resource(name:"基金",objectName: "Fund").save(failOnError: true)
-        Resource da=new Resource(name:"档案",objectName: "InvestmentArchives").save(failOnError: true)
-        Resource kh=new Resource(name:"客户",objectName: "Customer").save(failOnError: true)
-        Resource yh=new Resource(name:"用户",objectName: "User").save(failOnError: true)
+        Resource jj=new Resource(name:"基金",objectName: Fund.class.toString()).save(failOnError: true)
+        Resource da=new Resource(name:"档案",objectName: InvestmentArchives.class.toString()).save(failOnError: true)
+        Resource kh=new Resource(name:"客户",objectName: Customer.class.toString()).save(failOnError: true)
+        Resource yh=new Resource(name:"用户",objectName: User.class.toString()).save(failOnError: true)
 
         //User资源
         ResourceRole resourceRole=new ResourceRole(role: adminRole,resource:yh).save(failOnError: true)
@@ -318,6 +322,70 @@ class BootStrap {
         resourceRole3.addToPropertys(property362)
         resourceRole3.addToPropertys(property372)
         resourceRole3.addToPropertys(property382)
+
+
+        //菜单权限数据
+        String localhost='http://192.168.1.59'
+        Menus menus1=new Menus(name:'jjgl',title:'基金管理',url:'').save(failOnError: true)
+        Menus menus11=new Menus(name:'jjxx',title:'基金信息',url:localhost+'/view/fund-list.jsp',parentId:menus1.id).save(failOnError: true)
+        Menus menus12=new Menus(name:'xzjj',title:'新增基金',url:localhost+'/view/fund-create.jsp',parentId:menus1.id).save(failOnError: true)
+        Menus menus13=new Menus(name:'htdj',title:'合同登记',url:localhost+'/view/hetong-dengji.jsp',parentId:menus1.id).save(failOnError: true)
+        Menus menus14=new Menus(name:'htly',title:'合同领用',url:localhost+'/view/hetong-lingyong.jsp',parentId:menus1.id).save(failOnError: true)
+        Menus menus15=new Menus(name:'htgh',title:'合同归还',url:localhost+'/view/hetong-guihuan.jsp',parentId:menus1.id).save(failOnError: true)
+
+        Menus menus2=new Menus(name:'khgl',title:'客户管理',url:'').save(failOnError: true)
+        Menus menus21=new Menus(name:'tjtzda',title:'添加投资档案',url:localhost+'/view/investment.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus22=new Menus(name:'dytzqrs',title:'打印投资确认书',url:localhost+'/view/investment-print.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus23=new Menus(name:'khxxxg',title:'客户信息修改',url:localhost+'/view/customer-list.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus24=new Menus(name:'ztdagl',title:'投资档案管理',url:localhost+'/view/invest-list.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus25=new Menus(name:'htcx',title:'合同查询',url:localhost+'/view/hetong-query.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus26=new Menus(name:'tccx',title:'提成查询',url:localhost+'/view/commission_query.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus27=new Menus(name:'tcsq',title:'提成申请',url:localhost+'/view/commission_apply.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus28=new Menus(name:'dfcx',title:'兑付查询',url:localhost+'/view/cash_app.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus29=new Menus(name:'dfsq',title:'兑付申请',url:localhost+'/view/cash_list.jsp',parentId:menus2.id).save(failOnError: true)
+        Menus menus20=new Menus(name:'czjlrz',title:'操作记录日志',url:localhost+'/view/czjlrz-list.jsp',parentId:menus2.id).save(failOnError: true)
+
+        Menus menus3=new Menus(name:'tssq',title:'特殊申请',url:'').save(failOnError: true)
+        Menus menus31=new Menus(name:'hzxx',title:'汇总信息',url:localhost+'/view/specialSummary.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus32=new Menus(name:'tssqgl',title:'特殊申请管理',url:localhost+'/view/special-treat-list.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus33=new Menus(name:'wtfksq',title:'委托付款申请',url:localhost+'/view/special-paytreat.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus34=new Menus(name:'dqztsq',title:'到期转投申请',url:localhost+'/view/special_treat.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus35=new Menus(name:'wdqztsq',title:'未到期转投申请',url:localhost+'/view/special_treat.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus36=new Menus(name:'thsq',title:'退伙申请',url:localhost+'/view/refund_add.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus37=new Menus(name:'xtsq',title:'续投申请',url:localhost+'/view/continuedinvestment-add.jsp',parentId:menus3.id).save(failOnError: true)
+        Menus menus38=new Menus(name:'hbsq',title:'合并申请',url:localhost+'/view/special-merge.jsp',parentId:menus3.id).save(failOnError: true)
+
+        Menus menus4=new Menus(name:'xmgl',title:'项目管理',url:'').save(failOnError: true)
+        Menus menus41=new Menus(name:'xjxm',title:'新建项目',url:localhost+'/view/new_project.jsp',parentId:menus4.id).save(failOnError: true)
+        Menus menus42=new Menus(name:'xmlb',title:'项目列表',url:localhost+'/view/project_list.jsp',parentId:menus4.id).save(failOnError: true)
+        Menus menus43=new Menus(name:'xzhkjl',title:'新增汇款记录',url:localhost+'/view/new_pay_record.jsp',parentId:menus4.id).save(failOnError: true)
+        Menus menus44=new Menus(name:'xzskjl',title:'新增收款记录',url:localhost+'/view/new_receive_record.jsp',parentId:menus4.id).save(failOnError: true)
+        Menus menus45=new Menus(name:'xmzkmxb',title:'项目转款明细表',url:localhost+'/view/pay_record_list.jsp',parentId:menus4.id).save(failOnError: true)
+        Menus menus46=new Menus(name:'xmjs',title:'项目结算',url:localhost+'/view/end_project.jsp',parentId:menus4.id).save(failOnError: true)
+
+        Menus menus5=new Menus(name:'dagl',title:'档案管理',url:'').save(failOnError: true)
+        Menus menus51=new Menus(name:'jycx',title:'借阅/查询',url:localhost+'/view/filepackage-list.jsp',parentId:menus5.id).save(failOnError: true)
+        Menus menus52=new Menus(name:'dark',title:'档案入库',url:localhost+'/view/filepackage-add.jsp',parentId:menus5.id).save(failOnError: true)
+
+        Menus menus6=new Menus(name:'yhyw',title:'银行业务',url:'').save(failOnError: true)
+        Menus menus61=new Menus(name:'fkdcx',title:'付款单查询',url:localhost+'/view/bankingpaymentorder.jsp',parentId:menus6.id).save(failOnError: true)
+        Menus menus62=new Menus(name:'jzpzscsz',title:'记账凭证生成设置',url:localhost+'/view/forms.html',parentId:menus6.id).save(failOnError: true)
+        Menus menus63=new Menus(name:'jzpzcx',title:'记账凭证查询',url:localhost+'/view/forms.html',parentId:menus6.id).save(failOnError: true)
+        Menus menus64=new Menus(name:'yhxxcx',title:'银行信息查询',url:localhost+'/view/bankingTransportation.jsp',parentId:menus6.id).save(failOnError: true)
+        Menus menus65=new Menus(name:'jyxxcx',title:'交易信息查询',url:localhost+'/view/bankingTransportation.jsp',parentId:menus6.id).save(failOnError: true)
+        Menus menus66=new Menus(name:'tkcx',title:'退款查询',url:localhost+'/view/bankingTransportation.jsp',parentId:menus6.id).save(failOnError: true)
+        Menus menus67=new Menus(name:'dzhdgl',title:'电子回单管理',url:localhost+'/view/bankingTransportation.jsp',parentId:menus6.id).save(failOnError: true)
+        Menus menus68=new Menus(name:'yhywxtrz',title:'银行业务系统日志',url:localhost+'/view/bankingTransportation.jsp',parentId:menus6.id).save(failOnError: true)
+
+        Menus menus7=new Menus(name:'xtsz',title:'系统设置',url:'').save(failOnError: true)
+        Menus menus71=new Menus(name:'qxgl',title:'权限管理',url:localhost+'/view/authority-list.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus72=new Menus(name:'gsgl',title:'公司管理',url:localhost+'/view/company-list.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus73=new Menus(name:'xzgs',title:'新增公司',url:localhost+'/view/company-create.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus74=new Menus(name:'bmgl',title:'部门管理',url:localhost+'/view/department-list.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus75=new Menus(name:'xzbm',title:'新增部门',url:localhost+'/view/department-create.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus76=new Menus(name:'jsgl',title:'角色管理',url:localhost+'/view/role-list.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus77=new Menus(name:'xzjs',title:'新增角色',url:localhost+'/view/role-create.jsp',parentId:menus7.id).save(failOnError: true)
+        Menus menus78=new Menus(name:'yhgl',title:'用户管理',url:localhost+'/view/user-list.jsp',parentId:menus7.id).save(failOnError: true)
 
     }
 
