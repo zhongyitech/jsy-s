@@ -163,6 +163,9 @@ class InvestmentArchivesResourceService {
      * @return
      */
     def getPayOnceAmount(InvestmentArchives ia) {
+        if(ia.nhsyl == 0  || ia.sjtzje ==0 || ia.payTimes.size()==0){
+            return  0
+        }
         return (ia.nhsyl * ia.sjtzje) / ia.payTimes.size()
     }
 
