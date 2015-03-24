@@ -389,9 +389,40 @@ class BootStrap {
         Menus menus78=new Menus(name:'yhgl',title:'用户管理',url:localhost+'/view/user-list.jsp',parentId:menus7.id).save(failOnError: true)
 
         //权限关系
+        new MenusRole(menus: menus1,role: managerRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus11,role: managerRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus12,role: managerRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus13,role: managerRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus14,role: managerRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus15,role: managerRole,visible: true).save(failOnError: true)
+
         new MenusRole(menus: menus1,role: adminRole,visible: true).save(failOnError: true)
         new MenusRole(menus: menus11,role: adminRole,visible: true).save(failOnError: true)
         new MenusRole(menus: menus12,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus13,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus14,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus15,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus2,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus21,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus22,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus23,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus24,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus25,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus26,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus27,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus28,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus29,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus20,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus3,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus31,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus32,role: adminRole,visible: false).save(failOnError: true)
+        new MenusRole(menus: menus33,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus34,role: adminRole,visible: false).save(failOnError: true)
+        new MenusRole(menus: menus35,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus36,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus37,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus38,role: adminRole,visible: true).save(failOnError: true)
+
     }
 
     def destroy = {
