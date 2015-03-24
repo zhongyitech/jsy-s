@@ -12,7 +12,6 @@ class ReceiveRecordResourceService {
             detail.receiveRecord=dto
             detail.save(failOnError: true)
         }
-
     }
 
     def read(id) {

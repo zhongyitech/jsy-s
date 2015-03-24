@@ -103,9 +103,9 @@ class PayRecord {
             if(owe_money > 0){
                 if("singleCount".equals(project.interestType)){//单利：欠款*interest_per/365*超出的天数
                     over_interest_pay = (owe_money * project.interest_per * over_days / 365)
-                }else if("costCount".equals(project.interestType)){//单利：(欠款+欠款*interest_per)*penalty_per/365*超出的天数
-                    over_interest_pay = (owe_money * (1+project.interest_per) * over_days / 365)
-                }else if("dayCount".equals(project.interestType)){//复利：便历每一天，做加法：第一天:(欠款+欠款*penalty_per)*penalty_per/365*1 ,第二天：第一天的利息*penalty_per/365*1，如此类推
+                }else if("costCount".equals(project.interestType)){//复利：(欠款+欠款*interest_per)*penalty_per/365*超出的天数
+                    over_interest_pay = ((owe_money+ amount*project.interest_per)*project.interest_per * over_days * project.interest_per/ 365)
+                }else if("dayCount".equals(project.interestType)){//日复利：便历每一天，做加法：第一天:(欠款+欠款*penalty_per)*penalty_per/365*1 ,第二天：第一天的利息*penalty_per/365*1，如此类推
                     over_interest_pay=(owe_money * (1+project.interest_per) / 365);  //第一天
                     for(int i=1;i<over_days;i++){//第二天起
                         over_interest_pay += (over_interest_pay * (1+project.interest_per) / 365);
