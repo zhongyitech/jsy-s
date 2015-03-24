@@ -29,9 +29,8 @@ class FundCollectionResource {
     def fundResourceService
 
     //新增基金
-    @Put
+    @PUT
     Response create(Fund dto) {
-
         ok {
             Date d = new Date()
             dto.createDate = d
