@@ -131,13 +131,13 @@ class PayRecordCollectionResource {
             pay_record.payDate = payRecord.payDate
 
             pay_record.id = payRecord.id
-            pay_record.manage_pay = payRecord.manage_bill                       //管理费
-            pay_record.community_pay = payRecord.community_bill                 //渠道费
-            pay_record.borrow_pay = payRecord.borrow_bill                       //借款
+            pay_record.manage_pay = payRecord.manage_bill                               //管理费
+            pay_record.community_pay = payRecord.community_bill                         //渠道费
+            pay_record.borrow_pay = payRecord.borrow_bill                               //借款
 
             pay_record.interest_year1 = project.year1
-            pay_record.interest_pay = payRecord.interest_bill   //第一年利率
-            pay_record.dateCount=Utils.dayDifferent(payRecord.payDate,new Date())                     //投资天数
+            pay_record.interest_pay = payRecord.interest_bill                           //第一年利率
+            pay_record.dateCount=Utils.dayDifferent(payRecord.payDate,new Date())       //投资天数
 
 
 //            singleCount", "costCount", "dayCount
@@ -147,10 +147,13 @@ class PayRecordCollectionResource {
             Date lastDate = Utils.addYears(payRecord.payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
 
             if(nowDate.after(lastDate)){//判断超出预定时间，查询时发现超出，就修改penalty_pay
-                pay_record.penalty_pay = payRecord.amount * project.penalty_per                     //违约金
+                pay_record.penalty_pay = payRecord.amount * project.penalty_per         //违约金
                 payRecord.penalty_bill=pay_record.penalty_pay
                 payRecord.save(failOnError: true)
+            }else{
+                pay_record.penalty_pay = 0 //返回结果用
             }
+
             pay_record.over_interest_pay = payRecord.getOverDue()
             rtn << pay_record
         }

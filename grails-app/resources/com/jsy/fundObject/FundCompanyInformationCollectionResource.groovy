@@ -215,7 +215,9 @@ class FundCompanyInformationCollectionResource {
 
             def banks = []
             project_banks?.each {
-                banks.addAll(it)
+                if(it){
+                    banks.addAll(it)
+                }
             }
 
             rtn.banks= banks.unique();
