@@ -2,6 +2,7 @@ package com.jsy.fundObject
 
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
+import com.jsy.utility.DomainHelper
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -15,11 +16,9 @@ import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.Produces
 import javax.ws.rs.Path
-import javax.ws.rs.PathParam
 import javax.ws.rs.POST
 import javax.ws.rs.core.Response
-
-import static org.grails.jaxrs.response.Responses.*
+import static com.jsy.utility.MyResponse.*
 
 @Path('/api/fundCompanyInformation')
 @Consumes(['application/xml', 'application/json'])
@@ -33,85 +32,39 @@ class FundCompanyInformationCollectionResource {
     @POST
     Response create(FundCompanyInformation dto) {
 
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def bfpr
-        try {
-            bfpr = fundCompanyInformationResourceService.create(dto)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(500).build()
-
+        ok {
+            return fundCompanyInformationResourceService.create(dto)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", bfpr as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @PUT
-    Response update(FundCompanyInformation dto,@QueryParam('id') Long id){
-         JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        dto.id = id
-        def  rc
-        try {
-            rc = fundCompanyInformationResourceService.update(dto)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-        }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", rc as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    Response update(FundCompanyInformation dto, @QueryParam('id') Long id) {
 
+        ok {
+            dto.id = id;
+            return fundCompanyInformationResourceService.update(dto)
+        }
     }
 
     @DELETE
     @Path('/delete')
-    Response delete(@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def  rc
-        try {
-            rc = fundCompanyInformationResourceService.delete(id)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+    Response delete(@QueryParam('id') Long id) {
+        ok {
+            return fundCompanyInformationResourceService.delete(id)
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", rc as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
-        org.json.JSONObject result = new org.json.JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        org.json.JSONObject json
-        JSONArray fp
-        try {
-            json = fundCompanyInformationResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            fp = json.get("page")
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            print(e)
-        }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", fp.toString())
-        result.put("rest_total", total)
+    Response readAllForPage(Map arg) {
+        page {
+            def dc = DomainHelper.getDetachedCriteria(FundCompanyInformation, arg)
 
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
+        }
+//            json = fundCompanyInformationResourceService.readAllForPage(arg.pagesize, arg.startposition, arg.keyword)
+//            total = json.get("size")
+//            fp = json.get("page")
     }
 
 
@@ -124,9 +77,9 @@ class FundCompanyInformationCollectionResource {
         try {
             def page = fundCompanyInformationResourceService.readAll()
             page.each {
-                JSONObject jsonObject =new JSONObject((it as JSON).toString());
+                JSONObject jsonObject = new JSONObject((it as JSON).toString());
                 def pars = new JSONArray()
-                it?.hhrpx?.split(",").each {fid->
+                it?.hhrpx?.split(",").each { fid ->
                     pars.put(FundCompanyInformation.get(Long.valueOf(fid)) as JSON)
                 }
                 jsonObject.put("partner", pars)
@@ -136,7 +89,7 @@ class FundCompanyInformationCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", ja.toString())
             return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             e.printStackTrace()
             result.put("rest_status", restStatus)
@@ -148,122 +101,81 @@ class FundCompanyInformationCollectionResource {
     @GET
     @Path('/listAll')
     Response listAll() {
-        ok fundCompanyInformationResourceService.readAll()
+        ok { return fundCompanyInformationResourceService.readAll() }
     }
 
 
     @GET
     @Path('/getRelateFund')
     Response getRelateFund(@QueryParam('companyid') Long companyid, @QueryParam('projectid') Long projectid) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def rtn = [:]
-
-        try {
+        ok {
+            def rtn = [:]
             def fundCompanyInformation = FundCompanyInformation.get(companyid)
-            rtn.banks=fundCompanyInformation.funds.collect{fund->
-                if(!fund.project){
+            rtn.banks = fundCompanyInformation.funds.collect { fund ->
+                if (!fund.project) {
                     def rtn2 = [:]
-                    rtn2.id=fund.id
-                    rtn2.fundName=fund.fundName
+                    rtn2.id = fund.id
+                    rtn2.fundName = fund.fundName
                     rtn2
                 }
             }
-            rtn.banks=rtn.banks.unique()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", rtn as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "error")
-            return Response.ok(result.toString()).status(500).build()
+            return rtn.banks = rtn.banks.unique()
         }
     }
 
     @GET
     @Path('/findByFund')
     Response getByFund(@QueryParam('id') Long id) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def rtn = [:]
-        try {
-            Fund fund = Fund.get(id)
-            if(!fund){
-                restStatus = REST_STATUS_FAI;
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "no such fund")
-                return Response.ok(result.toString()).status(500).build()
-            }
-            def projects = TSProject.findAllByFund(fund)
+        ok
+                {
+                    def rtn = [:]
+                    Fund fund = Fund.get(id)
+                    if (!fund) {
+                        throw new Exception("id no found!")
+                    }
+                    def projects = TSProject.findAllByFund(fund)
 
-            def project_banks=projects.collect {project->
-                project.company?.bankAccount?.collect {bank->
-                    def rtn2 = [:]
-                    rtn2.id=bank.id
-                    rtn2.bankName=bank.bankName
-                    rtn2.bankOfDeposit=bank.bankOfDeposit
-                    rtn2.accountName=bank.accountName
-                    rtn2.account=bank.account
-                    rtn2.defaultAccount=bank.defaultAccount
-                    rtn2.purposeName=bank.purposeName
-                    rtn2
+                    def project_banks = projects.collect { project ->
+                        project.company?.bankAccount?.collect { bank ->
+                            def rtn2 = [:]
+                            rtn2.id = bank.id
+                            rtn2.bankName = bank.bankName
+                            rtn2.bankOfDeposit = bank.bankOfDeposit
+                            rtn2.accountName = bank.accountName
+                            rtn2.account = bank.account
+                            rtn2.defaultAccount = bank.defaultAccount
+                            rtn2.purposeName = bank.purposeName
+                            rtn2
 
+                        }
+                    }
+                    def banks = []
+                    project_banks?.each {
+                        if (it) {
+                            banks.addAll(it)
+                        }
+                    }
+                    rtn.banks = banks.unique();
+                    rtn.projects = projects.collect { project ->
+                        project.getProjectSimpleInfo()
+                    }
+                    return rtn
                 }
-            }
-
-            def banks = []
-            project_banks?.each {
-                if(it){
-                    banks.addAll(it)
-                }
-            }
-
-            rtn.banks= banks.unique();
-
-            rtn.projects=projects.collect{project->
-                project.getProjectSimpleInfo()
-            }
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", rtn as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "error")
-            return Response.ok(result.toString()).status(500).build()
-        }
     }
-
 
 
     @GET
     @Path("/findById")
     Response findById(@QueryParam('id') Long id) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def bfpr
-        try {
-            bfpr = FundCompanyInformation.get(id)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(500).build()
+        ok {
+            return FundCompanyInformation.get(id)
         }
     }
 
     //获取募集基金账户信息
     @GET
     @Path('/getAccount')
-    Response getAccount(@QueryParam('id') Long id){
+    Response getAccount(@QueryParam('id') Long id) {
 
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
@@ -271,7 +183,7 @@ class FundCompanyInformationCollectionResource {
         try {
 //            fc = FundCompanyInformation.get(id).bankAccount
             fc = FundCompanyInformation.findByFundInList(Fund.get(id)).bankAccount
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             e.printStackTrace()
             print(e)
@@ -286,51 +198,31 @@ class FundCompanyInformationCollectionResource {
 
     @GET
     @Path('/findByType')
-    Response findByType(@QueryParam('type') Long type){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def dp
-        try{
-            dp = FundCompanyInformation.findAllByCompanyType(TypeConfig.get(type))
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dp as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dp as JSON)
-            return Response.ok(result.toString()).status(500).build()
-        }
+    Response findByType(@QueryParam('type') Long type) {
 
-
+        ok { return FundCompanyInformation.findAllByCompanyType(TypeConfig.get(type)) }
     }
 
     @GET
     @Path('/getAccountFromFundName')
-    Response getAccountFromFundName(@QueryParam('fundName') String fundName){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def dp
-        try{
-            dp = FundCompanyInformation.findAllByFund(Fund.findByFundName(fundName)).bankAccount
-//            dp = FundCompanyInformation.findAllByCompanyType(TypeConfig.get(type))
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dp as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", dp as JSON)
-            return Response.ok(result.toString()).status(500).build()
-        }
-
-
+    Response getAccountFromFundName(@QueryParam('fundName') String fundName) {
+        ok { FundCompanyInformation.findAllByFund(Fund.findByFundName(fundName)).bankAccount }
     }
 
-
-
-
+    /**
+     * 获取有限合伙的公司列表,用于有限合伙选择列表
+     * 类型为有限合伙的公司(企业)
+     * @return
+     */
+    @GET
+    @Path('/listForAddFund')
+    Response listForAddFund() {
+        ok {
+            def list = []
+            FundCompanyInformation.findAllByCompanyType(TypeConfig.findByTypeAndMapValue(6, 1)).collect {
+                list.add([id: it.id, companyName: it.companyName, companyType: it.companyType.mapName])
+            }
+            return list
+        }
+    }
 }
