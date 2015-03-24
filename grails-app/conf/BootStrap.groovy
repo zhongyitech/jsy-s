@@ -1,6 +1,7 @@
 import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
+import com.jsy.auth.MenusRole
 import com.jsy.auth.Property
 import com.jsy.auth.Resource
 import com.jsy.auth.ResourceRole
@@ -387,6 +388,10 @@ class BootStrap {
         Menus menus77=new Menus(name:'xzjs',title:'新增角色',url:localhost+'/view/role-create.jsp',parentId:menus7.id).save(failOnError: true)
         Menus menus78=new Menus(name:'yhgl',title:'用户管理',url:localhost+'/view/user-list.jsp',parentId:menus7.id).save(failOnError: true)
 
+        //权限关系
+        new MenusRole(menus: menus1,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus11,role: adminRole,visible: true).save(failOnError: true)
+        new MenusRole(menus: menus12,role: adminRole,visible: true).save(failOnError: true)
     }
 
     def destroy = {
