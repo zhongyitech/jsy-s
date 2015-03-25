@@ -84,6 +84,10 @@ class Fund {
 
 
 
+    //有限合伙
+    FundCompanyInformation funcCompany
+
+
     //相关联项目
     static belongsTo = []
 
@@ -139,5 +143,7 @@ class Fund {
         uncollectedInterest nullable: true
         collectedPrincipal nullable: true
         uncollectedPrincipal nullable: true
+        //todo:remove this
+        funcCompany nullable: true
     }
 }
