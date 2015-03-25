@@ -22,7 +22,7 @@ class JsonResult {
     public static def success(/*结果*/def result,def total=null){
         def map=[:]
         map.rest_result=result
-        if(total){
+        if(total||total==0){
             map.rest_total=total
         }
         map.rest_status=REST_STATUS_SUC
