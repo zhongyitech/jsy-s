@@ -8,6 +8,7 @@ import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.json.JSONArray
 import org.json.JSONObject
@@ -521,7 +522,7 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/ArchivesByNO')
     Response GetHeTongStatusList(Map arg) {
-        com.jsy.utility.MyResponse.ok {
+        MyResponse.page {
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, arg)
             List<InvestmentArchives> investmentArchives = dc
                     .list([max: arg.pagesize, offset: arg.startposition])
@@ -575,7 +576,7 @@ class InvestmentArchivesCollectionResource {
                 res.add(row)
             }
 //            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
-            return [data: (res as JSON).toString(), total: arg.startposition == 0 ? dc.count() : 0]
+            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]
         }
     }
 }
