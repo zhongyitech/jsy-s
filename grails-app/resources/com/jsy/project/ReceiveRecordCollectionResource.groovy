@@ -33,24 +33,26 @@ class ReceiveRecordCollectionResource {
         String restStatus = "200";
 
         try{
-            // get project
+            //json格式数据转换
             org.json.JSONObject obj = JSON.parse(datastr)
 
+            //基础数据转换
             Fund fund = Fund.get(obj.fundid)
             TSProject project = TSProject.get(obj.projectid)
             BankAccount bankAccount = BankAccount.get(obj.bankid)
             def paydate = Date.parse("yyyy-MM-dd", obj.paydate)
+
             def payTargets = obj.targets
             def payRecords = obj.payRecords
             def paytotal = obj.paytotal
             def remain_money_suggest = new BigDecimal(obj.remain_money_suggest)
 
-            //dirty operate!!! 保证顺序
+            //保证顺序，dirty operate!!!
             obj.targets.sort { targetA,targetB->
                 return targetA.id.compareTo(targetB.id)
             }
 
-            //check same suggest： remain_money_suggest
+            //根据前台的计算结果，进行再次验证，check same suggest： remain_money_suggest
             def paytotal2 = new BigDecimal(obj.paytotal)
             def receiveDetails = []
             obj.payRecords?.each{payRecordId->

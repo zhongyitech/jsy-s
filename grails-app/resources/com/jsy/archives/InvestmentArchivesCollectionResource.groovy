@@ -5,8 +5,10 @@ import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.system.TypeConfig
 import com.jsy.utility.CreateNumberService
+import com.jsy.utility.DomainHelper
 import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.json.JSONArray
 import org.json.JSONObject
@@ -33,7 +35,7 @@ class InvestmentArchivesCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def investmentArchivesResourceService
+    InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
 
     //根据档案id取附件
@@ -229,13 +231,13 @@ class InvestmentArchivesCollectionResource {
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
-                        if(!customerArchives.zch){
+                        if (!customerArchives.zch) {
                             customerArchives.zch = ""
                         }
 
                         customerArchives.save(failOnError: true)
-                        TypeConfig typeConfig=TypeConfig.findByTypeAndMapValue(7,2)
-                        customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig).save(failOnError: true)
+                        TypeConfig typeConfig = TypeConfig.findByTypeAndMapValue(7, 2)
+                        customerArchives.addToBankAccount(bankName: cus.khh, bankOfDeposit: cus.khh, accountName: cus.name, account: cus.yhzh, purpose: typeConfig).save(failOnError: true)
                     }
 //                    }else{
 //                        cus.properties=dto.customer.properties
@@ -254,10 +256,10 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
                 //付息时间新增
-                List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
-                int i=1
+                List times = investmentArchivesResourceService.scfxsj(dto.rgrq, dto.tzqx, dto.fxfs)
+                int i = 1
                 times.each {
-                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false,investmentArchives:dto).save(failOnError: true)
+                    PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dto).save(failOnError: true)
                     dto.addToPayTimes(payTime).save(failOnError: true)
                     i++
                 }
@@ -280,11 +282,11 @@ class InvestmentArchivesCollectionResource {
 //                    cus.properties=dto.customer.properties
 //                    cus.save(failOnError: true)
 //                }
-                dto.status=1
-                dto.username=cus.name
+                dto.status = 1
+                dto.username = cus.name
             }
-            dto.customer=cus
-            ia = investmentArchivesResourceService.update(dto,Integer.parseInt(id))
+            dto.customer = cus
+            ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
 //            }catch (Exception e){
 //                restStatus = REST_STATUS_FAI
 //                print(e)
@@ -292,7 +294,6 @@ class InvestmentArchivesCollectionResource {
 
             ok JsonResult.success(ia)
         }
-
 
 
     }
@@ -304,7 +305,7 @@ class InvestmentArchivesCollectionResource {
                          @QueryParam('fxfs') String fxfs) {
         try {
             Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startTime);
-            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date,qx,fxfs))
+            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date, qx, fxfs))
         } catch (Exception e) {
             print(e)
             ok JsonResult.error(e.message)
@@ -414,7 +415,7 @@ class InvestmentArchivesCollectionResource {
 
     @GET
     @Path('/getyy')
-    Response Getyy(){
+    Response Getyy() {
         ok JsonResult.success("ok")
     }
 
@@ -511,5 +512,71 @@ class InvestmentArchivesCollectionResource {
         result.put("rest_total", total)
 
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    }
+
+    /**
+     * 获取投资档案信息(以合同编号 为依据的信息)
+     * @param arg
+     * @return
+     */
+    @POST
+    @Path('/ArchivesByNO')
+    Response GetHeTongStatusList(Map arg) {
+        MyResponse.page {
+            def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, arg)
+            List<InvestmentArchives> investmentArchives = dc
+                    .list([max: arg.pagesize, offset: arg.startposition])
+            def res = []
+//            res.push([x:100,y:100])//
+//            return [data: res,total: 10] //这样是对的,不知道为什么了
+            //生成需要的数据
+            investmentArchives.each {
+                def row = [:]
+                row.contractNum = it.contractNum
+                row.htzt = it.htzt.mapName
+                row.customer = it.customer != null ? it.customer.name : ""
+                row.rgrq = it.rgrq
+                row.tzqx = it.tzqx
+                row.tzje = it.sjtzje
+                row.fundName=it.fund.fundName
+
+                //下次提成日期和金额
+                def today = new Date()
+                Date next_tc_time = null
+                def next_tc_amount = 0
+                it.ywtcs.sort {
+                    a, b -> a.tcffsj < b.tcffsj
+                }.each {
+                    if (it.tcffsj > today) {
+                        next_tc_time = it.tcffsj
+                    }
+                }
+                //获取管理提成信息
+                def gl_list = investmentArchivesResourceService.getGltcList(it)
+                def next_gltc = gl_list.find {
+                    it.time > today
+                }
+                if (next_gltc != null && next_gltc.time > today) {
+                    next_tc_time = next_gltc.time
+                    next_tc_amount = next_gltc.amount
+                }
+                //设置下次提成数据
+                row.next_tc_time = next_tc_time
+                row.next_tc_amount = next_tc_amount
+
+                //下次付息时间和金额
+                def next_pay = it.payTimes.sort {
+                    a, b -> a.px < b.px
+                }.find {
+                    print(it)
+                    it.fxsj > today
+                }
+                row.next_pay_time = next_pay != null ? next_pay.fxsj : null
+                row.next_pay_amount = investmentArchivesResourceService.getPayOnceAmount(it)
+                res.add(row)
+            }
+//            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
+            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]
+        }
     }
 }

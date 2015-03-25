@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.created
 
-//import static org.grails.jaxrs.response.Responses.ok
+import static org.grails.jaxrs.response.Responses.ok
 import static com.jsy.utility.MyResponse.*
 
 
@@ -31,9 +31,8 @@ class FundCollectionResource {
     AuthorityService authorityService
 
     //新增基金
-    @Put
+    @PUT
     Response create(Fund dto) {
-
         ok {
             Date d = new Date()
             dto.createDate = d
