@@ -10,6 +10,7 @@ import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.Kxzqx
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
 import sun.misc.resources.Messages_sv
@@ -63,7 +64,11 @@ class TSWorkflowCollectionResource {
         customerArchive.save(failOnError: true)
 
         def typeConfig =TypeConfig.findByMapName("在库")
+        Kxzqx kxzqx1=new Kxzqx(jsz: 1,dw: '年')
+        Kxzqx kxzqx2=new Kxzqx(jsz: 2,dw: '年')
         def fund = Fund.findByFundName('fund1')?:new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        fund.addToKxzqx(kxzqx1)
+        fund.addToKxzqx(kxzqx2)
         def user = User.findByUsername("admin")
 
         InvestmentArchives archives1 = new InvestmentArchives(markNum:'2141412',customerArchive:customerArchive,customer:customer,

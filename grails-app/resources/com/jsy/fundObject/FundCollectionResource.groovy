@@ -1,5 +1,6 @@
 package com.jsy.fundObject
 
+import com.jsy.auth.AuthorityService
 import com.jsy.utility.CreateNumberService
 import grails.converters.JSON
 import org.apache.http.entity.StringEntity
@@ -27,6 +28,7 @@ class FundCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     public static final String NULL_STATUS = "200"
     def fundResourceService
+    AuthorityService authorityService
 
     //新增基金
     @Put
@@ -140,14 +142,13 @@ class FundCollectionResource {
         def fund
         String s = "1"
         try {
-            print(fundResourceService.seachByCriteria("fundNo='F201501311'", [max: 10, offset: 5]))
-            fund = fundResourceService.readAll()
+            fund = authorityService.getAuth(fundResourceService.readAll())
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             print(e)
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", fund as JSON)
+        result.put("rest_result", fund)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 

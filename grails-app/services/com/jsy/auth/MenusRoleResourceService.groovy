@@ -22,7 +22,7 @@ class MenusRoleResourceService {
                         ja.put(me.properties)
                     }
                 }
-                jsonObject.put("parentId",ja)
+                jsonObject.put("children",ja)
                 jsonArray.put(jsonObject)
             }
         }

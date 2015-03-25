@@ -174,8 +174,9 @@ class WorkflowResourceService {
         YieldRange range2 =new YieldRange(investment1:100,investment2:500,yield:0.1,vers:"A").save(failOnError: true);
         Tcfpfw tcfpfw2 = new Tcfpfw(manageerId:admin.id,businessCommision:0.1,manageCommision:0.2).save(failOnError: true);
         Kxzqx kxzqx2 = new Kxzqx(jsz:1,dw:'年').save(failOnError: true);
-
+        Kxzqx kxzqx1 = new Kxzqx(jsz:2,dw:'年').save(failOnError: true);
         fund2.addToKxzqx(kxzqx2)
+        fund2.addToKxzqx(kxzqx1)
         fund2.addToTcfpfw(tcfpfw2)
         fund2.addToYieldRange(range2)
         fund2.save(failOnError: true)
