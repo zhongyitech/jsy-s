@@ -127,6 +127,8 @@ class PayRecordCollectionResource {
         def rtn = []
         payRecords.each{payRecord->
             def pay_record = [:]
+
+            pay_record.payType = payRecord.payType
             pay_record.amount = payRecord.amount
             pay_record.payDate = payRecord.payDate
 
