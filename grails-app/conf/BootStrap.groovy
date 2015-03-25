@@ -2,6 +2,7 @@ import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
 import com.jsy.auth.MenusRole
+import com.jsy.auth.Operation
 import com.jsy.auth.Property
 import com.jsy.auth.Resource
 import com.jsy.auth.ResourceRole
@@ -231,6 +232,16 @@ class BootStrap {
         resourceRole1.addToPropertys(property15)
         resourceRole1.addToPropertys(property16)
         resourceRole1.addToPropertys(property17)
+        //基金资源的操作权限
+        Operation operation1=new Operation(cz: 'read',name: '查询',title: '查询',visible: true).save(failOnError: true)
+        Operation operation2=new Operation(cz: 'creat',name: '创建',title: '创建',visible: true).save(failOnError: true)
+        Operation operation3=new Operation(cz: 'update',name: '更新',title: '更新',visible: true).save(failOnError: true)
+        Operation operation4=new Operation(cz: 'delete',name: '删除',title: '删除',visible: true).save(failOnError: true)
+        resourceRole.addToOperations(operation1)
+        resourceRole.addToOperations(operation2)
+        resourceRole.addToOperations(operation3)
+        resourceRole.addToOperations(operation4)
+
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
         Property property21=new Property(name:'name',title:'客户名',visible:true).save(failOnError: true)
