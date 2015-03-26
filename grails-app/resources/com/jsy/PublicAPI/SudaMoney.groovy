@@ -72,6 +72,7 @@ class ExternalAPI {
             order.manageDate = new Date()
             order.manageType = AcceptOK
             order.save(failOnError: true)
+            return true
         }
     }
 }
