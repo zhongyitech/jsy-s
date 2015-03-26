@@ -34,10 +34,10 @@ class ExternalAPI {
      * 与速达账务软件的对接API
      */
     @GET
-    @Path('/bankrder')
+    @Path('/bankOrder')
     Response getBankOrder() {
         ok {
-            JSON.use("deep")
+//            JSON.use("deep")
             def order = BankOrder.findAllByManageType(NoAccept)
             def o = [:]
             o.number = order.evidenceCode
@@ -55,6 +55,7 @@ class ExternalAPI {
                 )
             }
             o.entry=oe
+
             return o
         }
     }
