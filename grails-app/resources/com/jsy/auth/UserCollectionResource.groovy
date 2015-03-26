@@ -29,7 +29,7 @@ class UserCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def userResourceService
+    UserResourceService userResourceService
     def springSecurityService
     AuthorityService authorityService
 
