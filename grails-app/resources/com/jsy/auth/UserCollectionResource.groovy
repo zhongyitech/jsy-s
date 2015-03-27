@@ -337,4 +337,12 @@ class UserCollectionResource {
 //            return Response.ok(result.toString()).status(500).build()
 //        }
     }
+    @GET
+    @Path('getUsers')
+    Response getUsers() {
+
+        ok {
+            User.findAll()
+        }
+    }
 }

@@ -249,10 +249,10 @@ class BootStrap {
         resourceRole1.addToOperations(operation3)
         resourceRole1.addToOperations(operation4)
         //基金相关url与对应操作关系
-        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund',method:'PUT',czlx:'creat').save(failOnError: true)
-        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund/update',method:'PUT',czlx:'update').save(failOnError: true)
-        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
-        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'PUT',czlx:'creat').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/update',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
 
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
