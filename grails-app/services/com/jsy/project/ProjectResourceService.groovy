@@ -84,7 +84,18 @@ class ProjectResourceService {
 
 
     def createProject(TSProject project){
-        project.save(failOnError: true)
+        if(project == null){
+            return MsgModel.getErrorMsg("project is null");
+        }
+
+        if(project.creator == null){
+            return MsgModel.getErrorMsg("project creator is null project id " + project.id);
+        }
+
+        if(project.projectOwner == null) {
+            return MsgModel.getErrorMsg("project owner is null project id " + project.id);
+        }
+        project.save(failOnError: true);
         workflowResourceService.createFlow(project.id)
     }
 

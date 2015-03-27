@@ -12,15 +12,15 @@ import com.jsy.fundObject.FundCompanyInformation
 class TSProject {
 
     /*****普通字段******/
-    String name              //项目名称
-    String projectDealer     //项目方
-    User projectOwner;       //项目负责人
-    User creator;            //创建者
-    String pdesc;            //备注
+    String name                //项目名称 not null
+    String projectDealer     //项目方   not null
+    User projectOwner;       //项目负责人 not null
+    User creator;             //创建者   not null
+    String pdesc;             //备注
 
     boolean isEnded=false;   //创建流程是否结束
     boolean archive=false;   //项目是否归档
-    String endSummary        //项目结算描述
+    String endSummary         //项目结算描述
 
     String director          //董事
     String supervisor        //监事

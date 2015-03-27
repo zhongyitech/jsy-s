@@ -74,7 +74,6 @@ class ReceiveRecordCollectionResource {
                             }
                             paytotal2= paytotal2 - payRecord.amount
 
-
                         }else if("interest_money".equals(target.name)){
                             ReceiveDetailRecord detailRecord
 
