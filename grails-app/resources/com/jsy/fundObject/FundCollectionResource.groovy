@@ -138,7 +138,6 @@ class FundCollectionResource {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def fund
-        String s = "1"
         try {
             fund = authorityService.getAuth(fundResourceService.readAll())
         } catch (Exception e) {

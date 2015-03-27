@@ -226,6 +226,7 @@ class BootStrap {
         Property property15=new Property(name:'tcfpfw',title:'提成分配',visible:true).save(failOnError: true)
         Property property16=new Property(name:'kxzqx',title:'可选择期限',visible:true).save(failOnError: true)
         Property property17=new Property(name:'status',title:'基金状态',visible:true).save(failOnError: true)
+        resourceRole1.addToPropertys(property10)
         resourceRole1.addToPropertys(property11)
         resourceRole1.addToPropertys(property12)
         resourceRole1.addToPropertys(property13)
