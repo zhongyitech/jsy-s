@@ -37,6 +37,11 @@ class AuthorityService {
                     jsonObject.put(it.key,null)
                 }
             }
+            if(map.containsKey("id")){
+                jsonObject.put("id",obj.id)
+            }else {
+                jsonObject.put("id",null)
+            }
             jsonArray.put(jsonObject)
         }
         return jsonArray
