@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.created
 
-import static org.grails.jaxrs.response.Responses.ok
 import static com.jsy.utility.MyResponse.*
 
 

@@ -90,14 +90,15 @@ class AuthorityService {
 
     //检测用户是否具有操作资源权限
     def checkAuth(List<ResourceRole> resourceRoles,String cz){
+        boolean isOk = false;
         resourceRoles.each {
             it.operations.each {operation->
                 if(operation.cz==cz&&operation.visible){
-                    return true
+                    isOk =  true
                 }
             }
         }
-        return false
+        return isOk
     }
 
     def serviceMethod() {

@@ -218,6 +218,7 @@ class BootStrap {
         resourceRoleUR.addToPropertys(propertyUR5)
         //基金资源
         ResourceRole resourceRole1=new ResourceRole(role: adminRole,resource:jj).save(failOnError: true)
+        Property property10=new Property(name:'id',title:'基金id',visible:true).save(failOnError: true)
         Property property11=new Property(name:'fundName',title:'基金名',visible:true).save(failOnError: true)
         Property property12=new Property(name:'fundNo',title:'基金编号',visible:true).save(failOnError: true)
         Property property13=new Property(name:'raiseFunds',title:'预募规模',visible:true).save(failOnError: true)
@@ -237,10 +238,10 @@ class BootStrap {
         Operation operation2=new Operation(cz: 'creat',name: '创建',title: '创建',visible: true).save(failOnError: true)
         Operation operation3=new Operation(cz: 'update',name: '更新',title: '更新',visible: true).save(failOnError: true)
         Operation operation4=new Operation(cz: 'delete',name: '删除',title: '删除',visible: true).save(failOnError: true)
-        resourceRole.addToOperations(operation1)
-        resourceRole.addToOperations(operation2)
-        resourceRole.addToOperations(operation3)
-        resourceRole.addToOperations(operation4)
+        resourceRole1.addToOperations(operation1)
+        resourceRole1.addToOperations(operation2)
+        resourceRole1.addToOperations(operation3)
+        resourceRole1.addToOperations(operation4)
 
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
