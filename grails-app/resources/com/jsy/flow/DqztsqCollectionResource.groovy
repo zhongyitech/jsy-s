@@ -3,6 +3,7 @@ package com.jsy.flow
 import com.jsy.archives.InvestmentArchives
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
+import com.jsy.utility.DomainHelper
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.parser.JSONParser
 import org.json.JSONObject
@@ -10,7 +11,8 @@ import org.json.JSONObject
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
-import static org.grails.jaxrs.response.Responses.*
+//import static org.grails.jaxrs.response.Responses.*
+import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -31,77 +33,99 @@ class DqztsqCollectionResource {
 
     @POST
     Response create(Dqztsq dto) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        dto.sqrq=new Date()
-        def dd
-        try {
-            dd = dqztsqResourceService.create(dto)
+        ok {
+            dto.sqrq=new Date()
+            def dd = dqztsqResourceService.create(dto)
             InvestmentArchives investmentArchives=InvestmentArchives.get(dto.oldArchivesId)
             investmentArchives.dazt=1
             investmentArchives.status=2
             investmentArchives.save(failOnError: true)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-        }catch(RuntimeException e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+            dd
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", dd as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        dto.sqrq=new Date()
+//        def dd
+//        try {
+//            dd = dqztsqResourceService.create(dto)
+//            InvestmentArchives investmentArchives=InvestmentArchives.get(dto.oldArchivesId)
+//            investmentArchives.dazt=1
+//            investmentArchives.status=2
+//            investmentArchives.save(failOnError: true)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }catch(RuntimeException e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", dd as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
     @Path('/getIAInfo')
     Response getIAInfo(@QueryParam('iaid') Long iaid){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def ia
-        try {
-            ia = InvestmentArchives.get(iaid)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+        ok {
+            def ia = InvestmentArchives.get(iaid)
+            ia
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ia as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def ia
+//        try {
+//            ia = InvestmentArchives.get(iaid)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ia as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
     Response getById(@QueryParam('id') Long id) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def wd
-        try {
-            wd =  Dqztsq.findById(id)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            print(e)
+        ok {
+            def wd =  Dqztsq.findById(id)
+            wd
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", wd as JSON)
-
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def wd
+//        try {
+//            wd =  Dqztsq.findById(id)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI;
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", wd as JSON)
+//
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
     @PUT
     Response update(Dqztsq dto,@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        dto.id = id
-        def wd
-        try {
-            wd =  dqztsqResourceService.update(dto)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            print(e)
+        ok {
+            dto.id = id
+            def wd =  dqztsqResourceService.update(dto)
+            wd
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", wd as JSON)
-
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        dto.id = id
+//        def wd
+//        try {
+//            wd =  dqztsqResourceService.update(dto)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI;
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", wd as JSON)
+//
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @Path('/{id}')
@@ -111,24 +135,31 @@ class DqztsqCollectionResource {
 
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        def ia
-        try {
-            JSONObject json = dqztsqResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            ia = json.get("page")
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            print(e)
-        }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ia as JSON)
-        result.put("rest_total", total)
+    Response readAllForPage(Map arg) {
+        page {
+            def dc = DomainHelper.getDetachedCriteria(Dqztsq, arg)
+            //todo: other code
 
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            //按分页要求返回数据格式 [数据,总页数]
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count():0]
+        }
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        int total
+//        def ia
+//        try {
+//            JSONObject json = dqztsqResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+//            total = json.get("size")
+//            ia = json.get("page")
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI;
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ia as JSON)
+//        result.put("rest_total", total)
+//
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 

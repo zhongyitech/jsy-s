@@ -2,13 +2,15 @@ package com.jsy.utility
 
 import grails.gorm.DetachedCriteria
 
+
 /**
  * Created by lioa on 2015/3/19.
  */
 class DomainHelper {
     public static DetachedCriteria getDetachedCriteria(Class domain, def query) {
+        VaildQueryObj(query)
         DetachedCriteria dc = new DetachedCriteria(domain)
-        if(query==null){
+        if (query == null) {
             return dc;
         }
         Map orderArg = query.order
@@ -46,6 +48,27 @@ class DomainHelper {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 返回指定对象的分页数据
+     * @param domainClass 对象名称(表名)
+     * @param query       查询条件
+     * @return            page格式
+     */
+    public static Map getPage(Class domainClass, def query) {
+        def dc = DomainHelper.getDetachedCriteria(domainClass, query)
+        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total: query.startposition == 0 ? dc.count() : 0]
+    }
+
+    /**
+     * 检测查询参数的合法性
+     * @param query
+     */
+    private static  void VaildQueryObj(def query){
+        if(query==null || (query as Map)==null){
+            throw  new Exception("查询格式不正确")
         }
     }
 }

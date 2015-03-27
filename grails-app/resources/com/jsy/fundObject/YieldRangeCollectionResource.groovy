@@ -5,7 +5,8 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.QueryParam
 
-import static org.grails.jaxrs.response.Responses.*
+//import static org.grails.jaxrs.response.Responses.*
+import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -45,17 +46,22 @@ class YieldRangeCollectionResource {
     @GET
     @Path('/getyieldrangebyid')
     Response getyieldrangebyid(@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def yr
-        try {
-            yr = YieldRange.get(id)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+        ok {
+            def yr = YieldRange.get(id)
+            yr
+
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", yr as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def yr
+//        try {
+//            yr = YieldRange.get(id)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", yr as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 }
