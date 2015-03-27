@@ -19,7 +19,7 @@ import static com.jsy.utility.MyResponse.*
 @Path('/api/PublicAPI')
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
-class ExternalAPI {
+class SudaMoney {
 
     /**
      * 未处理
