@@ -51,22 +51,26 @@ class RoleCollectionResource {
 
     @GET
     Response readAll() {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def ia
-        try {
-            ia = roleResourceService.readAll()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", ia as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        } catch (Exception e) {
-            restStatus = REST_STATUS_FAI
-            print(e)
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", ia as JSON)
-            return Response.ok(result.toString()).status(500).build()
+        ok {
+            def ia = roleResourceService.readAll()
+            ia
         }
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def ia
+//        try {
+//            ia = roleResourceService.readAll()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", ia as JSON)
+//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        } catch (Exception e) {
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//            e.printStackTrace()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", ia as JSON)
+//            return Response.ok(result.toString()).status(500).build()
+//        }
     }
 
 //    @GET
