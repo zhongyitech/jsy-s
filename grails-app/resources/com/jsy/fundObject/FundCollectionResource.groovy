@@ -135,20 +135,24 @@ class FundCollectionResource {
     //读取全部基金
     @GET
     Response readAll() {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def fund
-        String s = "1"
-        try {
-            print(fundResourceService.seachByCriteria("fundNo='F201501311'", [max: 10, offset: 5]))
-            fund = fundResourceService.readAll()
-        } catch (Exception e) {
-            restStatus = REST_STATUS_FAI;
-            print(e)
+        ok {
+            def fund = fundResourceService.readAll()
+            fund
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", fund as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def fund
+//        String s = "1"
+//        try {
+//            print(fundResourceService.seachByCriteria("fundNo='F201501311'", [max: 10, offset: 5]))
+//            fund = fundResourceService.readAll()
+//        } catch (Exception e) {
+//            restStatus = REST_STATUS_FAI;
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", fund as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
 
@@ -156,133 +160,227 @@ class FundCollectionResource {
     @POST
     @Path('/mainPage')
     Response readMainPage(Finfo f1) {
-        print('/mainPage/readMainPage')
-        print(f1.startposition)
-        Finfo f = new Finfo()
-        print(f)
-        if (null != f1.status) {
-            f.status = f1.status
-        }
-        if (null != f1.startsaledate1) {
-            f.startsaledate1 = f1.startsaledate1
-        }
-        if (null != f1.startsaledate2) {
-            f.startsaledate2 = f1.startsaledate2
-        }
-        if (null != f1.keyword) {
-            f.keyword = f1.keyword
-        }
-        if (null != f1.startposition) {
-            f.startposition = f1.startposition
-        }
-        if (null != f1.pagesize) {
-            f.pagesize = f1.pagesize
-        }
-//    Response readMainPage(@QueryParam('pagesize') @DefaultValue('10') Long pagesize, @QueryParam('startposition') @DefaultValue('0') Long startposition, @QueryParam('keyword') String keyword, @QueryParam('status') @DefaultValue("200") int status, @QueryParam('startsaledate1') @DefaultValue('2000-01-01 00:00:00') String startsaledate1, @QueryParam('startsaledate2') @DefaultValue('3000-01-01 00:00:00')  String startsaledate2)  {
-//        f.pagesize = 2
-//        f.startposition = 0
-//        f.keyword = ""
-//        f.status = 0
-//        f.startsaledate1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2014-12-11 00:00:00")
-//        f.startsaledate2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2014-12-31 00:00:00")
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        Date date2 = new Date()
-        //example 2014-12-09 09:10:46
-//        if (null == f.startsaledate2 || "" == f.startsaledate2){
-//
-//            sdf.format(date2)
-//
-//        }else {
-//            date2 = sdf.parse(f.startsaledate2)
-//
-//        }
-
-//        String da=sdf.format(startsaledate1)
-//        Date date1 = sdf.parse(f.startsaledate1)
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        JSONObject json
-        def rc
-        try {
-            //分页内容查找
-//        def funcoll = fundResourceService.readMainPage(pagesize, startposition, keyword, status, date1, date2)
-            json = fundResourceService.readMainPage(f.pagesize, f.startposition, f.keyword, f.status, f.startsaledate1, f.startsaledate2)
-            total = json.get("size")
-            rc = json.get("page")
-//        print(funcoll.size)
-//
-            def fund_all = fundResourceService.readAll()
-            int fund_count = fund_all.size() //统计总数
-            int raise_count = 0    //在募基金数量
-            long plan_total = 0     //预计募集总量
-            long real_total = 0     //实际募集总量
-            long season_plan_total = 0      //季度预募总量
-            long season_real_total = 0      //季度实募总量
-            long half_plan_total = 0        //半年预募总量
-            long half_real_total = 0        //半年实募总量
-            long year_plan_total = 0        //年度预募总量
-            long year_real_total = 0        //年度实募总量
-            //遍历
-            fund_all.each {
-                Fund current_fund = it
-                if (1 == current_fund.status) {
-                    raise_count++
-                }
-
-                if (current_fund.raiseFunds.toString().isNumber()) {
-                    plan_total += current_fund.raiseFunds
-                }
-                if (null == current_fund.rRaiseFunds) {
-//                real_total += current_fund.rRaiseFunds
-                } else {
-                    real_total += current_fund.rRaiseFunds
-                }
-                if (current_fund.quarterRaise.toString().isNumber()) {
-                    season_plan_total += current_fund.quarterRaise
-                }
-                if (current_fund.rQuarterRaise.toString().isNumber()) {
-                    season_real_total += current_fund.rQuarterRaise
-                }
-                if (current_fund.halfRaise.toString().isNumber()) {
-                    half_plan_total += current_fund.halfRaise
-                }
-                if (current_fund.rHalfRaise.toString().isNumber()) {
-                    half_real_total += current_fund.rHalfRaise
-                }
-                if (current_fund.yearRaise.toString().isNumber()) {
-                    year_plan_total += current_fund.yearRaise
-                }
-                if (current_fund.rYearRaise.toString().isNumber()) {
-                    year_real_total += current_fund.rYearRaise
-                }
-
+        ok {
+            print('/mainPage/readMainPage')
+            print(f1.startposition)
+            Finfo f = new Finfo()
+            print(f)
+            if (null != f1.status) {
+                f.status = f1.status
             }
-            result.put("fund_count", fund_count)
-            result.put("raise_count", raise_count);
-            result.put("plan_total", plan_total)
-            result.put("real_total", real_total)
-            result.put("season_plan_total", season_plan_total)
-            result.put("season_real_total", season_real_total)
-            result.put("half_plan_total", half_plan_total)
-            result.put("half_real_total", half_real_total)
-            result.put("year_plan_total", year_plan_total)
-            result.put("year_real_total", year_real_total)
-        } catch (Exception e) {
-            restStatus = REST_STATUS_FAI;
-            print(e)
-        }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", rc as JSON)
-        result.put("rest_total", total)
+            if (null != f1.startsaledate1) {
+                f.startsaledate1 = f1.startsaledate1
+            }
+            if (null != f1.startsaledate2) {
+                f.startsaledate2 = f1.startsaledate2
+            }
+            if (null != f1.keyword) {
+                f.keyword = f1.keyword
+            }
+            if (null != f1.startposition) {
+                f.startposition = f1.startposition
+            }
+            if (null != f1.pagesize) {
+                f.pagesize = f1.pagesize
+            }
 
-//        print("funcoll class: "+funcoll.getClass().getName())
-//        String resultString = result.toString();
-//        StringEntity resultEntity = new StringEntity(resultString);
-//        return b.build(EntityUtils.toString(resultEntity,"UTF-8"));
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            Date date2 = new Date()
+            JSONObject result = new JSONObject();
+            JSONArray table = new JSONArray();
+            String restStatus = REST_STATUS_SUC;
+            int total
+            JSONObject json
+            def rc
+                json = fundResourceService.readMainPage(f.pagesize, f.startposition, f.keyword, f.status, f.startsaledate1, f.startsaledate2)
+                total = json.get("size")
+                rc = json.get("page")
+//
+                def fund_all = fundResourceService.readAll()
+                int fund_count = fund_all.size() //统计总数
+                int raise_count = 0    //在募基金数量
+                long plan_total = 0     //预计募集总量
+                long real_total = 0     //实际募集总量
+                long season_plan_total = 0      //季度预募总量
+                long season_real_total = 0      //季度实募总量
+                long half_plan_total = 0        //半年预募总量
+                long half_real_total = 0        //半年实募总量
+                long year_plan_total = 0        //年度预募总量
+                long year_real_total = 0        //年度实募总量
+                //遍历
+                fund_all.each {
+                    Fund current_fund = it
+                    if (1 == current_fund.status) {
+                        raise_count++
+                    }
+
+                    if (current_fund.raiseFunds.toString().isNumber()) {
+                        plan_total += current_fund.raiseFunds
+                    }
+                    if (null == current_fund.rRaiseFunds) {
+//                real_total += current_fund.rRaiseFunds
+                    } else {
+                        real_total += current_fund.rRaiseFunds
+                    }
+                    if (current_fund.quarterRaise.toString().isNumber()) {
+                        season_plan_total += current_fund.quarterRaise
+                    }
+                    if (current_fund.rQuarterRaise.toString().isNumber()) {
+                        season_real_total += current_fund.rQuarterRaise
+                    }
+                    if (current_fund.halfRaise.toString().isNumber()) {
+                        half_plan_total += current_fund.halfRaise
+                    }
+                    if (current_fund.rHalfRaise.toString().isNumber()) {
+                        half_real_total += current_fund.rHalfRaise
+                    }
+                    if (current_fund.yearRaise.toString().isNumber()) {
+                        year_plan_total += current_fund.yearRaise
+                    }
+                    if (current_fund.rYearRaise.toString().isNumber()) {
+                        year_real_total += current_fund.rYearRaise
+                    }
+
+                }
+                result.put("fund_count", fund_count)
+                result.put("raise_count", raise_count);
+                result.put("plan_total", plan_total)
+                result.put("real_total", real_total)
+                result.put("season_plan_total", season_plan_total)
+                result.put("season_real_total", season_real_total)
+                result.put("half_plan_total", half_plan_total)
+                result.put("half_real_total", half_real_total)
+                result.put("year_plan_total", year_plan_total)
+                result.put("year_real_total", year_real_total)
+            return
+        }
+//        print('/mainPage/readMainPage')
+//        print(f1.startposition)
+//        Finfo f = new Finfo()
+//        print(f)
+//        if (null != f1.status) {
+//            f.status = f1.status
+//        }
+//        if (null != f1.startsaledate1) {
+//            f.startsaledate1 = f1.startsaledate1
+//        }
+//        if (null != f1.startsaledate2) {
+//            f.startsaledate2 = f1.startsaledate2
+//        }
+//        if (null != f1.keyword) {
+//            f.keyword = f1.keyword
+//        }
+//        if (null != f1.startposition) {
+//            f.startposition = f1.startposition
+//        }
+//        if (null != f1.pagesize) {
+//            f.pagesize = f1.pagesize
+//        }
+////    Response readMainPage(@QueryParam('pagesize') @DefaultValue('10') Long pagesize, @QueryParam('startposition') @DefaultValue('0') Long startposition, @QueryParam('keyword') String keyword, @QueryParam('status') @DefaultValue("200") int status, @QueryParam('startsaledate1') @DefaultValue('2000-01-01 00:00:00') String startsaledate1, @QueryParam('startsaledate2') @DefaultValue('3000-01-01 00:00:00')  String startsaledate2)  {
+////        f.pagesize = 2
+////        f.startposition = 0
+////        f.keyword = ""
+////        f.status = 0
+////        f.startsaledate1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2014-12-11 00:00:00")
+////        f.startsaledate2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2014-12-31 00:00:00")
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//        Date date2 = new Date()
+//        //example 2014-12-09 09:10:46
+////        if (null == f.startsaledate2 || "" == f.startsaledate2){
+////
+////            sdf.format(date2)
+////
+////        }else {
+////            date2 = sdf.parse(f.startsaledate2)
+////
+////        }
+//
+////        String da=sdf.format(startsaledate1)
+////        Date date1 = sdf.parse(f.startsaledate1)
+//        JSONObject result = new JSONObject();
+//        JSONArray table = new JSONArray();
+//        String restStatus = REST_STATUS_SUC;
+//        int total
+//        JSONObject json
+//        def rc
+//        try {
+//            //分页内容查找
+////        def funcoll = fundResourceService.readMainPage(pagesize, startposition, keyword, status, date1, date2)
+//            json = fundResourceService.readMainPage(f.pagesize, f.startposition, f.keyword, f.status, f.startsaledate1, f.startsaledate2)
+//            total = json.get("size")
+//            rc = json.get("page")
+////        print(funcoll.size)
+////
+//            def fund_all = fundResourceService.readAll()
+//            int fund_count = fund_all.size() //统计总数
+//            int raise_count = 0    //在募基金数量
+//            long plan_total = 0     //预计募集总量
+//            long real_total = 0     //实际募集总量
+//            long season_plan_total = 0      //季度预募总量
+//            long season_real_total = 0      //季度实募总量
+//            long half_plan_total = 0        //半年预募总量
+//            long half_real_total = 0        //半年实募总量
+//            long year_plan_total = 0        //年度预募总量
+//            long year_real_total = 0        //年度实募总量
+//            //遍历
+//            fund_all.each {
+//                Fund current_fund = it
+//                if (1 == current_fund.status) {
+//                    raise_count++
+//                }
+//
+//                if (current_fund.raiseFunds.toString().isNumber()) {
+//                    plan_total += current_fund.raiseFunds
+//                }
+//                if (null == current_fund.rRaiseFunds) {
+////                real_total += current_fund.rRaiseFunds
+//                } else {
+//                    real_total += current_fund.rRaiseFunds
+//                }
+//                if (current_fund.quarterRaise.toString().isNumber()) {
+//                    season_plan_total += current_fund.quarterRaise
+//                }
+//                if (current_fund.rQuarterRaise.toString().isNumber()) {
+//                    season_real_total += current_fund.rQuarterRaise
+//                }
+//                if (current_fund.halfRaise.toString().isNumber()) {
+//                    half_plan_total += current_fund.halfRaise
+//                }
+//                if (current_fund.rHalfRaise.toString().isNumber()) {
+//                    half_real_total += current_fund.rHalfRaise
+//                }
+//                if (current_fund.yearRaise.toString().isNumber()) {
+//                    year_plan_total += current_fund.yearRaise
+//                }
+//                if (current_fund.rYearRaise.toString().isNumber()) {
+//                    year_real_total += current_fund.rYearRaise
+//                }
+//
+//            }
+//            result.put("fund_count", fund_count)
+//            result.put("raise_count", raise_count);
+//            result.put("plan_total", plan_total)
+//            result.put("real_total", real_total)
+//            result.put("season_plan_total", season_plan_total)
+//            result.put("season_real_total", season_real_total)
+//            result.put("half_plan_total", half_plan_total)
+//            result.put("half_real_total", half_real_total)
+//            result.put("year_plan_total", year_plan_total)
+//            result.put("year_real_total", year_real_total)
+//        } catch (Exception e) {
+//            restStatus = REST_STATUS_FAI;
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", rc as JSON)
+//        result.put("rest_total", total)
+//
+////        print("funcoll class: "+funcoll.getClass().getName())
+////        String resultString = result.toString();
+////        StringEntity resultEntity = new StringEntity(resultString);
+////        return b.build(EntityUtils.toString(resultEntity,"UTF-8"));
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 
     /*
@@ -311,28 +409,42 @@ class FundCollectionResource {
     @GET
     @Path("/getKxzqx")
     Response getKxzqx(@QueryParam('id') Long id) {
-        JSONObject result = new JSONObject();
-        result.put("rest_status", 200)
-        result.put("rest_result", Fund.get(id).kxzqx as JSON)
-        return Response.ok(result.toString()).status(200).build()
+        ok {
+            return Fund.get(id).kxzqx
+        }
+//        JSONObject result = new JSONObject();
+//        result.put("rest_status", 200)
+//        result.put("rest_result", Fund.get(id).kxzqx as JSON)
+//        return Response.ok(result.toString()).status(200).build()
     }
 
     @GET
     @Path('/nameLike')
     Response findByNameLike(@QueryParam('params') String username) {
-        def users = Fund.findAllByFundNameLike("%" + username + "%")
-        org.json.JSONArray jsonArray = new org.json.JSONArray()
-        users.each {
-            JSONObject jso = new JSONObject()
-            jso.put("value", it.fundName)
-            jso.put("data", it.id)
-            jsonArray.put(jso)
+        ok {
+            def users = Fund.findAllByFundNameLike("%" + username + "%")
+            org.json.JSONArray jsonArray = new org.json.JSONArray()
+            users.each {
+                JSONObject jso = new JSONObject()
+                jso.put("value", it.fundName)
+                jso.put("data", it.id)
+                jsonArray.put(jso)
+            }
+            jsonArray
         }
-        JSONObject jsonObject = new JSONObject()
-        jsonObject.put("query", "Unit")
-        jsonObject.put("suggestions", jsonArray)
-
-        ok jsonObject.toString()
+//        def users = Fund.findAllByFundNameLike("%" + username + "%")
+//        org.json.JSONArray jsonArray = new org.json.JSONArray()
+//        users.each {
+//            JSONObject jso = new JSONObject()
+//            jso.put("value", it.fundName)
+//            jso.put("data", it.id)
+//            jsonArray.put(jso)
+//        }
+//        JSONObject jsonObject = new JSONObject()
+//        jsonObject.put("query", "Unit")
+//        jsonObject.put("suggestions", jsonArray)
+//
+//        ok jsonObject.toString()
     }
 }
 
