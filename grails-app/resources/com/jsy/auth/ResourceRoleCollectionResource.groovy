@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
+import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -41,24 +42,32 @@ class ResourceRoleCollectionResource {
 
     @PUT
     Response update(ResourceRole dto,@QueryParam('id') Long id){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def rr
-        try {
+        ok {
+            def rr
             rr = ResourceRole.get(id)
             rr.operations = dto.operations
             rr.propertys = dto.propertys
             rr.save(failOnError: true)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", rr as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", rr as JSON)
-            return Response.ok(result.toString()).status(500).build()
+            rr
         }
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def rr
+//        try {
+//            rr = ResourceRole.get(id)
+//            rr.operations = dto.operations
+//            rr.propertys = dto.propertys
+//            rr.save(failOnError: true)
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", rr as JSON)
+//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//            e.printStackTrace()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", rr as JSON)
+//            return Response.ok(result.toString()).status(500).build()
+//        }
     }
 }

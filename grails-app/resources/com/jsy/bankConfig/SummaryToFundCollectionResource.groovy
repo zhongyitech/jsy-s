@@ -6,7 +6,9 @@ import org.json.JSONObject
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
-import static org.grails.jaxrs.response.Responses.*
+//import static org.grails.jaxrs.response.Responses.*
+
+import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -37,51 +39,64 @@ class SummaryToFundCollectionResource {
 
     @POST
     Response create(SummaryToFund dto) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def ftb
-        try {
-            ftb = summaryToFundResourceService.create(dto)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+        ok {
+            def ftb = summaryToFundResourceService.create(dto)
+            ftb
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ftb as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def ftb
+//        try {
+//            ftb = summaryToFundResourceService.create(dto)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ftb as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
     Response readAll() {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def ftb
-        try {
-            ftb = summaryToFundResourceService.readAll()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+        ok {
+            def ftb = summaryToFundResourceService.readAll()
+            ftb
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ftb as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def ftb
+//        try {
+//            ftb = summaryToFundResourceService.readAll()
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ftb as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @PUT
     Response update(SummaryToFund dto,@QueryParam('id') Long id){
-        dto.id = id
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def ftb
-        try {
-            ftb = summaryToFundResourceService.update(dto)
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI
-            print(e)
+        ok {
+            dto.id = id
+            def ftb = summaryToFundResourceService.update(dto)
+            ftb
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ftb as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        dto.id = id
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def ftb
+//        try {
+//            ftb = summaryToFundResourceService.update(dto)
+//        }catch (Exception e){
+//            restStatus = REST_STATUS_FAI
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ftb as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
 
