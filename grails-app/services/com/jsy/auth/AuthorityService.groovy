@@ -83,14 +83,15 @@ class AuthorityService {
         def roles=UserRole.findAllByUser(user).collect{it.role}
         Resource resource=Resource.findByObjectName(resourceName)
         def resourceRoles=ResourceRole.findAllByRoleInListAndResource(roles,resource)
+        boolean b=false
         resourceRoles.each {
             it.operations.each {operation->
                 if(operation.cz==cz&&operation.visible){
-                    return true
+                    b=true
                 }
             }
         }
-        return false
+        return b
     }
 
     //检测用户是否具有操作资源权限

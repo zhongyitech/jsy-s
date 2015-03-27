@@ -1,6 +1,7 @@
 package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.json.JSONObject
 
@@ -112,17 +113,9 @@ class ContractRegisterCollectionResource {
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Finfo finfo) {
-        ok {
-            def result
-            int total
-            JSONObject json
-            def fp
-            json = contractRegisterResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            fp = json.get("page")
-//            result.put("rest_status", restStatus)
-            result.put("rest_result", fp as JSON)
-            result.put("rest_total", total)
+        page {
+            def json = contractRegisterResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            return [data:json.get("page"),total:json.get("size")]
         }
 //        print("contractRegisterResourceService.readAllForPage()")
 //        JSONObject result = new JSONObject();
