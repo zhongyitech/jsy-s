@@ -32,7 +32,7 @@ class ContractRegisterCollectionResource {
     Response create(ContractRegister dto) {
 
         ok {
-            def result
+            def result=[:]
             def cr
             //截取合同编号
             int qs=Integer.parseInt(dto.qsbh.substring(5))
