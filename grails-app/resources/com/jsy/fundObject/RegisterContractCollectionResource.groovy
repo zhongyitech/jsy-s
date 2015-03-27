@@ -3,6 +3,7 @@ package com.jsy.fundObject
 import com.jsy.archives.Contract
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -139,18 +140,9 @@ class RegisterContractCollectionResource {
     @POST
     @Path('/readUseForPage')
     Response readUseForPage(Finfo finfo) {
-        ok {
-            def ret =[:]
-            int total
-            def rc
-            JSONObject json
-            json = registerContractResourceService.readUseForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            rc = json.get("page")
-            ret.page = rc
-            ret.total = total
-            ret
+        page {
+            def json = registerContractResourceService.readUseForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            return [data:json.get("page"),total:json.get("size")]
         }
 //        print("registerContract.readUseForPage")
 //        JSONObject result = new JSONObject();
