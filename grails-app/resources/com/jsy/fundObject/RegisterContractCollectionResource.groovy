@@ -174,18 +174,9 @@ class RegisterContractCollectionResource {
     @POST
     @Path('/readReturnForPage')
     Response readReturnForPage(Finfo finfo) {
-        ok {
-            def ret =[:]
-            int total
-            def rc
-            JSONObject json
-            json = registerContractResourceService.readReturnForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            rc = json.get("page")
-            ret.page = rc
-            ret.total = total
-            ret
+        page {
+            def json = registerContractResourceService.readReturnForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            return [data:json.get("page"),total: json.get("size")]
         }
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
