@@ -7,7 +7,9 @@ class OperationsAPI {
     String resoureClass
     //url接口
     String url
-    //操作类型 craeat delete update read
+    //method
+    String method
+    //操作类型 creat delete update read
     String czlx
 
     static constraints = {

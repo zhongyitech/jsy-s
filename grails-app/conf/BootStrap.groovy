@@ -3,6 +3,7 @@ import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
 import com.jsy.auth.MenusRole
 import com.jsy.auth.Operation
+import com.jsy.auth.OperationsAPI
 import com.jsy.auth.Property
 import com.jsy.auth.Resource
 import com.jsy.auth.ResourceRole
@@ -237,10 +238,15 @@ class BootStrap {
         Operation operation2=new Operation(cz: 'creat',name: '创建',title: '创建',visible: true).save(failOnError: true)
         Operation operation3=new Operation(cz: 'update',name: '更新',title: '更新',visible: true).save(failOnError: true)
         Operation operation4=new Operation(cz: 'delete',name: '删除',title: '删除',visible: true).save(failOnError: true)
-        resourceRole.addToOperations(operation1)
-        resourceRole.addToOperations(operation2)
-        resourceRole.addToOperations(operation3)
-        resourceRole.addToOperations(operation4)
+        resourceRole1.addToOperations(operation1)
+        resourceRole1.addToOperations(operation2)
+        resourceRole1.addToOperations(operation3)
+        resourceRole1.addToOperations(operation4)
+        //基金相关url与对应操作关系
+        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund',method:'PUT',czlx:'creat').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund/update',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class,url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
 
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
