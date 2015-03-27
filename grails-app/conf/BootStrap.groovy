@@ -195,11 +195,13 @@ class BootStrap {
 
         //User资源
         ResourceRole resourceRole=new ResourceRole(role: adminRole,resource:yh).save(failOnError: true)
+        Property property0=new Property(name:'id',title:'用户id',visible:true).save(failOnError: true)
         Property property1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
         Property property2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
         Property property3=new Property(name:'skr',title:'收款人',visible:true).save(failOnError: true)
         Property property4=new Property(name:'khh',title:'开户行',visible:true).save(failOnError: true)
         Property property5=new Property(name:'yhzh',title:'银行账户',visible:true).save(failOnError: true)
+        resourceRole.addToPropertys(property0)
         resourceRole.addToPropertys(property1)
         resourceRole.addToPropertys(property2)
         resourceRole.addToPropertys(property3)
@@ -207,11 +209,13 @@ class BootStrap {
         resourceRole.addToPropertys(property5)
 
         ResourceRole resourceRoleUR=new ResourceRole(role: userRole,resource:yh).save(failOnError: true)
+        Property propertyUR0=new Property(name:'id',title:'用户id',visible:true).save(failOnError: true)
         Property propertyUR1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
         Property propertyUR2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
         Property propertyUR3=new Property(name:'skr',title:'收款人',visible:false).save(failOnError: true)
         Property propertyUR4=new Property(name:'khh',title:'开户行',visible:false).save(failOnError: true)
         Property propertyUR5=new Property(name:'yhzh',title:'银行账户',visible:false).save(failOnError: true)
+        resourceRoleUR.addToPropertys(propertyUR0)
         resourceRoleUR.addToPropertys(propertyUR1)
         resourceRoleUR.addToPropertys(propertyUR2)
         resourceRoleUR.addToPropertys(propertyUR3)
@@ -250,6 +254,7 @@ class BootStrap {
 
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
+        Property property20=new Property(name:'id',title:'客户id',visible:true).save(failOnError: true)
         Property property21=new Property(name:'name',title:'客户名',visible:true).save(failOnError: true)
         Property property22=new Property(name:'country',title:'国家（地区）',visible:true).save(failOnError: true)
         Property property23=new Property(name:'credentialsType',title:'证照类型',visible:true).save(failOnError: true)
@@ -266,6 +271,7 @@ class BootStrap {
         Property property295=new Property(name:'remark',title:'备注',visible:true).save(failOnError: true)
         Property property296=new Property(name:'bankAccount',title:'银行账户',visible:true).save(failOnError: true)
         Property property297=new Property(name:'uploadFiles',title:'客户附件',visible:true).save(failOnError: true)
+        resourceRole2.addToPropertys(property20)
         resourceRole2.addToPropertys(property21)
         resourceRole2.addToPropertys(property22)
         resourceRole2.addToPropertys(property23)
@@ -284,6 +290,7 @@ class BootStrap {
         resourceRole2.addToPropertys(property297)
         //档案资源
         ResourceRole resourceRole3=new ResourceRole(role: adminRole,resource:da).save(failOnError: true)
+        Property property01=new Property(name:'id',title:'档案id',visible:true).save(failOnError: true)
         Property property31=new Property(name:'markNum',title:'档案编号',visible:true).save(failOnError: true)
         Property property32=new Property(name:'archiveNum',title:'编号',visible:true).save(failOnError: true)
         Property property33=new Property(name:'contractNum',title:'合同编号',visible:true).save(failOnError: true)
@@ -312,6 +319,7 @@ class BootStrap {
         Property property362=new Property(name:'gltcs',title:'管理提成',visible:true).save(failOnError: true)
         Property property372=new Property(name:'uploadFiles',title:'档案附件',visible:true).save(failOnError: true)
         Property property382=new Property(name:'payTimes',title:'兑付时间',visible:true).save(failOnError: true)
+        resourceRole3.addToPropertys(property01)
         resourceRole3.addToPropertys(property31)
         resourceRole3.addToPropertys(property32)
         resourceRole3.addToPropertys(property33)
