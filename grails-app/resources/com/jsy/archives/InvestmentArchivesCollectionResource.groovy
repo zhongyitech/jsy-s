@@ -8,6 +8,7 @@ import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.json.JSONArray
 import org.json.JSONObject
@@ -17,8 +18,7 @@ import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 import java.text.SimpleDateFormat
 
-//import static org.grails.jaxrs.response.Responses.*
-import static com.jsy.utility.MyResponse.*
+import static org.grails.jaxrs.response.Responses.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -35,34 +35,30 @@ class InvestmentArchivesCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def investmentArchivesResourceService
-    def springSecurityService
+    InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
 
     //根据档案id取附件
     @GET
     @Path('/getFiles')
     Response getgetFiles(@QueryParam('archiveNum') String archiveNum) {
-        ok {
-            def file
-            InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-            file = investmentArchives.uploadFiles
-            file
-        }
-//        InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", investmentArchives.uploadFiles as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        result.put("rest_status", restStatus)
+        result.put("rest_result", investmentArchives.uploadFiles as JSON)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //获取剩余的收益额
     @GET
     @Path('/getProceeds')
     Response getProceeds(@QueryParam('archiveNum') String archiveNum) {
-        ok {
-            def jsonArray
+        JSONObject result = new JSONObject();
+        JSONArray jsonArray = new JSONArray()
+        String restStatus = REST_STATUS_SUC;
+        boolean b = true
+        try {
             InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
 
             if ("N" == investmentArchives.fxfs) {
@@ -128,167 +124,55 @@ class InvestmentArchivesCollectionResource {
                 jsonArray.put(obj3)
                 jsonArray.put(obj4)
             }
-            jsonArray
+        } catch (Exception e) {
+            restStatus = REST_STATUS_FAI
+            e.printStackTrace()
+            print(e)
         }
-//        JSONObject result = new JSONObject();
-//        JSONArray jsonArray = new JSONArray()
-//        String restStatus = REST_STATUS_SUC;
-//        boolean b = true
-//        try {
-//            InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-//
-//            if ("N" == investmentArchives.fxfs) {
-//                JSONObject obj = new JSONObject()
-//                BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl
-//                obj.put("lx", lx)
-//                obj.put("fxsj", investmentArchives.fxsj1)
-//                if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
-//                    b = false
-//                }
-//                obj.put("sffx", b)
-//                jsonArray.put(obj)
-//            } else if (investmentArchives.fxfs == "W") {
-//                BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl / 2
-//                JSONObject obj1 = new JSONObject()
-//                obj1.put("lx", lx)
-//                obj1.put("fxsj", investmentArchives.fxsj1)
-//                obj1.put("sffx", true)
-//                JSONObject obj2 = new JSONObject()
-//                obj2.put("lx", lx)
-//                obj2.put("fxsj", investmentArchives.fxsj2)
-//                obj2.put("sffx", true)
-//                if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
-//                    obj1.put("sffx", false)
-//                }
-//                if (investmentArchives.fxsj2 && investmentArchives.fxsj2.after(new Date())) {
-//                    obj2.put("sffx", false)
-//                }
-//                jsonArray.put(obj1)
-//                jsonArray.put(obj2)
-//            } else if (investmentArchives.fxfs == "J") {
-//                BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl / 4
-//                JSONObject obj1 = new JSONObject()
-//                obj1.put("lx", lx)
-//                obj1.put("fxsj", investmentArchives.fxsj1)
-//                obj1.put("sffx", true)
-//                JSONObject obj2 = new JSONObject()
-//                obj2.put("lx", lx)
-//                obj2.put("fxsj", investmentArchives.fxsj2)
-//                obj2.put("sffx", true)
-//                JSONObject obj3 = new JSONObject()
-//                obj3.put("lx", lx)
-//                obj3.put("fxsj", investmentArchives.fxsj3)
-//                obj3.put("sffx", true)
-//                JSONObject obj4 = new JSONObject()
-//                obj4.put("lx", lx)
-//                obj4.put("fxsj", investmentArchives.fxsj4)
-//                obj4.put("sffx", true)
-//                if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
-//                    obj1.put("sffx", false)
-//                }
-//                if (investmentArchives.fxsj2 && investmentArchives.fxsj2.after(new Date())) {
-//                    obj2.put("sffx", false)
-//                }
-//                if (investmentArchives.fxsj3 && investmentArchives.fxsj3.after(new Date())) {
-//                    obj3.put("sffx", false)
-//                }
-//                if (investmentArchives.fxsj4 && investmentArchives.fxsj4.after(new Date())) {
-//                    obj4.put("sffx", false)
-//                }
-//                jsonArray.put(obj1)
-//                jsonArray.put(obj2)
-//                jsonArray.put(obj3)
-//                jsonArray.put(obj4)
-//            }
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
-//            e.printStackTrace()
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", jsonArray.toString())
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+        result.put("rest_status", restStatus)
+        result.put("rest_result", jsonArray.toString())
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
     @Path('/getFile')
     static Response getFile(@QueryParam('archiveNum') String archiveNum) {
-        ok {
-            InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-            JSONObject result = new JSONObject();
-            JSONArray fxsj = new JSONArray()
+        InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
+        JSONObject result = new JSONObject();
+        JSONArray fxsj = new JSONArray()
 
-            //客户名字
-            result.put("username", investmentArchives.username)
-            //基金名
-            result.put("fundName", investmentArchives.fundName)
-            //投资金额
-            result.put("sjtzje", investmentArchives.sjtzje)
-            //投资期限
-            result.put("qx", investmentArchives.qx)
-            //投资预期收益率
-            result.put("yqsyl", investmentArchives.yqsyl)
-            //计息开始日期
-            result.put("startDate", investmentArchives.startDate)
-            //计息结束日期
-            result.put("endDate", investmentArchives.endDate)
-            //第一次付息时间
-            if (investmentArchives.fxsj1) {
-                fxsj.put(investmentArchives.fxsj1)
-            }
-            //第二次付息时间
-            if (investmentArchives.fxsj2) {
-                fxsj.put(investmentArchives.fxsj2)
-            }
-            //第三次付息时间
-            if (investmentArchives.fxsj3) {
-                fxsj.put(investmentArchives.fxsj3)
-            }
-            //第四次付息时间
-            if (investmentArchives.fxsj4) {
-                fxsj.put(investmentArchives.fxsj4)
-            }
-            result.put("fxsj", fxsj)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
-            result
+        //客户名字
+        result.put("username", investmentArchives.username)
+        //基金名
+        result.put("fundName", investmentArchives.fundName)
+        //投资金额
+        result.put("sjtzje", investmentArchives.sjtzje)
+        //投资期限
+        result.put("qx", investmentArchives.qx)
+        //投资预期收益率
+        result.put("yqsyl", investmentArchives.yqsyl)
+        //计息开始日期
+        result.put("startDate", investmentArchives.startDate)
+        //计息结束日期
+        result.put("endDate", investmentArchives.endDate)
+        //第一次付息时间
+        if (investmentArchives.fxsj1) {
+            fxsj.put(investmentArchives.fxsj1)
         }
-
-//        InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-//        JSONObject result = new JSONObject();
-//        JSONArray fxsj = new JSONArray()
-//
-//        //客户名字
-//        result.put("username", investmentArchives.username)
-//        //基金名
-//        result.put("fundName", investmentArchives.fundName)
-//        //投资金额
-//        result.put("sjtzje", investmentArchives.sjtzje)
-//        //投资期限
-//        result.put("qx", investmentArchives.qx)
-//        //投资预期收益率
-//        result.put("yqsyl", investmentArchives.yqsyl)
-//        //计息开始日期
-//        result.put("startDate", investmentArchives.startDate)
-//        //计息结束日期
-//        result.put("endDate", investmentArchives.endDate)
-//        //第一次付息时间
-//        if (investmentArchives.fxsj1) {
-//            fxsj.put(investmentArchives.fxsj1)
-//        }
-//        //第二次付息时间
-//        if (investmentArchives.fxsj2) {
-//            fxsj.put(investmentArchives.fxsj2)
-//        }
-//        //第三次付息时间
-//        if (investmentArchives.fxsj3) {
-//            fxsj.put(investmentArchives.fxsj3)
-//        }
-//        //第四次付息时间
-//        if (investmentArchives.fxsj4) {
-//            fxsj.put(investmentArchives.fxsj4)
-//        }
-//        result.put("fxsj", fxsj)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
+        //第二次付息时间
+        if (investmentArchives.fxsj2) {
+            fxsj.put(investmentArchives.fxsj2)
+        }
+        //第三次付息时间
+        if (investmentArchives.fxsj3) {
+            fxsj.put(investmentArchives.fxsj3)
+        }
+        //第四次付息时间
+        if (investmentArchives.fxsj4) {
+            fxsj.put(investmentArchives.fxsj4)
+        }
+        result.put("fxsj", fxsj)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 
     //检测传入MODEL的合法性，属性的值
@@ -347,13 +231,13 @@ class InvestmentArchivesCollectionResource {
                     if (!cusa) {
                         CustomerArchives customerArchives = new CustomerArchives()
                         customerArchives.properties = cus.properties
-                        if(!customerArchives.zch){
+                        if (!customerArchives.zch) {
                             customerArchives.zch = ""
                         }
 
                         customerArchives.save(failOnError: true)
-                        TypeConfig typeConfig=TypeConfig.findByTypeAndMapValue(7,2)
-                        customerArchives.addToBankAccount(bankName:cus.khh,bankOfDeposit:cus.khh,accountName:cus.name,account:cus.yhzh,purpose:typeConfig).save(failOnError: true)
+                        TypeConfig typeConfig = TypeConfig.findByTypeAndMapValue(7, 2)
+                        customerArchives.addToBankAccount(bankName: cus.khh, bankOfDeposit: cus.khh, accountName: cus.name, account: cus.yhzh, purpose: typeConfig).save(failOnError: true)
                     }
 //                    }else{
 //                        cus.properties=dto.customer.properties
@@ -372,10 +256,10 @@ class InvestmentArchivesCollectionResource {
                 dto.markNum = dto.archiveNum
                 dto.save(failOnError: true)
                 //付息时间新增
-                List times=investmentArchivesResourceService.scfxsj(dto.rgrq,dto.tzqx,dto.fxfs)
-                int i=1
+                List times = investmentArchivesResourceService.scfxsj(dto.rgrq, dto.tzqx, dto.fxfs)
+                int i = 1
                 times.each {
-                    PayTime payTime=new PayTime(px: i,fxsj: it,sffx: false,investmentArchives:dto).save(failOnError: true)
+                    PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dto).save(failOnError: true)
                     dto.addToPayTimes(payTime).save(failOnError: true)
                     i++
                 }
@@ -398,11 +282,11 @@ class InvestmentArchivesCollectionResource {
 //                    cus.properties=dto.customer.properties
 //                    cus.save(failOnError: true)
 //                }
-                dto.status=1
-                dto.username=cus.name
+                dto.status = 1
+                dto.username = cus.name
             }
-            dto.customer=cus
-            ia = investmentArchivesResourceService.update(dto,Integer.parseInt(id))
+            dto.customer = cus
+            ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
 //            }catch (Exception e){
 //                restStatus = REST_STATUS_FAI
 //                print(e)
@@ -412,7 +296,6 @@ class InvestmentArchivesCollectionResource {
         }
 
 
-
     }
 
     @GET
@@ -420,19 +303,13 @@ class InvestmentArchivesCollectionResource {
     Response getPayTimes(@QueryParam('startTime') String startTime,
                          @QueryParam('qx') String qx,
                          @QueryParam('fxfs') String fxfs) {
-        ok {
-            def t
+        try {
             Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startTime);
-                    t = investmentArchivesResourceService.scfxsj(date,qx,fxfs)
-            t
+            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date, qx, fxfs))
+        } catch (Exception e) {
+            print(e)
+            ok JsonResult.error(e.message)
         }
-//        try {
-//            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startTime);
-//            ok JsonResult.success(investmentArchivesResourceService.scfxsj(date,qx,fxfs))
-//        } catch (Exception e) {
-//            print(e)
-//            ok JsonResult.error(e.message)
-//        }
     }
 
     @GET
@@ -440,84 +317,51 @@ class InvestmentArchivesCollectionResource {
     Response GetById(@QueryParam('id') Long id) {
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
-        ok {
-            def ia = InvestmentArchives.get(id)
-            ia
+        def ia
+        try {
+            ia = InvestmentArchives.get(id)
+            ok JsonResult.success(ia)
+        } catch (Exception e) {
+//            restStatus = REST_STATUS_FAI
+            print(e)
+            ok JsonResult.error(e.message)
         }
-//        def ia
-//        try {
-//            ia = InvestmentArchives.get(id)
-//            ok JsonResult.success(ia)
-//        } catch (Exception e) {
-////            restStatus = REST_STATUS_FAI
-//            print(e)
-//            ok JsonResult.error(e.message)
-//        }
-////        result.put("rest_status", restStatus)
-////        result.put("rest_result", ia as JSON)
-////        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ia as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //根据名字模糊查询投资确认书列表
     @GET
     @Path('/getAllFile')
     Response getAllFile(@QueryParam('query') String query) {
-        ok {
-            List<InvestmentArchives> investmentArchives = InvestmentArchives.findAllByFundNameLikeOrUsernameLike("%" + query + "%", "%" + query + "%")
-            JSONArray result = new JSONArray();
-            investmentArchives.each {
-                JSONObject ia = new JSONObject();
-                //客户名字
-                ia.put("username", it.username)
-                //基金名
-                ia.put("fundName", it.fundName)
-                //投资金额
-                ia.put("sjtzje", it.sjtzje)
-                //认购日期
-                ia.put("rgrq", it.rgrq)
-                //投资期限
-                ia.put("qx", it.qx)
-                //投资预期收益率
-                ia.put("yqsyl", it.yqsyl)
-                //付息方式
-                ia.put("fxfs", it.fxfs)
-                //部门
-                ia.put("bm", it.bmjl.username)
-                //最近打印日期
-                ia.put("zjdysj", it.zjdysj)
-                //文档编号
-                ia.put("archiveNum", it.archiveNum)
-                result.put(ia);
-            }
-                result
+        List<InvestmentArchives> investmentArchives = InvestmentArchives.findAllByFundNameLikeOrUsernameLike("%" + query + "%", "%" + query + "%")
+        JSONArray result = new JSONArray();
+        investmentArchives.each {
+            JSONObject ia = new JSONObject();
+            //客户名字
+            ia.put("username", it.username)
+            //基金名
+            ia.put("fundName", it.fundName)
+            //投资金额
+            ia.put("sjtzje", it.sjtzje)
+            //认购日期
+            ia.put("rgrq", it.rgrq)
+            //投资期限
+            ia.put("qx", it.qx)
+            //投资预期收益率
+            ia.put("yqsyl", it.yqsyl)
+            //付息方式
+            ia.put("fxfs", it.fxfs)
+            //部门
+            ia.put("bm", it.bmjl.username)
+            //最近打印日期
+            ia.put("zjdysj", it.zjdysj)
+            //文档编号
+            ia.put("archiveNum", it.archiveNum)
+            result.put(ia);
         }
-//        List<InvestmentArchives> investmentArchives = InvestmentArchives.findAllByFundNameLikeOrUsernameLike("%" + query + "%", "%" + query + "%")
-//        JSONArray result = new JSONArray();
-//        investmentArchives.each {
-//            JSONObject ia = new JSONObject();
-//            //客户名字
-//            ia.put("username", it.username)
-//            //基金名
-//            ia.put("fundName", it.fundName)
-//            //投资金额
-//            ia.put("sjtzje", it.sjtzje)
-//            //认购日期
-//            ia.put("rgrq", it.rgrq)
-//            //投资期限
-//            ia.put("qx", it.qx)
-//            //投资预期收益率
-//            ia.put("yqsyl", it.yqsyl)
-//            //付息方式
-//            ia.put("fxfs", it.fxfs)
-//            //部门
-//            ia.put("bm", it.bmjl.username)
-//            //最近打印日期
-//            ia.put("zjdysj", it.zjdysj)
-//            //文档编号
-//            ia.put("archiveNum", it.archiveNum)
-//            result.put(ia);
-//        }
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 
     @PUT
@@ -525,8 +369,9 @@ class InvestmentArchivesCollectionResource {
     Response updateforprint(@QueryParam('id') Long id) {
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
-        ok {
-            def ia = InvestmentArchives.get(id)
+        def ia
+        try {
+            ia = InvestmentArchives.get(id)
             ia.dycs = ia.dycs + 1
             ia.zjdysj = new Date()
             ia.save(failOnError: true)
@@ -539,30 +384,13 @@ class InvestmentArchivesCollectionResource {
                     new CommissionInfo(zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
                 }
             }
-            ia
+            ok JsonResult.success(ia)
+
+        } catch (Exception e) {
+//            restStatus = REST_STATUS_FAI
+            print(e)
+            ok JsonResult.error(e.message)
         }
-//        def ia
-//        try {
-//            ia = InvestmentArchives.get(id)
-//            ia.dycs = ia.dycs + 1
-//            ia.zjdysj = new Date()
-//            ia.save(failOnError: true)
-//
-//            //添加业务提成
-//            def commissionInfo = CommissionInfo.findAllByArchivesId(ia.id)
-//            if (commissionInfo.size() == 0) {
-//                ia.ywtcs.each {
-//                    //业务提成金额
-//                    new CommissionInfo(zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
-//                }
-//            }
-//            ok JsonResult.success(ia)
-//
-//        } catch (Exception e) {
-////            restStatus = REST_STATUS_FAI
-//            print(e)
-//            ok JsonResult.error(e.message)
-//        }
 //        result.put("rest_status", restStatus)
 //        result.put("rest_result", ia as JSON)
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
@@ -572,40 +400,24 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/print1')
     Response print1(@QueryParam('archiveNum') String archiveNum) {
-        ok {
-            InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-            //更新打印数据
-            if (investmentArchives) {
-                investmentArchives.dycs = investmentArchives.dycs + 1
-                investmentArchives.zjdysj = new Date()
-                investmentArchives.save(failOnError: true)
-                return Response.ok("{'result':'ok'}").status(200).build();
-            } else {
-                return Response.ok("{'result':'error'}").status(200).build();
-            }
+        InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
+        //更新打印数据
+        if (investmentArchives) {
+            investmentArchives.dycs = investmentArchives.dycs + 1
+            investmentArchives.zjdysj = new Date()
+            investmentArchives.save(failOnError: true)
+            return Response.ok("{'result':'ok'}").status(200).build();
+        } else {
+            return Response.ok("{'result':'error'}").status(200).build();
         }
-//        InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
-//        //更新打印数据
-//        if (investmentArchives) {
-//            investmentArchives.dycs = investmentArchives.dycs + 1
-//            investmentArchives.zjdysj = new Date()
-//            investmentArchives.save(failOnError: true)
-//            return Response.ok("{'result':'ok'}").status(200).build();
-//        } else {
-//            return Response.ok("{'result':'error'}").status(200).build();
-//        }
 
     }
 
     @GET
     @Path('/getyy')
-    Response Getyy(){
-//        ok JsonResult.success("ok")
-    ok {
-        "ok"
+    Response Getyy() {
+        ok JsonResult.success("ok")
     }
-    }
-
 
     @GET
     @Path('/getYield')
@@ -613,48 +425,37 @@ class InvestmentArchivesCollectionResource {
                       @QueryParam('managerid') Long managerid,
                       @QueryParam('investment') BigDecimal investment,
                       @QueryParam('vers') String vers) {
-        ok {
-            def gy = GetYieldService.getYield(fundid, managerid, investment, vers)
-            gy
+        def gy
+        try {
+            gy = GetYieldService.getYield(fundid, managerid, investment, vers)
+            ok JsonResult.success(gy)
+        } catch (Exception e) {
+            print(e)
+            ok JsonResult.error(e.message)
         }
-//        def gy
-//        try {
-//            gy = GetYieldService.getYield(fundid, managerid, investment, vers)
-//            ok JsonResult.success(gy)
-//        } catch (Exception e) {
-//            print(e)
-//            ok JsonResult.error(e.message)
-//        }
     }
 
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Map arg) {
-            page {
-                def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, arg)
-                //todo: other code
-
-                //按分页要求返回数据格式 [数据,总页数]
-                return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count():0]
-            }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int total
-//        def ia
-//        ia = investmentArchivesResourceService.findByParm(finfo.keyword)
-//        total = ia.size()
-//        try {
-//            JSONObject json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-//            total = json.get("size")
-//            ia = json.get("page")
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ia)
-//        result.put("rest_total", total)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    Response readAllForPage(Finfo finfo) {
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        int total
+        def ia
+        ia = investmentArchivesResourceService.findByParm(finfo.keyword)
+        total = ia.size()
+        try {
+            JSONObject json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            total = json.get("size")
+            ia = json.get("page")
+        } catch (Exception e) {
+            restStatus = REST_STATUS_FAI;
+            print(e)
+        }
+        result.put("rest_status", restStatus)
+        result.put("rest_result", ia)
+        result.put("rest_total", total)
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 
@@ -666,11 +467,7 @@ class InvestmentArchivesCollectionResource {
     @GET
     Response readAll() {
 //        ok investmentArchivesResourceService.readAll()
-//        ok JsonResult.success(investmentArchivesResourceService.readAll())
-        ok {
-            def ia = investmentArchivesResourceService.readAll()
-            ia
-        }
+        ok JsonResult.success(investmentArchivesResourceService.readAll())
     }
 
     @Path('/{id}')
@@ -680,10 +477,19 @@ class InvestmentArchivesCollectionResource {
 
     @POST
     @Path('/IAOutput')
-    Response IAOutput(Map arg) {
-        page {
-            def ia = DomainHelper.getDetachedCriteria(FilePackage, arg)
-            def iao
+    Response IAOutput(Finfo finfo) {
+        if (null == finfo.keyword) {
+            finfo.keyword = ""
+        }
+        JSONObject result = new JSONObject();
+        String restStatus = REST_STATUS_SUC;
+        int total
+        def ia
+        org.codehaus.groovy.grails.web.json.JSONArray iao = new org.codehaus.groovy.grails.web.json.JSONArray()
+        try {
+
+            ia = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("page")
+            total = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("size")
             ia.each {
 //            InvestmentArchives inves = it
                 if (null != it.customer) {
@@ -693,75 +499,84 @@ class InvestmentArchivesCollectionResource {
                     print(it.toString() + ".customer is null!!!")
                 }
             }
-            return [data: iao.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? ia.count():0]
+
+        } catch (Exception e) {
+            restStatus = REST_STATUS_FAI;
+            print(e)
         }
-//        if (null == finfo.keyword) {
-//            finfo.keyword = ""
-//        }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int total
-//        def ia
-//        org.codehaus.groovy.grails.web.json.JSONArray iao = new org.codehaus.groovy.grails.web.json.JSONArray()
-//        try {
-//
-//            ia = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("page")
-//            total = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("size")
-//            ia.each {
-////            InvestmentArchives inves = it
-//                if (null != it.customer) {
-//                    IAOutput iaoo = new IAOutput(it)
-//                    iao.put(iaoo)
-//                } else {
-//                    print(it.toString() + ".customer is null!!!")
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//
-//
-//        print("customer NOT NULL.size = " + iao.size())
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", iao as JSON)
-//        result.put("rest_total", total)
-//
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+
+
+        print("customer NOT NULL.size = " + iao.size())
+        result.put("rest_status", restStatus)
+        result.put("rest_result", iao as JSON)
+        result.put("rest_total", total)
+
+        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
+    /**
+     * 获取投资档案信息(以合同编号 为依据的信息)
+     * @param arg
+     * @return
+     */
     @POST
-    @Path('getContract')
-    Response getContract(Map arg){
-        page {
+    @Path('/ArchivesByNO')
+    Response GetHeTongStatusList(Map arg) {
+        MyResponse.page {
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, arg)
-            //todo: other code
+            List<InvestmentArchives> investmentArchives = dc
+                    .list([max: arg.pagesize, offset: arg.startposition])
+            def res = []
+//            res.push([x:100,y:100])//
+//            return [data: res,total: 10] //这样是对的,不知道为什么了
+            //生成需要的数据
+            investmentArchives.each {
+                def row = [:]
+                row.contractNum = it.contractNum
+                row.htzt = it.htzt.mapName
+                row.customer = it.customer != null ? it.customer.name : ""
+                row.rgrq = it.rgrq
+                row.tzqx = it.tzqx
+                row.tzje = it.sjtzje
+                row.fundName=it.fund.fundName
 
-            //按分页要求返回数据格式 [数据,总页数]
-            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count():0]
+                //下次提成日期和金额
+                def today = new Date()
+                Date next_tc_time = null
+                def next_tc_amount = 0
+                it.ywtcs.sort {
+                    a, b -> a.tcffsj < b.tcffsj
+                }.each {
+                    if (it.tcffsj > today) {
+                        next_tc_time = it.tcffsj
+                    }
+                }
+                //获取管理提成信息
+                def gl_list = investmentArchivesResourceService.getGltcList(it)
+                def next_gltc = gl_list.find {
+                    it.time > today
+                }
+                if (next_gltc != null && next_gltc.time > today) {
+                    next_tc_time = next_gltc.time
+                    next_tc_amount = next_gltc.amount
+                }
+                //设置下次提成数据
+                row.next_tc_time = next_tc_time
+                row.next_tc_amount = next_tc_amount
+
+                //下次付息时间和金额
+                def next_pay = it.payTimes.sort {
+                    a, b -> a.px < b.px
+                }.find {
+                    print(it)
+                    it.fxsj > today
+                }
+                row.next_pay_time = next_pay != null ? next_pay.fxsj : null
+                row.next_pay_amount = investmentArchivesResourceService.getPayOnceAmount(it)
+                res.add(row)
+            }
+//            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
+            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]
         }
-//        if (null == finfo.keyword) {
-//            finfo.keyword = ""
-//        }
-//        def  json
-//        def jsonpage
-//        try {
-//             json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-//            jsonpage = json.get("page")
-//            jsonpage.each {
-//                int s=CommissionInfo.findAllByTcrAndArchivesIdAndLx(springSecurityService.getCurrentUser().chainName,it.id,1).size()
-//                //
-//                //
-//                //    Unfinished By liujw.2015.3.13-18:05
-//                //
-//                //
-//            }
-//            ok JsonResult.success(obj,"",page)
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
     }
-
 }

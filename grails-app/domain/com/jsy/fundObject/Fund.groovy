@@ -40,49 +40,62 @@ class Fund {
     TypeConfig status
     //创建日期
     Date createDate
-    //基金责任人
-    String owner
-    //备注
-    String memo
-    //已付利息
-    BigDecimal interestPaid = 0
-    //未付利息 = 0
-    BigDecimal unpaidInterest = 0
-    //已付本金 = 0
-    BigDecimal paidPrincipal = 0
-    //未付本金 = 0
-    BigDecimal unpaidPrincipal = 0
-    //转投合计 = 0
-    BigDecimal investmentDiversion = 0
-    //退伙合计 = 0
-    BigDecimal exitInvestment = 0
-    //续投合计 = 0
-    BigDecimal reinvestment = 0
-    //投资日期
-    Date investDate
-    //应投项目金额
-    String investmentAmount
-    //实投项目金额
-    BigDecimal rInvestmentAmount = 0
-    //已收管理费 = 0
-    BigDecimal managementFee = 0
-    //已收渠道费
-    BigDecimal channelFee = 0
-    //已收项目利息
-    BigDecimal collectedInterest = 0
-    //未收项目利息 = 0
-    BigDecimal uncollectedInterest = 0
-    //已收项目本金 = 0
-    BigDecimal collectedPrincipal = 0
-    //未收项目本金 = 0
-    BigDecimal uncollectedPrincipal = 0
     //扣除违约金比例
     double kcwyjbl=0.05
 
+    /* 以下基金字段是没用实际用到的，前台界面也没有  */
+    //基金责任人：没用到！
+    String owner
+    //备注：没用到！
+    String memo
+    //已付利息：没用到！
+    BigDecimal interestPaid = 0
+    //未付利息 = 0：没用到！
+    BigDecimal unpaidInterest = 0
+    //已付本金 = 0：没用到！
+    BigDecimal paidPrincipal = 0
+    //未付本金 = 0：没用到！
+    BigDecimal unpaidPrincipal = 0
+    //转投合计 = 0：没用到！
+    BigDecimal investmentDiversion = 0
+    //退伙合计 = 0：没用到！
+    BigDecimal exitInvestment = 0
+    //续投合计 = 0：没用到！
+    BigDecimal reinvestment = 0
+    //投资日期：没用到！
+    Date investDate
+    //应投项目金额：没用到！
+    String investmentAmount
+    //实投项目金额：没用到！
+    BigDecimal rInvestmentAmount = 0
+    //已收管理费 = 0：没用到！
+    BigDecimal managementFee = 0
+    //已收渠道费：没用到！
+    BigDecimal channelFee = 0
+    //已收项目利息：没用到！
+    BigDecimal collectedInterest = 0
+    //未收项目利息 = 0：没用到！
+    BigDecimal uncollectedInterest = 0
+    //已收项目本金 = 0：没用到！
+    BigDecimal collectedPrincipal = 0
+    //未收项目本金 = 0：没用到！
+    BigDecimal uncollectedPrincipal = 0
+
+
+
+
+    //有限合伙
+    FundCompanyInformation funcCompany
+
+
     //相关联项目
     static belongsTo = []
-    //收益率范围//提成分配//可选投资期限
-    static hasMany = [yieldRange:YieldRange,tcfpfw:Tcfpfw,kxzqx:Kxzqx]
+
+    static hasMany = [
+            yieldRange:YieldRange,  //收益率范围
+            tcfpfw:Tcfpfw,          //提成分配
+            kxzqx:Kxzqx             //可选投资期限
+    ]
 
     //收益率范围
     //非包销情况下调用返回收益率
@@ -130,5 +143,7 @@ class Fund {
         uncollectedInterest nullable: true
         collectedPrincipal nullable: true
         uncollectedPrincipal nullable: true
+        //todo:remove this
+        funcCompany nullable: true
     }
 }

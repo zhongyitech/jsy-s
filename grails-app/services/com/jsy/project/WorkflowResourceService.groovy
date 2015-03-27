@@ -1,13 +1,20 @@
 package com.jsy.project
 
-import Models.MsgModel
+import com.jsy.archives.CommissionInfo
 import com.jsy.archives.CommissionInfoResourceService
+import com.jsy.archives.CustomerArchives
+import com.jsy.archives.InvestmentArchives
+import com.jsy.archives.PaymentInfo
 import com.jsy.auth.Role
 import com.jsy.auth.User
 import com.jsy.auth.UserRole
 import com.jsy.bankConfig.BankAccount
+import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
+import com.jsy.fundObject.Kxzqx
+import com.jsy.fundObject.Tcfpfw
+import com.jsy.fundObject.YieldRange
 import com.jsy.system.Company
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
@@ -22,12 +29,13 @@ class WorkflowResourceService {
     CommissionInfoResourceService commissionInfoResourceService
 
     def initData = {
-        commissionInfoResourceService.initData()
-
-        initFund()
-        initCompany()
+        initCompany();
+        initFund();
+        initFund_Company_Relate();
+        initInvestment();
+        initCommissionData();
         createProjects()
-        initPayRecords();
+//        initPayRecords();
         initRole();
         initFlowModel()
         init_flow();
@@ -60,8 +68,6 @@ class WorkflowResourceService {
         TSWorkflowModel tsWorkflow = new TSWorkflowModel(modelName: "projectCreateFlow");
         tsWorkflow.save(failOnError: true)
 
-        //SortedSet phaseParticipants;
-//        static hasMany = [phaseParticipants : Role];
         def financialIncharger = Role.findByAuthority("FinancialIncharger")
         def projectIncharger = Role.findByAuthority("ProjectIncharger")
         def ministryIncharger = Role.findByAuthority("MinistryIncharger")
@@ -118,140 +124,214 @@ class WorkflowResourceService {
     }
 
     def initFund() {
+        Fund fund = new Fund(
+                fundName: 'fund1',
+                fundNo: '001',
+                startSaleDate: new Date(),
+                raiseFunds:1000000,
+                rRaiseFunds:1000000/2,
+                quarterRaise:1000000/2/4,
+                rQuarterRaise:1000000/2/4/2,
+                halfRaise:1000000/2/2,
+                rHalfRaise:1000000/2/2/2,
+                yearRaise:1000000/2,
+                rYearRaise:1000000/2/2,
+                status: TypeConfig.findByTypeAndMapValue(1, 2),
+                owner: '张三',
+                memo: '备注',
+        ).save(failOnError: true)
 
-        Fund.findByFundName('fund1') ?: new Fund(fundName: 'fund1', fundNo: 'F001', startSaleDate: new Date(), status: TypeConfig.findByTypeAndMapValue(1, 2), owner: '张三', memo: '备注').save(failOnError: true)
-        Fund.findByFundName('fund2') ?: new Fund(fundName: 'fund2', fundNo: 'F002', startSaleDate: new Date(), status: TypeConfig.findByTypeAndMapValue(1, 2), owner: '张三', memo: '备注').save(failOnError: true)
-        Fund.findByFundName('fund3') ?: new Fund(fundName: 'fund3', fundNo: 'F003', startSaleDate: new Date(), status: TypeConfig.findByTypeAndMapValue(1, 2), owner: '张三', memo: '备注').save(failOnError: true)
+        def admin = User.findByUsername("admin")
+        YieldRange range =new YieldRange(investment1:100,investment2:500,yield:0.1,vers:"A").save(failOnError: true);
+        Tcfpfw tcfpfw = new Tcfpfw(manageerId:admin.id,businessCommision:0.1,manageCommision:0.2).save(failOnError: true);
+        Kxzqx kxzqx = new Kxzqx(jsz:1,dw:'年').save(failOnError: true);
+
+        fund.addToKxzqx(kxzqx)
+        fund.addToTcfpfw(tcfpfw)
+        fund.addToYieldRange(range)
+        fund.save(failOnError: true)
+
+
+        //2
+
+        Fund fund2 = new Fund(
+                fundName: 'fund2',
+                fundNo: '002',
+                startSaleDate: new Date(),
+                raiseFunds:1000000,
+                rRaiseFunds:1000000/2,
+                quarterRaise:1000000/2/4,
+                rQuarterRaise:1000000/2/4/2,
+                halfRaise:1000000/2/2,
+                rHalfRaise:1000000/2/2/2,
+                yearRaise:1000000/2,
+                rYearRaise:1000000/2/2,
+                status: TypeConfig.findByTypeAndMapValue(1, 2),
+                owner: '张三',
+                memo: '备注',
+        ).save(failOnError: true)
+
+        YieldRange range2 =new YieldRange(investment1:100,investment2:500,yield:0.1,vers:"A").save(failOnError: true);
+        Tcfpfw tcfpfw2 = new Tcfpfw(manageerId:admin.id,businessCommision:0.1,manageCommision:0.2).save(failOnError: true);
+        Kxzqx kxzqx2 = new Kxzqx(jsz:1,dw:'年').save(failOnError: true);
+        Kxzqx kxzqx1 = new Kxzqx(jsz:2,dw:'年').save(failOnError: true);
+        fund2.addToKxzqx(kxzqx2)
+        fund2.addToKxzqx(kxzqx1)
+        fund2.addToTcfpfw(tcfpfw2)
+        fund2.addToYieldRange(range2)
+        fund2.save(failOnError: true)
+
     }
 
-    def initCompany() {
-        def admin = User.findByUsername("admin")
-        def fund1 = Fund.findByFundName("fund1")
-        def fund2 = Fund.findByFundName("fund2")
-        def fund3 = Fund.findByFundName("fund3")
+    def initInvestment={
 
-        //目的
-        TypeConfig typeConfig1 = new TypeConfig(type: 6, mapName: "收款", mapValue: 1)
-        typeConfig1.save(failOnError: true)
-        TypeConfig typeConfig2 = new TypeConfig(type: 6, mapName: "汇款", mapValue: 2)
-        typeConfig2.save(failOnError: true)
-        TypeConfig typeConfig3 = new TypeConfig(type: 6, mapName: "国庆电商收款", mapValue: 3)
-        typeConfig3.save(failOnError: true)
-        BankAccount bankAccount1 = new BankAccount(
-                bankName: "光大银行",
-                bankOfDeposit: "黎平街支行",
-                accountName: "刘先生",
-                account: "21415212",
-                defaultAccount: false,
-                purpose: typeConfig1
-        )
-        bankAccount1.save(failOnError: true)
-        BankAccount bankAccount2 = new BankAccount(
-                bankName: "平安银行",
-                bankOfDeposit: "和哦支行",
-                accountName: "李先生",
-                account: "53462",
-                defaultAccount: false,
-                purpose: typeConfig2
-        )
-        bankAccount2.save(failOnError: true)
-        BankAccount bankAccount3 = new BankAccount(
-                bankName: "人民银行",
-                bankOfDeposit: "三个支行",
-                accountName: "和先生",
-                account: "1623623",
-                defaultAccount: true,
-                purpose: typeConfig3
-        )
-        bankAccount3.save(failOnError: true)
+    }
 
-        BankAccount bankAccount4 = new BankAccount(
-                bankName: "人民银行",
-                bankOfDeposit: "三个支行",
-                accountName: "chen先生",
-                account: "34634",
-                defaultAccount: true,
-                purpose: typeConfig3
-        )
-        bankAccount4.save(failOnError: true)
-        BankAccount bankAccount5 = new BankAccount(
-                bankName: "人民银行",
-                bankOfDeposit: "三个支行",
-                accountName: "tian先生",
-                account: "54643",
-                defaultAccount: true,
-                purpose: typeConfig3
-        )
-        bankAccount5.save(failOnError: true)
 
-        FundCompanyInformation company1 = new FundCompanyInformation(
-                companyName: "洞庭湖",
+    def initCommissionData={
+        Customer customer = new Customer(name:'liayi',credentialsAddr:'at sss',credentialsNumber:'1111');
+        customer.save(failOnError: true)
+
+        CustomerArchives customerArchive = new CustomerArchives(
+                name:'1',
+                country:'2',
+                credentialsType:'3',
+                credentialsNumber:'4',
+                credentialsAddr:'5',
+                fddbr:'6',
+                zch:'7',
+                khh:'8',
+                telephone:'9',
+                phone:'10',
+                postalcode:'11',
+                callAddress:'12');
+        customerArchive.save(failOnError: true)
+
+        def typeConfig =TypeConfig.findByMapName("在库")
+        def fund = Fund.findByFundName('fund1')
+        def user = User.findByUsername("admin")
+
+
+        InvestmentArchives archives1 = new InvestmentArchives(markNum:'2141412',customerArchive:customerArchive,customer:customer,
+                archiveNum:1,contractNum:'124214',fund:fund,tzje:1,tzqx:'2015-06-01',rgrq:new Date(),dqrq:new Date(),fxfs:'fukuan',nhsyl:0.01,
+                htzt:typeConfig,bm:'abc',gltc:0.1,ywtc:0.1,bj:10000,
+        )
+        archives1.save(failOnError: true)
+
+        InvestmentArchives archives2 = new InvestmentArchives(markNum:'124122',customerArchive:customerArchive,customer:customer,
+                archiveNum:2,contractNum:'34235',fund:fund,tzje:1,tzqx:'2015-06-01',rgrq:new Date(),dqrq:new Date(),fxfs:'fukuan',nhsyl:0.01,
+                htzt:typeConfig,bm:'abc',gltc:0.1,ywtc:0.1,bj:10000,
+        )
+        archives2.save(failOnError: true)
+
+        //开始初始化N条未提成申请状态的提成申请,lx=1为管理
+        (1..9).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives1.id,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1,type:0
+            );
+            commissionInfo.save(failOnError: true)
+        }
+        //开始初始化N条提成申请状态的提成申请，lx=1为管理
+        (10..19).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives1.id,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1,type:1
+            );
+            commissionInfo.save(failOnError: true)
+        }
+
+        //开始初始化N条未提成申请状态的提成申请，lx=0为业务
+        (20..29).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives2.id,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:0,type:0
+            );
+            commissionInfo.save(failOnError: true)
+        }
+        //开始初始化N条提成申请状态的提成申请，lx=0为业务
+        (30..39).each {
+            CommissionInfo commissionInfo=new CommissionInfo(fundName:'fund'+it,customer:'oswaldl',
+                    tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives2.id,ywjl:'admin',
+                    tcr:'ss',skr:'bb',khh:'1221121',yhzh:'sss',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:0,type:1
+            );
+            commissionInfo.save(failOnError: true)
+        }
+
+        CommissionInfo commissionInfo1=new CommissionInfo(fundName:'myfund',customer:'zhangjia',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives1.id,ywjl:'likequn',
+                tcr:'ss',skr:'bb',khh:'1111111',yhzh:'aaaaaaa',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
         );
-        company1.addToFunds(fund1)
-        company1.addToBankAccount(bankAccount1)
-        company1.addToBankAccount(bankAccount2)
-        company1.addToBankAccount(bankAccount3)
-        company1.save(failOnError: true)
+        commissionInfo1.save(failOnError: true)
 
-        FundCompanyInformation company2 = new FundCompanyInformation(
-                companyName: "财经阳",
+        CommissionInfo commissionInfo2=new CommissionInfo(fundName:'changjiagnyihao',customer:'liuzhen',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives1.id,ywjl:'saterday',
+                tcr:'ss',skr:'bb',khh:'222222',yhzh:'bbbbbbb',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
         );
-        company2.addToFunds(fund2)
-        company2.addToBankAccount(bankAccount4)
-        company2.save(failOnError: true)
+        commissionInfo2.save(failOnError: true)
 
-        FundCompanyInformation company3 = new FundCompanyInformation(
-                companyName: "广州白云机场",
+        CommissionInfo commissionInfo3=new CommissionInfo(fundName:'tiaozhan',customer:'zhanshen',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives1.id,ywjl:'lusifa',
+                tcr:'ss',skr:'bb',khh:'3333333',yhzh:'cccccc',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
         );
-        company3.addToFunds(fund3)
-        company3.addToBankAccount(bankAccount5)
-        company3.save(failOnError: true)
+        commissionInfo3.save(failOnError: true)
+
+        CommissionInfo commissionInfo4=new CommissionInfo(fundName:'laiba',customer:'songzai',
+                tzje:1,syl:0.1,tcje:0.1,tcl:0.1,rgqx:'2015-08-15',rgrq:new Date(),archivesId:archives1.id,ywjl:'cheme',
+                tcr:'ss',skr:'bb',khh:'444444',yhzh:'ddddddd',sfgs:false,sl:0.1,sqsh:false,sfyfse:false,lx:1
+        );
+        commissionInfo4.save(failOnError: true)
+
+
+
+        (1..9).each {
+            PaymentInfo paymentInfo = new PaymentInfo(fundName:'fund'+it,htbh:'1000',customerName:'sss'+it,tzje:12,
+                    tzqx:'2015-05-14',syl:0.1,yflx:0.1,yfbj:100,
+                    zj:100,khh:'211111',yhzh:'aaaaa',gj:'bbb',zjlx:'dd',zjhm:'ddd',bmjl:'ddd',
+                    archivesId:archives1.id,fxsj:new Date(),type:0)
+            paymentInfo.save(failOnError: true)
+        }
+
+        (10..19).each {
+            PaymentInfo paymentInfo = new PaymentInfo(fundName:'fund'+it,htbh:'1000',customerName:'sss'+it,tzje:12,
+                    tzqx:'2015-05-14',syl:0.1,yflx:0.1,yfbj:100,
+                    zj:100,khh:'211111',yhzh:'aaaaa',gj:'bbb',zjlx:'dd',zjhm:'ddd',bmjl:'ddd',
+                    archivesId:archives1.id,fxsj:new Date(),type:1)
+            paymentInfo.save(failOnError: true)
+        }
+
+
+
     }
 
     def createProjects() {
-        def fundCompanyInformation = FundCompanyInformation.findByCompanyName("洞庭湖")
+        FundCompanyInformation fundCompanyInformation = FundCompanyInformation.findByCompanyName("金赛银")
         def fund1 = Fund.findByFundName("fund1")
+        def fund2 = Fund.findByFundName("fund2")
         def admin = User.findByUsername('admin') ?: new User(
                 username: 'admin',
                 password: 'admin',
                 chainName: "张三",
                 enabled: true).save(failOnError: true)
 
-        (1..6).each { i ->
-            TSProject.findByName('project' + i) ?: new TSProject(
-                    name: 'project' + i,
-                    projectDealer: 'dealer_' + i,
-                    projectOwner: admin,
-                    creator: admin,
-                    manage_per: 0.02,
-                    community_per: 0.03,
-                    penalty_per: 0.04,
-                    borrow_per: 0.05,
-                    interest_per: 0.06,
-                    year1: 1,
-                    year2: 0,
-                    interestType: "costCount"
-            ).save(failOnError: true)
-        }
+        def i = 1
+        new TSProject(
+                name: 'project' + i,
+                projectDealer: 'dealer_' + i,
+                projectOwner: admin,
+                creator: admin,
+                manage_per: 0.02,
+                community_per: 0.03,
+                penalty_per: 0.04,
+                borrow_per: 0.05,
+                interest_per: 0.06,
+                year1: 1,
+                year2: 0,
+                fund: fund1,
+                company: fundCompanyInformation,
+                interestType: "costCount"
+        ).save(failOnError: true)
 
-        (7..13).each { i ->
-            TSProject.findByName('project' + i) ?: new TSProject(
-                    name: 'project' + i,
-                    projectDealer: 'dealer_' + i,
-                    projectOwner: admin,
-                    creator: admin,
-                    manage_per: 0.02,
-                    community_per: 0.03,
-                    penalty_per: 0.04,
-                    borrow_per: 0.05,
-                    interest_per: 0.06,
-                    year1: 1,
-                    year2: 0,
-                    interestType: "costCount",
-                    company: fundCompanyInformation,
-                    fund: fund1
-            ).save(failOnError: true)
-        }
     }
 
     @Transactional
@@ -281,8 +361,8 @@ class WorkflowResourceService {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd")
         Date payDate = sf.parse(_date)
 
-        def bankAccount = BankAccount.findByBankName("光大银行");
-        def project = TSProject.findByName("project7")
+        def bankAccount = BankAccount.findByBankName("工商银行");
+        def project = TSProject.findByName("project1")
         def fund = Fund.findByFundName('fund1')
 
         PayRecord payRecord1 = new PayRecord(payDate: payDate, amount: 200000, payType: "borrow", bankAccount: bankAccount, project: project, fund: fund)
@@ -300,8 +380,8 @@ class WorkflowResourceService {
 
     }
 
-    def initFundCompanyInformation(){
-
+    def initCompany={
+        //合伙人信息
         FundCompanyInformation fundCompanyInformation = new FundCompanyInformation();
         fundCompanyInformation.companyName = "金赛银";
         fundCompanyInformation.corporate   = "金赛银";
@@ -317,127 +397,33 @@ class WorkflowResourceService {
         fundCompanyInformation.status     = "1111";
         fundCompanyInformation.remark     = "2010-08-08创建";
         fundCompanyInformation.groupCompany = null;
-        TypeConfig typeConfig = new TypeConfig();
-        typeConfig.mapName="AAAAA";
-        typeConfig.mapValue = 0;
-        fundCompanyInformation.companyType  = typeConfig;
+        fundCompanyInformation.companyType  = TypeConfig.findByTypeAndMapValue(6,1);;
         fundCompanyInformation.protocolTemplate  = 0;
         fundCompanyInformation.hhrpx = "2,3";
-
         fundCompanyInformation.save(failOnError: true);
-        if(fundCompanyInformation.hasErrors()){
-            println(fundCompanyInformation.getErrors());
-        }
-
-        FundCompanyInformation partnerA = new FundCompanyInformation();
-        partnerA.companyName = "金赛银A";
-        partnerA.corporate   = "金赛银A";
-        partnerA.address     = "深圳南山";
-        partnerA.province     = "广东";
-        partnerA.city     = "深圳";
-        partnerA.area     = "深圳";
-        partnerA.telephone     = "18811110000";
-        partnerA.companyNickName     = "金赛银";
-        partnerA.companyDescription     = "金融";
-        partnerA.responsiblePerson     = "草泥马";
-        partnerA.fax     = "2010-08-08";
-        partnerA.status     = "1111";
-        partnerA.remark     = "2010-08-08创建";
-        partnerA.groupCompany = fundCompanyInformation;
-        TypeConfig typeConfigA = new TypeConfig();
-        typeConfigA.mapName="AAAAA";
-        typeConfigA.mapValue = 0;
-        partnerA.companyType  = typeConfigA;
-        partnerA.protocolTemplate  = 0;
-        fundCompanyInformation.hhrpx = "";
-        partnerA.save(failOnError: true);
 
 
-        partnerA.addToPartner(fundCompanyInformation);
-
-        if(partnerA.hasErrors()){
-            println(partnerA.getErrors());
-        }
-
-        FundCompanyInformation partnerB = new FundCompanyInformation();
-        partnerB.companyName = "金赛银A";
-        partnerB.corporate   = "金赛银A";
-        partnerB.address     = "深圳南山";
-        partnerB.province     = "广东";
-        partnerB.city     = "深圳";
-        partnerB.area     = "深圳";
-        partnerB.telephone     = "18811110000";
-        partnerB.companyNickName     = "金赛银";
-        partnerB.companyDescription     = "金融";
-        partnerB.responsiblePerson     = "草泥马";
-        partnerB.fax     = "2010-08-08";
-        partnerB.status     = "1111";
-        partnerB.remark     = "2010-08-08创建";
-        partnerB.groupCompany = fundCompanyInformation;
-        TypeConfig typeConfigB = new TypeConfig();
-        typeConfigB.mapName="AAAAA";
-        typeConfigB.mapValue = 0;
-        partnerB.companyType  = typeConfigB;
-        partnerB.protocolTemplate  = 0;
-        fundCompanyInformation.hhrpx = "";
-
-        partnerB.save(failOnError: true);
-
-        partnerB.addToPartner(fundCompanyInformation);
-        if(partnerB.hasErrors()){
-            println(partnerB.getErrors());
-        }
-
+        //银行信息
         BankAccount bankAccount = new BankAccount();
         bankAccount.bankName = "工商银行";
         bankAccount.bankOfDeposit = "工商银行";
         bankAccount.accountName = "金赛银";
         bankAccount.account = "1111111111111111";
         bankAccount.defaultAccount = true;
-
         TypeConfig purpose = TypeConfig.findByTypeAndMapValue(7,1);
         bankAccount.purpose = purpose;
         bankAccount.purpose.save(failOnError: true);
-
         bankAccount.save(failOnError: true);
-
         fundCompanyInformation.addToBankAccount(bankAccount);
+        fundCompanyInformation.save(failOnError: true);
 
-        BankAccount bankAccountA = new BankAccount();
-        bankAccountA.bankName = "工商银行";
-        bankAccountA.bankOfDeposit = "工商银行";
-        bankAccountA.accountName = "金赛银";
-        bankAccountA.account = "1111111111111111";
-        bankAccountA.defaultAccount = true;
+    }
 
-        TypeConfig purposeA = TypeConfig.findByTypeAndMapValue(7,1);
 
-        bankAccountA.purpose = purposeA;
-        bankAccountA.purpose.save(failOnError: true);
-
-        bankAccountA.save(failOnError: true);
-
-        partnerA.addToBankAccount(bankAccount);
-
-        BankAccount bankAccountB = new BankAccount();
-        bankAccountB.bankName = "工商银行";
-        bankAccountB.bankOfDeposit = "工商银行";
-        bankAccountB.accountName = "金赛银";
-        bankAccountB.account = "1111111111111111";
-        bankAccountB.defaultAccount = true;
-
-        TypeConfig purposeB = TypeConfig.findByTypeAndMapValue(7,1);
-        bankAccountB.purpose = purposeB;
-        bankAccountB.purpose.save(failOnError: true);
-
-        bankAccountB.save(failOnError: true);
-
-        partnerB.addToBankAccount(bankAccount);
-
+    def initFund_Company_Relate={
+        FundCompanyInformation fundCompanyInformation = FundCompanyInformation.findByCompanyName("金赛银")
         Fund fund = Fund.findByFundName('fund1');
-
         fundCompanyInformation.addToFunds(fund);
-        partnerA.addToFunds(fund);
-        partnerB.addToFunds(fund);
+        fundCompanyInformation.save(failOnError: true)
     }
 }
