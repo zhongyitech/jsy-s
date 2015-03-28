@@ -327,7 +327,7 @@ class FundCollectionResource {
         jsonObject.put("query", "Unit")
         jsonObject.put("suggestions", jsonArray)
 
-        ok jsonObject.toString()
+        return Response.ok(jsonObject.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 }
 
