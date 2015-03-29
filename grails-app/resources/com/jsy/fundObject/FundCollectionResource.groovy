@@ -146,6 +146,23 @@ class FundCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
+    /**
+     * 返回基金列表,专用接口(用于前台Select扩展功能)
+     * @return $.dom.select('id=",[data]) 专用数据
+     */
+    @GET
+    @Path('/selectList')
+    Response selectList(){
+        com.jsy.utility.MyResponse.ok{
+            def data=[]
+            //todo:最好能优化为只从数据库中返回指定字段的方法
+            Fund.list().each{
+                data.push([id:it.id,mapName:it.fundName,])
+            }
+            data
+        }
+    }
+
 
     //读取主页数据
     @POST

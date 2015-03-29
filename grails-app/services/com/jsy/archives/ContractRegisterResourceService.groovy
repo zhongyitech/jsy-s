@@ -5,16 +5,15 @@ import com.jsy.fundObject.Fund
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+import java.text.DecimalFormat
+
 class ContractRegisterResourceService {
 
-    def create(ContractRegister dto) {
+    def create(ContractRegister dto,int start,int end,String bh,DecimalFormat decimalFormat ) {
         //截取合同编号
-        int qs=Integer.parseInt(dto.qsbh.substring(5))
-        int js=Integer.parseInt(dto.jsbh.substring(5))
-        String bh=dto.qsbh.substring(0,5)
         //循环新建合同
-        for(int i=qs;i<=js;i++){
-            def c = new Contract(htbh:bh+i,fund: dto.fund,djsj: dto.djsj)
+        for(int i=start;i<=end;i++){
+            def c = new Contract(htbh:bh+decimalFormat.format(i),fund: dto.fund,djsj: dto.djsj)
             c.save(failOnError: true)
         }
         dto.save(failOnError: true)
