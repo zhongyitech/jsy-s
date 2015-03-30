@@ -107,13 +107,13 @@ class BorrowFilesPackageRecordsCollectionResource {
 
     @GET
     @Path('/findByFilepackageId')
-    Response findByFilepackageId(@QueryParam('fpid') String fpid){
+    Response findByFilepackageId(@QueryParam('pid') Long pid){
 
         ok {
             def bfpr
-            def filePackage = FilePackage.get(fpid)
+            def filePackage = FilePackage.get(pid)
             def borrowFilePackge=BorrowFilesPackageRecords.findByFilePackage(filePackage);
-            bfpr = borrowFilePackge.user.username
+            bfpr = borrowFilePackge.user.chainName
             bfpr
         }
 //        JSONObject result = new JSONObject();
