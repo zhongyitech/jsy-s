@@ -213,20 +213,15 @@ class InvestmentArchivesCollectionResource {
     @PUT
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto, @QueryParam('id') @DefaultValue("") String id) {
-        try {
+        MyResponse.ok {
             def error = ValidationModel(dto)
             if (error.size() > 0) {
                 def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
-                return  Response.ok(result).build()
+                return Response.ok(result).build()
             }
-        } catch (Exception e) {
-            ok JsonResult.error(e.message)
-        }
-        // JSONObject result = new JSONObject();
-        def result
-        def ia
-        if ("" == id || null == id) {
-            try {
+            def ia
+            //create
+            if ("" == id || null == id) {
                 Customer cus = null
                 if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
@@ -244,10 +239,6 @@ class InvestmentArchivesCollectionResource {
                         TypeConfig typeConfig = TypeConfig.findByTypeAndMapValue(7, 2)
                         customerArchives.addToBankAccount(bankName: cus.khh, bankOfDeposit: cus.khh, accountName: cus.name, account: cus.yhzh, purpose: typeConfig).save(failOnError: true)
                     }
-//                    }else{
-//                        cus.properties=dto.customer.properties
-//                        cus.save(failOnError: true)
-//                    }
                     dto.status = 1
                     dto.username = cus.name
                 }
@@ -268,30 +259,20 @@ class InvestmentArchivesCollectionResource {
                     dto.addToPayTimes(payTime).save(failOnError: true)
                     i++
                 }
-                result = JsonResult.success(dto)
+                return dto
 
-            } catch (Exception e) {
-                result = JsonResult.error(e.message)
-                print(e)
+            } else {
+                //update
+                Customer cus = null
+                if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                    cus = dto.customer.save(failOnError: true)
+                    dto.status = 1
+                    dto.username = cus.name
+                }
+                dto.customer = cus
+                ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
+                return ia
             }
-            ok result
-
-        } else {
-            Customer cus = null
-            if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
-//                cus=Customer.findByCredentialsNumber(dto.customer.credentialsNumber)
-//                if(!cus){
-                cus = dto.customer.save(failOnError: true)
-//                }else{
-//                    cus.properties=dto.customer.properties
-//                    cus.save(failOnError: true)
-//                }
-                dto.status = 1
-                dto.username = cus.name
-            }
-            dto.customer = cus
-            ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
-            ok JsonResult.success(ia)
         }
     }
 
