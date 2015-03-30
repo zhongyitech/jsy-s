@@ -1,14 +1,9 @@
 package com.jsy.archives
 
-import com.jsy.fundObject.Finfo
-import grails.converters.JSON
-import org.json.JSONObject
+import com.jsy.utility.DomainHelper
 
-import javax.ws.rs.DefaultValue
-import javax.ws.rs.PUT
-import javax.ws.rs.QueryParam
+import java.text.DecimalFormat
 
-//import static org.grails.jaxrs.response.Responses.*
 import static com.jsy.utility.MyResponse.*
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -25,127 +20,56 @@ class ContractRegisterCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    public static final String REST_INFORMATION = ""
-    def contractRegisterResourceService
+    public static int nameLength = 5
+    public static int numberLength = 4
+    ContractRegisterResourceService contractRegisterResourceService
 
     @POST
     Response create(ContractRegister dto) {
 
         ok {
-            def result
-            def cr
+            validBh(dto.qsbh)
+            validBh(dto.jsbh)
             //截取合同编号
-            int qs=Integer.parseInt(dto.qsbh.substring(5))
-            int js=Integer.parseInt(dto.jsbh.substring(5))
-            String bh=dto.qsbh.substring(0,5)
+            int qs = Integer.parseInt(dto.qsbh.substring(nameLength))
+            int js = Integer.parseInt(dto.jsbh.substring(nameLength))
+            String bh = dto.qsbh.substring(0, nameLength)
+            def decimalFormat = new DecimalFormat("00000")
+
             //验证合同编号
-            for(int i=qs;i<=js;i++){
-                if (Contract.findByHtbh(bh+i)){
-//                    rest_information = "已经存在的合同编号："+bh+i
-//                    restStatus = REST_STATUS_FAI
-//                    result.put("rest_information", rest_information)
-//                    result.put("rest_status", restStatus)
-                    result.put("rest_result", cr as JSON)
-                    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+            for (int i = qs; i <= js; i++) {
+                if (Contract.findByHtbh(bh + i)) {
+                    throw new Exception("合同编号范围:" + bh + decimalFormat.format(qs) + " - " + bh + decimalFormat.format(js) + " 已经存在了")
                     break
                 }
             }
-            //循环新建合同
-            for(int i=qs;i<=js;i++){
-                    def c = new Contract(htbh: bh + i, fund: dto.fund, djsj: dto.djsj)
-                    print(c.properties)
-                    c.save(failOnError: true)
-            }
-            cr = dto.save(failOnError: true)
-//            cr = contractRegisterResourceService.create(dto)
-
-//            result.put("rest_status", restStatus)
-            result.put("rest_result", cr as JSON)
+            def result = contractRegisterResourceService.create(dto, qs, js, bh, decimalFormat)
             result
         }
-        // {"fund":1, "qsbh":"CFYHN100","jsbh":CFYHN200,"sum":101}
-//        String rest_information = REST_INFORMATION
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def cr
-//        try {
-//            //截取合同编号
-//            int qs=Integer.parseInt(dto.qsbh.substring(5))
-//            int js=Integer.parseInt(dto.jsbh.substring(5))
-//            String bh=dto.qsbh.substring(0,5)
-//            //验证合同编号
-//            for(int i=qs;i<=js;i++){
-//                if (Contract.findByHtbh(bh+i)){
-//                    rest_information = "已经存在的合同编号："+bh+i
-//                    restStatus = REST_STATUS_FAI
-//                    result.put("rest_information", rest_information)
-//                    result.put("rest_status", restStatus)
-//                    result.put("rest_result", cr as JSON)
-//                    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//                    break
-//                }
-//            }
-//            //循环新建合同
-//            for(int i=qs;i<=js;i++){
-//                    def c = new Contract(htbh: bh + i, fund: dto.fund, djsj: dto.djsj)
-//                    print(c.properties)
-//                    c.save(failOnError: true)
-//            }
-//            cr = dto.save(failOnError: true)
-////            cr = contractRegisterResourceService.create(dto)
-//
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", cr as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            rest_information = "合同登记失败，请检查数据"
-//            result.put("rest_information", rest_information)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", cr as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }
-
     }
 
+    boolean validBh(String qsbh) {
+        print(nameLength)
+        print("起始编号:应为" + nameLength + "位字母加" + numberLength + "位序号")
+        if (qsbh == null || qsbh.length() != nameLength + numberLength) {
+            throw new Exception("\"编号\"应为" + nameLength + "位字母加" + numberLength + "位序号")
+        }
+        return true
+    }
+
+    /**
+     * 获取分布数据
+     * @param arg
+     * @return
+     */
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
-        ok {
-            def result
-            int total
-            JSONObject json
-            def fp
-            json = contractRegisterResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            fp = json.get("page")
-//            result.put("rest_status", restStatus)
-            result.put("rest_result", fp as JSON)
-            result.put("rest_total", total)
+    Response readAllForPage(Map arg) {
+        page {
+            def result = DomainHelper.getPage(ContractRegister, arg)
+            return result
         }
-//        print("contractRegisterResourceService.readAllForPage()")
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int total
-//        JSONObject json
-//        def fp
-//        try {
-//            json = contractRegisterResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-//            total = json.get("size")
-//            fp = json.get("page")
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", fp as JSON)
-//        result.put("rest_total", total)
-//
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
-
 
     @GET
     Response readAll() {

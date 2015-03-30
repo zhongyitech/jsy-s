@@ -22,27 +22,29 @@ import javax.ws.rs.core.Response
 class CustomerArchivesCollectionResource {
 
     CustomerArchivesResourceService customerArchivesResourceService
+
     @PUT
     Response create(CustomerArchives dto) {
-       ok{
-           return customerArchivesResourceService.create(dto)
-       }
+        ok {
+            return customerArchivesResourceService.create(dto)
+        }
     }
 
 
     @POST
     @Path('/readAllForPage')
-    Response queryAll(Map arg){
-        page{
-            return  DomainHelper.getPage(CustomerArchives,arg)
+    Response queryAll(Map arg) {
+        page {
+            def result = DomainHelper.getPage(CustomerArchives, arg)
+            result
         }
     }
 
 
     @POST
     @Path('/update')
-    Response update(CustomerArchives dto,@QueryParam('id') Long id){
-        ok{
+    Response update(CustomerArchives dto, @QueryParam('id') Long id) {
+        ok {
             dto.id = id
             return customerArchivesResourceService.update(dto)
         }
@@ -55,18 +57,18 @@ class CustomerArchivesCollectionResource {
      */
     @GET
     @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String username){
-        def users=CustomerArchives.findAllByNameLike("%"+username+"%")
-        JSONArray jsonArray=new JSONArray()
+    Response findByNameLike(@QueryParam('params') String username) {
+        def users = CustomerArchives.findAllByNameLike("%" + username + "%")
+        JSONArray jsonArray = new JSONArray()
         users.each {
-            JSONObject jso=new JSONObject()
-            jso.put("value",it.name)
-            jso.put("data",it.id)
+            JSONObject jso = new JSONObject()
+            jso.put("value", it.name)
+            jso.put("data", it.id)
             jsonArray.put(jso)
         }
-        JSONObject jsonObject=new JSONObject()
-        jsonObject.put("query","Unit")
-        jsonObject.put("suggestions",jsonArray)
+        JSONObject jsonObject = new JSONObject()
+        jsonObject.put("query", "Unit")
+        jsonObject.put("suggestions", jsonArray)
 
         return Response.ok(jsonObject.toString()).build()
     }

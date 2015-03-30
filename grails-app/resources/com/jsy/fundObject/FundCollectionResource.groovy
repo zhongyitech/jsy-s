@@ -3,11 +3,8 @@ package com.jsy.fundObject
 import com.jsy.auth.AuthorityService
 import com.jsy.utility.CreateNumberService
 import grails.converters.JSON
-import org.apache.http.entity.StringEntity
-import org.apache.http.util.EntityUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
-import org.restlet.resource.Put
 
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
@@ -15,7 +12,6 @@ import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.created
 
-//import static org.grails.jaxrs.response.Responses.ok
 import static com.jsy.utility.MyResponse.*
 
 
@@ -139,7 +135,6 @@ class FundCollectionResource {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def fund
-        String s = "1"
         try {
             fund = authorityService.getAuth(fundResourceService.readAll())
         } catch (Exception e) {
@@ -149,6 +144,23 @@ class FundCollectionResource {
         result.put("rest_status", restStatus)
         result.put("rest_result", fund)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    }
+
+    /**
+     * 返回基金列表,专用接口(用于前台Select扩展功能)
+     * @return $.dom.select('id=",[data]) 专用数据
+     */
+    @GET
+    @Path('/selectList')
+    Response selectList(){
+        com.jsy.utility.MyResponse.ok{
+            def data=[]
+            //todo:最好能优化为只从数据库中返回指定字段的方法
+            Fund.list().each{
+                data.push([id:it.id,mapName:it.fundName,])
+            }
+            data
+        }
     }
 
 
@@ -332,7 +344,7 @@ class FundCollectionResource {
         jsonObject.put("query", "Unit")
         jsonObject.put("suggestions", jsonArray)
 
-        ok jsonObject.toString()
+        return Response.ok(jsonObject.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 }
 

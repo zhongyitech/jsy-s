@@ -1,6 +1,7 @@
 package com.jsy.utility
 
 import grails.gorm.DetachedCriteria
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 
 /**
@@ -54,8 +55,8 @@ class DomainHelper {
     /**
      * 返回指定对象的分页数据
      * @param domainClass 对象名称(表名)
-     * @param query       查询条件
-     * @return            page格式
+     * @param query 查询条件
+     * @return page格式
      */
     public static Map getPage(Class domainClass, def query) {
         def dc = DomainHelper.getDetachedCriteria(domainClass, query)
@@ -66,9 +67,15 @@ class DomainHelper {
      * 检测查询参数的合法性
      * @param query
      */
-    private static  void VaildQueryObj(def query){
-        if(query==null || (query as Map)==null){
-            throw  new Exception("查询格式不正确")
+    private static void VaildQueryObj(def query) {
+        if (query == null || (query as Map) == null) {
+            throw new Exception("查询格式不正确")
         }
+    }
+
+    public static def toMap(def target) {
+
+        def json = new JSONObject(target)
+        return json
     }
 }

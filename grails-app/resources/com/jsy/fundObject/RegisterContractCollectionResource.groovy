@@ -3,6 +3,7 @@ package com.jsy.fundObject
 import com.jsy.archives.Contract
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.JsonResult
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -32,6 +33,8 @@ class RegisterContractCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     public static final String REST_INFORMATION = "";
+    public static int nameLength = 5
+    public static int numberLength = 4
     def registerContractResourceService
 
     @POST
@@ -40,81 +43,28 @@ class RegisterContractCollectionResource {
             def rc
             StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
             dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-            rc=registerContractResourceService.create(dto)
+            rc = registerContractResourceService.create(dto)
             rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
             rc.save(failOnError: true)
             rc
         }
-//        //{"department":{"id":1},"receiveUser":{"id":1},"receiveDate":"2014-12-16T08:00:00Z","fund":{"id":1},"startNum":"123","endNum":"234","item-key":"0","total":111}
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def rc
-//        try {
-//            StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
-////            StringBuffer funno = new StringBuffer("R")
-////            Date d = new Date()
-////            print(d)
-////            dto.createDate = d
-////            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd")
-////            String da=sdf.format(d)
-////            funno.append(da.toString())
-////            int endnumber = Math.random()*10000 + Math.random()*1000 + Math.random()*100 + Math.random()*10
-////            StringBuffer funnocut = new StringBuffer(funno)
-////            print(funno)
-////            funnocut.append(endnumber)
-////            print(funno)
-//            dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-//            rc=registerContractResourceService.create(dto)
-////            print(rc.id)
-////            print(funno)
-////            funno.append(rc.id)
-////            print(funno)
-//            rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-////            print(funno)
-//            rc.save(failOnError: true)
-////            rc = registerContractResourceService.create(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        print(rc)
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", rc as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @DELETE
-    Response delete(@PathParam('id') Long id){
+    Response delete(@PathParam('id') Long id) {
         ok {
 
-            return  registerContractResourceService.delete(id)
+            return registerContractResourceService.delete(id)
         }
     }
 
     @PUT
-    Response update(RegisterContract dto,@QueryParam('id') Long id){
+    Response update(RegisterContract dto, @QueryParam('id') Long id) {
         ok {
             dto.id = id
             def rc = registerContractResourceService.update(dto)
             rc
         }
-//        print(dto.id)
-//        print(dto)
-//        print(id)
-//        dto.id = id
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def  rc
-//        try {
-//            rc = registerContractResourceService.update(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", rc as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @GET
@@ -123,101 +73,24 @@ class RegisterContractCollectionResource {
             def registerContract = registerContractResourceService.readAll()
             registerContract
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def registerContract
-//        try {
-//            registerContract = registerContractResourceService.readAll()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", registerContract as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
+
     @POST
     @Path('/readUseForPage')
     Response readUseForPage(Finfo finfo) {
-        ok {
-            def ret =[:]
-            int total
-            def rc
-            JSONObject json
-            json = registerContractResourceService.readUseForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            rc = json.get("page")
-            ret.page = rc
-            ret.total = total
-            ret
+        page {
+            def json = registerContractResourceService.readUseForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            return [data: json.get("page"), total: json.get("size")]
         }
-//        print("registerContract.readUseForPage")
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int total
-//        JSONObject json
-//        def rc
-//        try {
-////            rc = registerContractResourceService.findByParm(queryparam)
-////            total = rc.size()
-//            json = registerContractResourceService.readUseForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-//            total = json.get("size")
-//            print(total)
-//            rc = json.get("page")
-//            print(rc)
-//
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", rc as JSON)
-//        result.put("rest_total", total)
-//
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @POST
     @Path('/readReturnForPage')
     Response readReturnForPage(Finfo finfo) {
-        ok {
-            def ret =[:]
-            int total
-            def rc
-            JSONObject json
-            json = registerContractResourceService.readReturnForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            rc = json.get("page")
-            ret.page = rc
-            ret.total = total
-            ret
+        page {
+            def json = registerContractResourceService.readReturnForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+            return [data: json.get("page"), total: json.get("size")]
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int total
-//        JSONObject json
-//        def rc
-//        try {
-////            rc = registerContractResourceService.findByParm(queryparam)
-////            total = rc.size()
-//            json = registerContractResourceService.readReturnForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-//            total = json.get("size")
-//            print(total)
-//            rc = json.get("page")
-//            print(rc)
-//
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", rc as JSON)
-//        result.put("rest_total", total)
-//
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
 
     }
 
@@ -226,173 +99,90 @@ class RegisterContractCollectionResource {
         new RegisterContractResource(registerContractResourceService: registerContractResourceService, id: id)
     }
 
-    //领用
+    /**
+     * 合同领用操作
+     * @param dto
+     * @return
+     */
     @POST
     @Path('/useContract')
-    Response useContract(RegisterContract dto){
+    Response useContract(RegisterContract dto) {
         ok {
+            validBh(dto.startNum)
+            validBh(dto.endNum)
             dto.actionType = false
             def fund = dto.fund
-            int sn = Integer.parseInt(dto.startNum.substring(5))
-            int en = Integer.parseInt(dto.endNum.substring(5))
-            JSONArray jc = new JSONArray()
-            for (int i = sn;i <= en;i++){
+            int sn = Integer.parseInt(dto.startNum.substring(nameLength))
+            int en = Integer.parseInt(dto.endNum.substring(nameLength))
+            def jc = []
+            for (int i = sn; i <= en; i++) {
                 Contract c = Contract.findBySzbhAndSflyAndFund(i, false, fund)
-                if (null == c){
+                if (null == c) {
+                    throw new Exception("合同编号范围不正确!")
                     break
-                }else {
-                    print("put "+i)
-                    jc.put(c)
+
+                } else {
+                    print("put " + i)
+                    jc.push(c)
                 }
             }
-            if ("suc" == restStatus) {
-                jc.each {
-                    Contract d = it
-                    d.sfly = true
-                    d.save(failOnError: true)
-                }
-
-                StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
-                dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-                def rc = registerContractResourceService.create(dto)
-                rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-                rc.save(failOnError: true)
-                return rc
+            jc.each {
+                Contract d = it
+                d.sfly = true
+                d.save(failOnError: true)
             }
 
+            StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
+            dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
+            def rc = registerContractResourceService.create(dto)
+            rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
+            rc.save(failOnError: true)
+
+            return rc
         }
-//        String rest_information = REST_INFORMATION
-//        //{"indexNum":"0001","department":{"id":1}, "receiveUser":{"id":1}, "receiveDate":"2014-12-16T08:00:00Z", "fund":{"id":1}, "startNum":"CFYHN201", "endNum":"CFYHN250", "total":50}
-////        {"department":{"id":1},"receiveUser":{"id":1},"receiveDate":"2014-12-16T08:00:00Z","fund":{"id":1},"startNum":"CFYHN201","endNum":"CFYHN250","total":50}
-//        print("useContract RegisterContractResourceService")
-//        dto.actionType = false
-//        JSONObject result = new JSONObject();
-//        def fund = dto.fund
-//        String restStatus = REST_STATUS_SUC;
-//        int sn = Integer.parseInt(dto.startNum.substring(5))
-//        int en = Integer.parseInt(dto.endNum.substring(5))
-//        JSONArray jc = new JSONArray()
-//        for (int i = sn;i <= en;i++){
-//            Contract c = Contract.findBySzbhAndSflyAndFund(i, false, fund)
-//            if (null == c){
-//                rest_information = "非法的合同编号！"
-//                restStatus = "err"
-//                print(restStatus)
-//                print(rest_information)
-//                break
-//            }else {
-//                print("put "+i)
-//                jc.put(c)
-//            }
-//        }
-//        if ("suc" == restStatus){
-//            jc.each {
-//                Contract d = it
-//                d.sfly = true
-//                d.save(failOnError: true)
-//            }
-//
-//            StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
-//            dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-//            def rc=registerContractResourceService.create(dto)
-//            rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-//            rc.save(failOnError: true)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", rc as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }else {
-//            result.put("rest_information", rest_information)
-//            result.put("rest_status", restStatus)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }
+
     }
 
-    //归还
+    boolean validBh(String qsbh) {
+        print(nameLength)
+        print("起始编号:应为" + nameLength + "位字母加" + numberLength + "位序号")
+        if (qsbh == null || qsbh.length() != nameLength + numberLength) {
+            throw new Exception("\"编号\"应为" + nameLength + "位字母加" + numberLength + "位序号")
+        }
+        return true
+    }
+    //归还操作
     @POST
     @Path('/returnContract')
-    Response returnContract(RegisterContract dto){
+    Response returnContract(RegisterContract dto) {
         ok {
+            validBh(dto.startNum)
+            validBh(dto.endNum)
             def fund = dto.fund
             dto.actionType = true
-            JSONObject result = new JSONObject();
-            String restStatus = REST_STATUS_SUC;
-            int sn = Integer.parseInt(dto.startNum.substring(5))
-            int en = Integer.parseInt(dto.endNum.substring(5))
-            JSONArray jc = new JSONArray()
-            for (int i = sn;i <= en;i++){
+            int sn = Integer.parseInt(dto.startNum.substring(nameLength))
+            int en = Integer.parseInt(dto.endNum.substring(nameLength))
+            def jc = []
+            for (int i = sn; i <= en; i++) {
                 Contract c = Contract.findBySzbhAndSflyAndFund(i, true, fund)
-                if (null == c){
-                    restStatus = "err"
-                    print(restStatus)
+                if (null == c) {
+                    throw new Exception("合同编号范围不正确!")
                     break
-                }else {
-                    print("put "+i)
-                    jc.put(c)
+                } else {
+                    jc.push(c)
                 }
             }
-            if ("suc" == restStatus){
-                jc.each {
-                    Contract d = it
-                    d.sfly = false
-                    d.save(failOnError: true)
-                }
-
-                StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
-                dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-                def rc=registerContractResourceService.create(dto)
-                rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-                rc.save(failOnError: true)
-                result.put("rest_status", restStatus)
-                result.put("rest_result", rc as JSON)
-                return result
-            }else {
-                result.put("rest_status", restStatus)
-                return result
+            jc.each {
+                Contract d = it
+                d.sfly = false
+                d.save(failOnError: true)
             }
+            StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
+            dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
+            def rc = registerContractResourceService.create(dto)
+            rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
+            rc.save(failOnError: true)
+            return rc
         }
-//        String rest_information = REST_INFORMATION
-//        //{"indexNum":"0001","department":{"id":1}, "receiveUser":{"id":1}, "receiveDate":"2014-12-16T08:00:00Z", "fund":{"id":1}, "startNum":"CFYHN201", "endNum":"CFYHN250", "total":50}
-////        {"department":{"id":1},"receiveUser":{"id":1},"receiveDate":"2014-12-16T08:00:00Z","fund":{"id":1},"startNum":"CFYHN201","endNum":"CFYHN250","total":50}
-//        print("returnContract RegisterContractResourceService")
-//        def fund = dto.fund
-//        dto.actionType = true
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int sn = Integer.parseInt(dto.startNum.substring(5))
-//        int en = Integer.parseInt(dto.endNum.substring(5))
-//        JSONArray jc = new JSONArray()
-//        for (int i = sn;i <= en;i++){
-//            Contract c = Contract.findBySzbhAndSflyAndFund(i, true, fund)
-//            if (null == c){
-//                rest_information = "非法的合同编号!"
-//                restStatus = "err"
-//                print(restStatus)
-//                break
-//            }else {
-//                print("put "+i)
-//                jc.put(c)
-//            }
-//        }
-//        if ("suc" == restStatus){
-//            jc.each {
-//                Contract d = it
-//                d.sfly = false
-//                d.save(failOnError: true)
-//            }
-//
-//            StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
-//            dto.indexNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-//            def rc=registerContractResourceService.create(dto)
-//            rc.indexNum = CreateNumberService.getFullNumber(former, dto.id.toString())
-//            rc.save(failOnError: true)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", rc as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }else {
-//            result.put("rest_information", rest_information)
-//            result.put("rest_status", restStatus)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }
     }
-
 }

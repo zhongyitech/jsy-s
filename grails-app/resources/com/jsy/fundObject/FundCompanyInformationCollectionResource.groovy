@@ -231,9 +231,10 @@ class FundCompanyInformationCollectionResource {
     @GET
     @Path('/listForAddFund')
     Response listForAddFund() {
+        def type=TypeConfig.findByTypeAndMapValue(6, 1)
         ok {
             def list = []
-            FundCompanyInformation.findAllByCompanyType(TypeConfig.findByTypeAndMapValue(6, 1)).collect {
+            FundCompanyInformation.findAllByCompanyType(type).collect {
                 list.add([id: it.id, companyName: it.companyName, companyType: it.companyType.mapName])
             }
             return list

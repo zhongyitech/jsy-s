@@ -19,7 +19,7 @@ import static com.jsy.utility.MyResponse.*
 @Path('/api/PublicAPI')
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
-class SudaMoney{
+class SudaMoney {
 
     /**
      * 未处理
@@ -64,6 +64,7 @@ class SudaMoney{
      * @param id
      * @return
      */
+
     @POST
     @Path('/Accept')
     Response accept(@QueryParam('id') Long id) {

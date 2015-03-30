@@ -5,9 +5,11 @@ import com.jsy.system.Department
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.JsonResult
+import com.sun.jersey.json.impl.JSONHelper
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
+import org.restlet.ext.json.JsonConverter
 
 import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
@@ -112,11 +114,11 @@ class UserCollectionResource {
                 jso.put("data", it.id)
                 jsonArray.add(jso)
             }
-            def jsonObject = [:]
-            jsonObject.put("query", "Unit")
-            jsonObject.put("suggestions", jsonArray)
+            def data = [:]
+            data.put("query", "Unit")
+            data.put("suggestions", jsonArray)
 
-            return  jsonObject
+            return data
         }
     }
 
@@ -238,6 +240,20 @@ class UserCollectionResource {
     }
 
     /**
+     * 获取指定用户的部门信息
+     * @param id
+     * @return
+     */
+    @GET
+    @Path('/findUserDepartment')
+    Response findUserDeparemnt(@QueryParam('uid') Long uid) {
+        ok {
+            def user = User.get(uid)
+                user.department
+        }
+    }
+
+    /**
      * 更新用户信息
      *
      * @param dto
@@ -336,5 +352,21 @@ class UserCollectionResource {
 //
 //            return Response.ok(result.toString()).status(500).build()
 //        }
+    }
+
+    @GET
+    @Path('getUsers')
+    Response getUsers() {
+
+        ok {
+            User.findAll()
+        }
+    }
+
+
+    @GET
+    @Path('/selectList')
+    Response getSelectList() {
+
     }
 }

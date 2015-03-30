@@ -3,6 +3,7 @@ import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
 import com.jsy.auth.MenusRole
 import com.jsy.auth.Operation
+import com.jsy.auth.OperationsAPI
 import com.jsy.auth.Property
 import com.jsy.auth.Resource
 import com.jsy.auth.ResourceRole
@@ -194,11 +195,13 @@ class BootStrap {
 
         //User资源
         ResourceRole resourceRole=new ResourceRole(role: adminRole,resource:yh).save(failOnError: true)
+        Property property0=new Property(name:'id',title:'用户id',visible:true).save(failOnError: true)
         Property property1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
         Property property2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
         Property property3=new Property(name:'skr',title:'收款人',visible:true).save(failOnError: true)
         Property property4=new Property(name:'khh',title:'开户行',visible:true).save(failOnError: true)
         Property property5=new Property(name:'yhzh',title:'银行账户',visible:true).save(failOnError: true)
+        resourceRole.addToPropertys(property0)
         resourceRole.addToPropertys(property1)
         resourceRole.addToPropertys(property2)
         resourceRole.addToPropertys(property3)
@@ -206,11 +209,13 @@ class BootStrap {
         resourceRole.addToPropertys(property5)
 
         ResourceRole resourceRoleUR=new ResourceRole(role: userRole,resource:yh).save(failOnError: true)
+        Property propertyUR0=new Property(name:'id',title:'用户id',visible:true).save(failOnError: true)
         Property propertyUR1=new Property(name:'username',title:'用户名',visible:true).save(failOnError: true)
         Property propertyUR2=new Property(name:'chainName',title:'中文名',visible:true).save(failOnError: true)
         Property propertyUR3=new Property(name:'skr',title:'收款人',visible:false).save(failOnError: true)
         Property propertyUR4=new Property(name:'khh',title:'开户行',visible:false).save(failOnError: true)
         Property propertyUR5=new Property(name:'yhzh',title:'银行账户',visible:false).save(failOnError: true)
+        resourceRoleUR.addToPropertys(propertyUR0)
         resourceRoleUR.addToPropertys(propertyUR1)
         resourceRoleUR.addToPropertys(propertyUR2)
         resourceRoleUR.addToPropertys(propertyUR3)
@@ -218,6 +223,7 @@ class BootStrap {
         resourceRoleUR.addToPropertys(propertyUR5)
         //基金资源
         ResourceRole resourceRole1=new ResourceRole(role: adminRole,resource:jj).save(failOnError: true)
+        Property property10=new Property(name:'id',title:'基金id',visible:true).save(failOnError: true)
         Property property11=new Property(name:'fundName',title:'基金名',visible:true).save(failOnError: true)
         Property property12=new Property(name:'fundNo',title:'基金编号',visible:true).save(failOnError: true)
         Property property13=new Property(name:'raiseFunds',title:'预募规模',visible:true).save(failOnError: true)
@@ -225,6 +231,7 @@ class BootStrap {
         Property property15=new Property(name:'tcfpfw',title:'提成分配',visible:true).save(failOnError: true)
         Property property16=new Property(name:'kxzqx',title:'可选择期限',visible:true).save(failOnError: true)
         Property property17=new Property(name:'status',title:'基金状态',visible:true).save(failOnError: true)
+        resourceRole1.addToPropertys(property10)
         resourceRole1.addToPropertys(property11)
         resourceRole1.addToPropertys(property12)
         resourceRole1.addToPropertys(property13)
@@ -237,13 +244,19 @@ class BootStrap {
         Operation operation2=new Operation(cz: 'creat',name: '创建',title: '创建',visible: true).save(failOnError: true)
         Operation operation3=new Operation(cz: 'update',name: '更新',title: '更新',visible: true).save(failOnError: true)
         Operation operation4=new Operation(cz: 'delete',name: '删除',title: '删除',visible: true).save(failOnError: true)
-        resourceRole.addToOperations(operation1)
-        resourceRole.addToOperations(operation2)
-        resourceRole.addToOperations(operation3)
-        resourceRole.addToOperations(operation4)
+        resourceRole1.addToOperations(operation1)
+        resourceRole1.addToOperations(operation2)
+        resourceRole1.addToOperations(operation3)
+        resourceRole1.addToOperations(operation4)
+        //基金相关url与对应操作关系
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'PUT',czlx:'creat').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/update',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
 
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
+        Property property20=new Property(name:'id',title:'客户id',visible:true).save(failOnError: true)
         Property property21=new Property(name:'name',title:'客户名',visible:true).save(failOnError: true)
         Property property22=new Property(name:'country',title:'国家（地区）',visible:true).save(failOnError: true)
         Property property23=new Property(name:'credentialsType',title:'证照类型',visible:true).save(failOnError: true)
@@ -260,6 +273,7 @@ class BootStrap {
         Property property295=new Property(name:'remark',title:'备注',visible:true).save(failOnError: true)
         Property property296=new Property(name:'bankAccount',title:'银行账户',visible:true).save(failOnError: true)
         Property property297=new Property(name:'uploadFiles',title:'客户附件',visible:true).save(failOnError: true)
+        resourceRole2.addToPropertys(property20)
         resourceRole2.addToPropertys(property21)
         resourceRole2.addToPropertys(property22)
         resourceRole2.addToPropertys(property23)
@@ -278,6 +292,7 @@ class BootStrap {
         resourceRole2.addToPropertys(property297)
         //档案资源
         ResourceRole resourceRole3=new ResourceRole(role: adminRole,resource:da).save(failOnError: true)
+        Property property01=new Property(name:'id',title:'档案id',visible:true).save(failOnError: true)
         Property property31=new Property(name:'markNum',title:'档案编号',visible:true).save(failOnError: true)
         Property property32=new Property(name:'archiveNum',title:'编号',visible:true).save(failOnError: true)
         Property property33=new Property(name:'contractNum',title:'合同编号',visible:true).save(failOnError: true)
@@ -306,6 +321,7 @@ class BootStrap {
         Property property362=new Property(name:'gltcs',title:'管理提成',visible:true).save(failOnError: true)
         Property property372=new Property(name:'uploadFiles',title:'档案附件',visible:true).save(failOnError: true)
         Property property382=new Property(name:'payTimes',title:'兑付时间',visible:true).save(failOnError: true)
+        resourceRole3.addToPropertys(property01)
         resourceRole3.addToPropertys(property31)
         resourceRole3.addToPropertys(property32)
         resourceRole3.addToPropertys(property33)

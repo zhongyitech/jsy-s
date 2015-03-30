@@ -83,7 +83,7 @@ class PaymentCollectionResource {
     @POST
     @Path('/getPayments')
     Response getPayments(String datastr) {
-        ok {
+        page {
             def ret = [:]
             int total
             def results
@@ -122,9 +122,7 @@ class PaymentCollectionResource {
 
             results = criterib.list(params)
             total = criterib.size()
-            ret.result = results
-            ret.total = total
-            ret
+            return [data:results,total:total]
         }
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
@@ -178,7 +176,7 @@ class PaymentCollectionResource {
     @POST
     @Path('/getCommissions')
     Response getCommissions(String datastr) {
-        ok {
+        page {
             def results
             int total
             def ret = [:]
@@ -218,10 +216,7 @@ class PaymentCollectionResource {
 
             results = criterib.list(params)
             total = criterib.size()
-            ret.result = results
-            ret.total = total
-            ret
-
+            return [data: results,total: total]
         }
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
