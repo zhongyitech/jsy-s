@@ -114,11 +114,11 @@ class UserCollectionResource {
                 jso.put("data", it.id)
                 jsonArray.add(jso)
             }
-            def jsonObject = [:]
-            jsonObject.put("query", "Unit")
-            jsonObject.put("suggestions", jsonArray)
+            def data = [:]
+            data.put("query", "Unit")
+            data.put("suggestions", jsonArray)
 
-            return jsonObject
+            return data
         }
     }
 
