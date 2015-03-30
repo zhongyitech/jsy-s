@@ -26,6 +26,8 @@ class JsonResult {
             map.rest_total=total
         }
         map.rest_status=REST_STATUS_SUC
+
+
         return map as JSON
     }
 
