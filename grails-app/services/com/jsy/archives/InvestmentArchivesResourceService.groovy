@@ -163,8 +163,8 @@ class InvestmentArchivesResourceService {
      * @return
      */
     def getPayOnceAmount(InvestmentArchives ia) {
-        if(ia.nhsyl == 0  || ia.sjtzje ==0 || ia.payTimes.size()==0){
-            return  0
+        if (ia.nhsyl == 0 || ia.sjtzje == 0 || ia.payTimes.size() == 0) {
+            return 0
         }
         return (ia.nhsyl * ia.sjtzje) / ia.payTimes.size()
     }
@@ -194,8 +194,44 @@ class InvestmentArchivesResourceService {
                 tcffsj = it.glffsj3
                 amount = it.tcje * 0.1
             }
-            list.add([user:it.user, time: tcffsj, amount: amount])
+            list.add([user: it.user, time: tcffsj, amount: amount])
         }
         return list
+    }
+    /**
+     * 获取可用于创建新档案的合同编号 (已经登记过,并且没有使用的合同编号)
+     * 过滤条件
+     */
+    def getVisibleContractNumber(String params) {
+
+        def list = []
+        if (params.length() < 5) {
+            return list;
+        }
+        def contract = Contract.findAllByHtbh("%" + params + "%")
+        def userContracts = InvestmentArchives.list()
+
+
+    }
+
+    /**
+     * 检测合同编号是否可用
+     * @param contractNum
+     * @return
+     */
+    void checkContractNumberIVisible(def contractNum) {
+        if (contractNum == null || contractNum == "") {
+            throw new Exception("合同编号格式不正确")
+        }
+
+        if (InvestmentArchives.findByContractNum(contractNum) != null) {
+            throw new Exception("合同编号已经使用过了!")
+        }
+        def c = Contract.findByHtbh(contractNum)
+
+        if (c == null) {
+            throw new Exception("合同编号未登记,请先进行合同登记!")
+        }
+
     }
 }

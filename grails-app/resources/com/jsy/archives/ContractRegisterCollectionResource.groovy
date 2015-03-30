@@ -34,7 +34,7 @@ class ContractRegisterCollectionResource {
             int qs = Integer.parseInt(dto.qsbh.substring(nameLength))
             int js = Integer.parseInt(dto.jsbh.substring(nameLength))
             String bh = dto.qsbh.substring(0, nameLength)
-            def decimalFormat = new DecimalFormat("00000")
+            def decimalFormat = new DecimalFormat("0000")
 
             //验证合同编号
             for (int i = qs; i <= js; i++) {

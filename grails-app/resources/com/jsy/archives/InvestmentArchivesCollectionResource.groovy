@@ -11,6 +11,7 @@ import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
+import grails.validation.ValidationException
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -19,6 +20,7 @@ import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 import java.text.SimpleDateFormat
 
+//import static com.jsy.utility.MyResponse.ok
 import static org.grails.jaxrs.response.Responses.*
 import com.jsy.utility.*
 
@@ -178,14 +180,17 @@ class InvestmentArchivesCollectionResource {
     }
 
     //检测传入MODEL的合法性，属性的值
-    static def ValidationModel(InvestmentArchives dto) {
+    def ValidationModel(InvestmentArchives dto) {
+
         def error = [:]
         if (dto.fxfs == null || dto.fxfs.length() > 1) {
             error.fxfs = "付息方式参数不合法"
         }
         if (dto.dqrq == null || dto.dqrq <= dto.rgrq) error.dqrq = "到期日期不合法"
 
-//        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
+        if (!investmentArchivesResourceService.checkContractNumberIVisible(dto.contractNum)) {
+            error.contractNum = "合同编号没有登记"
+        }
 
         def contract = Contract.findByHtbh(dto.contractNum)
         if (contract != null && contract.fund.id != dto.fund.id) {
@@ -214,11 +219,12 @@ class InvestmentArchivesCollectionResource {
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto, @QueryParam('id') @DefaultValue("") String id) {
         MyResponse.ok {
-            def error = ValidationModel(dto)
-            if (error.size() > 0) {
-                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
-                return Response.ok(result).build()
-            }
+//            def error = ValidationModel(dto)
+//            if (error.size() > 0) {
+//                throw new Exception("传递的参数不合法，请修改参数！")
+//            }
+            investmentArchivesResourceService.checkContractNumberIVisible(dto.contractNum)
+
             def ia
             //create
             if ("" == id || null == id) {
@@ -463,7 +469,6 @@ class InvestmentArchivesCollectionResource {
         result.put("rest_result", ia)
         result.put("rest_total", total)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     def formatClassToValue(JSONObject object) {
@@ -584,6 +589,29 @@ class InvestmentArchivesCollectionResource {
             }
 //            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
             return [data: res, total: arg.startposition == 0 ? dc.count() : 0]
+        }
+    }
+
+    //todo:.....
+    @GET
+    @Path('/nameLike')
+    Response findByNameLike(@QueryParam('params') String htbn) {
+        MyResponse.ok {
+
+            def ia = Contract.findAllByHtbh("%" + htbn + "%")
+
+            def jsonArray = []
+            ia.each {
+                def jso = [:]
+                jso.put("value", it.htbh)
+                jso.put("data", it.id)
+                jsonArray.add(jso)
+            }
+            def data = [:]
+            data.put("query", "Unit")
+            data.put("suggestions", jsonArray)
+
+            return data
         }
     }
 }
