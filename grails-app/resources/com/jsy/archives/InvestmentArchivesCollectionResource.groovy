@@ -1,5 +1,6 @@
 package com.jsy.archives
 
+import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
@@ -19,6 +20,7 @@ import javax.ws.rs.QueryParam
 import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
+import com.jsy.utility.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -202,18 +204,21 @@ class InvestmentArchivesCollectionResource {
         return error
     }
 
+    /**
+     * 创建或是更新投资档案信息
+     * @param dto
+     * @param id
+     * @return
+     */
     @PUT
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto, @QueryParam('id') @DefaultValue("") String id) {
-//        测试数据
-//        {"customer":{"name":"12","credentialsNumber":"12","country":"china","phone":"12",country":"12","credentialsType":"12","telephone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"12","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T14:49:20Z","dqrq":"2014-12-23T14:49:20Z","fxfs":"12","htzt":"1","ywjl":"1"}
-//        {"customer":{"name":"12","khh":"12","yhzh":"12","country":"12","credentialsType":"12","credentialsNumber":"12","telephone":"12","phone":"12","postalcode":"12","email":"12","callAddress":"12","remark":"12"},"contractNum":"122301","fund":"1","tzje":"12","tzqx":"1","rgrq":"2014-12-23T18:17:43Z","dqrq":"2014-12-23T18:17:43Z","fxfs":"12","htzt":"1","ywjl":"1"}
         try {
-//            def error = ValidationModel(dto)
-//            if (error.size() > 0) {
-//                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
-//                return  Response.ok(result).build()
-//            }
+            def error = ValidationModel(dto)
+            if (error.size() > 0) {
+                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
+                return  Response.ok(result).build()
+            }
         } catch (Exception e) {
             ok JsonResult.error(e.message)
         }
@@ -272,7 +277,6 @@ class InvestmentArchivesCollectionResource {
             ok result
 
         } else {
-//            try {
             Customer cus = null
             if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
 //                cus=Customer.findByCredentialsNumber(dto.customer.credentialsNumber)
@@ -287,15 +291,8 @@ class InvestmentArchivesCollectionResource {
             }
             dto.customer = cus
             ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
-//            }catch (Exception e){
-//                restStatus = REST_STATUS_FAI
-//                print(e)
-//            }
-
             ok JsonResult.success(ia)
         }
-
-
     }
 
     @GET
@@ -315,20 +312,9 @@ class InvestmentArchivesCollectionResource {
     @GET
     @Path('/GetById')
     Response GetById(@QueryParam('id') Long id) {
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-        def ia
-        try {
-            ia = InvestmentArchives.get(id)
-            ok JsonResult.success(ia)
-        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
-            print(e)
-            ok JsonResult.error(e.message)
+        MyResponse.ok {
+            return investmentArchivesResourceService.read(id)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ia as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //根据名字模糊查询投资确认书列表
@@ -413,6 +399,24 @@ class InvestmentArchivesCollectionResource {
 
     }
 
+    /**
+     * 更新投资档案关联的客户的信息
+     * @param dto 客户数据
+     * @param id 要更新的客户ID
+     * @return 更新后的数据
+     */
+    @POST
+    @Path('')
+    Response editCustomer(Customer dto, @QueryParam('cid') Long cid, @QueryParam('iid') Long iid) {
+        MyResponse.ok {
+            def archives = InvestmentArchives.get(iid)
+            if (archives == null || archives.customer.id != cid) {
+                throw new Exception("提交数据不合法,客户")
+            }
+
+        }
+    }
+
     @GET
     @Path('/getyy')
     Response Getyy() {
@@ -434,6 +438,28 @@ class InvestmentArchivesCollectionResource {
             ok JsonResult.error(e.message)
         }
     }
+
+    /**
+     * 返回指定业务经理的提成和年化信息
+     * @param fundid 基金ID
+     * @param userid 业务经理ID
+     * @param amount 投资金额
+     * @param vers 合同版本
+     * @return
+     */
+    @GET
+    @Path('/getYieldInfo')
+    Response getYieldForUser(@QueryParam('fundId') Long fundId,
+                             @QueryParam('userId') Long userId,
+                             @QueryParam('amount') BigDecimal amount,
+                             @QueryParam('ver') String ver) {
+        MyResponse.ok {
+            def user = User.get(userId)
+            def leader = user.department.leader
+            return GetYieldService.getYield(fundId, leader.id, amount, ver)
+        }
+    }
+
 
     @POST
     @Path('/readAllForPage')
@@ -538,7 +564,7 @@ class InvestmentArchivesCollectionResource {
                 row.rgrq = it.rgrq
                 row.tzqx = it.tzqx
                 row.tzje = it.sjtzje
-                row.fundName=it.fund.fundName
+                row.fundName = it.fund.fundName
 
                 //下次提成日期和金额
                 def today = new Date()
