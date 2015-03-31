@@ -68,6 +68,9 @@ class CommissionInfoResourceService {
 
     def toPay(CommissionInfo com)throws Exception{
         CommissionInfo commissionInfo=CommissionInfo.get(com.comId)
+        if (commissionInfo.type!=0){
+            return new Exception('正在处理或已处理！')
+        }
         commissionInfo.sfyfse=com.sfyfse
         commissionInfo.fpje=com.fpje
         commissionInfo.sj=com.sj
