@@ -11,7 +11,6 @@ import com.jsy.utility.GetYieldService
 import com.jsy.utility.JsonResult
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
-import grails.validation.ValidationException
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -20,7 +19,6 @@ import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 import java.text.SimpleDateFormat
 
-//import static com.jsy.utility.MyResponse.ok
 import static org.grails.jaxrs.response.Responses.*
 import com.jsy.utility.*
 
@@ -219,11 +217,12 @@ class InvestmentArchivesCollectionResource {
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto, @QueryParam('id') @DefaultValue("") String id) {
         MyResponse.ok {
-//            def error = ValidationModel(dto)
-//            if (error.size() > 0) {
-//                throw new Exception("传递的参数不合法，请修改参数！")
-//            }
-            investmentArchivesResourceService.checkContractNumberIVisible(dto.contractNum)
+
+//            throw new Exception("test exception")
+            def exception = investmentArchivesResourceService.IVisible(dto.contractNum)
+            if (exception != null) {
+                throw exception
+            }
 
             def ia
             //create
@@ -489,7 +488,12 @@ class InvestmentArchivesCollectionResource {
 
     @POST
     @Path('/IAOutput')
-    Response IAOutput(Finfo finfo) {
+    Response IAOutput(Map finfo) {
+
+//        MyResponse.page {
+//
+//
+//        }
         if (null == finfo.keyword) {
             finfo.keyword = ""
         }

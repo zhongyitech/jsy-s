@@ -219,19 +219,21 @@ class InvestmentArchivesResourceService {
      * @param contractNum
      * @return
      */
-    void checkContractNumberIVisible(def contractNum) {
+    def IVisible(def contractNum) {
+
         if (contractNum == null || contractNum == "") {
-            throw new Exception("合同编号格式不正确")
+
+            return new Exception("合同编号格式不正确")
         }
 
         if (InvestmentArchives.findByContractNum(contractNum) != null) {
-            throw new Exception("合同编号已经使用过了!")
+            return new Exception("合同编号已经使用过了!")
         }
         def c = Contract.findByHtbh(contractNum)
 
         if (c == null) {
-            throw new Exception("合同编号未登记,请先进行合同登记!")
+            return new Exception("合同编号未登记,请先进行合同登记!")
         }
-
+        return null
     }
 }

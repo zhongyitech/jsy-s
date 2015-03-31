@@ -490,7 +490,7 @@ class BootStrap {
     }
 
     def init_metaExtend = {
-        print("set Date out format")
+        print("set Date out format 'yyyy/MM/dd HH:mm:ss'")
         JSON.registerObjectMarshaller(Date) {
             return it?.format("yyyy/MM/dd HH:mm:ss")
         }

@@ -22,8 +22,13 @@ class CommissionInfoCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def commissionInfoResourceService
+    CommissionInfoResourceService commissionInfoResourceService
 
+    /**
+     * 生成提成申请单
+     * @param commissionInfo
+     * @return
+     */
     @POST
     @Path('/addPayment')
     Response addPayment(CommissionInfo commissionInfo) {
@@ -31,12 +36,6 @@ class CommissionInfoCollectionResource {
             def ci= commissionInfoResourceService.toPay(commissionInfo)
             ci
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ci= commissionInfoResourceService.toPay(commissionInfo)
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ci as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
 //    @POST
@@ -46,7 +45,7 @@ class CommissionInfoCollectionResource {
 
     @GET
     Response readAll() {
-        ok commissionInfoResourceService.readAll()
+        ok {commissionInfoResourceService.readAll()}
     }
 
     @GET
