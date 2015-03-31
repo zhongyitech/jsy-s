@@ -26,8 +26,11 @@ class InvestmentArchivesResourceService {
         InvestmentArchives.findAll()
     }
 
-    def update(InvestmentArchives dto, int id) {
+    def update(InvestmentArchives dto, int id) throws Exception {
         def obj = InvestmentArchives.get(id)
+        if(obj.status==2){
+            throw new Exception("已归档，无法修改！")
+        }
 //        obj.customer.delete()
 
         // def did = obj.customer?.id

@@ -107,6 +107,17 @@ log4j = {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
 
+    appenders {// write by liujw 15.03.31.15.30
+        console name: "stdout",
+                layout: pattern(conversionPattern: "%c{2} %m%n")
+        environments {
+            production {
+                rollingFile name: "myAppender", maxFileSize: 1024,
+                        file: "D:/tmp/logs/myApp.log"
+            }
+        }
+    }
+
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
            'org.codehaus.groovy.grails.web.sitemesh',       // layouts
