@@ -34,20 +34,8 @@ class FundCompanyInformationCollectionResource {
 
     @POST
     Response create(FundCompanyInformation dto) {
-        def d = dto as JSON;
-        println(d.toString());
-//        fundCompanyInformationResourceService.create(dto);
-//        ok {
-//            fundCompanyInformationResourceService.create(dto);
-//        };
-        try{
-            MsgModel msgModel = fundCompanyInformationResourceService.create(dto);
-            if(msgModel == null){
-                ok JsonResult.error("java error");
-            }
-            ok JsonResult.success(msgModel.result);
-        }catch (Exception ex){
-            ok JsonResult.error(ex.message);
+        MyResponse.ok{
+            fundCompanyInformationResourceService.create(dto)
         }
     }
 
