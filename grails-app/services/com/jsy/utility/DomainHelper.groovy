@@ -60,7 +60,7 @@ class DomainHelper {
      */
     public static Map getPage(Class domainClass, def query) {
         def dc = DomainHelper.getDetachedCriteria(domainClass, query)
-        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total: query.startposition == 0 ? dc.count() : 0]
+        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total:  dc.count()]
     }
 
     /**

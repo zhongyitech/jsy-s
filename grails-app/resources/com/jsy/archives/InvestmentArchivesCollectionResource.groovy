@@ -219,8 +219,8 @@ class InvestmentArchivesCollectionResource {
         MyResponse.ok {
 
             def ia
-            dto.bmjl=dto.ywjl.department.leader
-            dto.bm=dto.bmjl.department.deptName
+            dto.bmjl = dto.ywjl.department.leader
+            dto.bm = dto.bmjl.department.deptName
 
             //create
             if ("" == id || null == id) {
@@ -229,7 +229,7 @@ class InvestmentArchivesCollectionResource {
                     throw exception
                 }
                 Customer cus = null
-                if (!(dto.customer==null ||dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto.customer == null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
 
                     CustomerArchives cusa = CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
@@ -270,7 +270,7 @@ class InvestmentArchivesCollectionResource {
             } else {
                 //update
                 Customer cus = null
-                if (!(dto.customer==null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto.customer == null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
                     dto.status = 1
                     dto.username = cus.name
@@ -615,18 +615,35 @@ class InvestmentArchivesCollectionResource {
                 row.next_tc_amount = next_tc_amount
 
                 //下次付息时间和金额
-                def next_pay = it.payTimes.sort {
-                    a, b -> a.px < b.px
-                }.find {
-                    print(it)
-                    it.fxsj > today
+//                def next_pay = it.payTimes.sort {
+//                    a, b ->
+//                        print(a.px + "," + b.px + ": " + it.id)
+//                        (a.px < b.px)
+//                }.find {
+//                    it.fxsj > today
+//                }
+
+                Date n_day
+                it.payTimes.each {
+                    print(it.fxsj)
+                    if (it.fxsj > today) {
+                        if (n_day == null) {
+                            n_day = it.fxsj
+                        }
+                        if (it.fxsj < n_day)
+                        { n_day = it.fxsj}
+                    }
                 }
-                row.next_pay_time = next_pay != null ? next_pay.fxsj : null
+                print(n_day)
+                print("----")
+
+                row.next_pay_time = n_day != null ? n_day : null
+                print("next_pay_time:" + row.next_pay_time)
                 row.next_pay_amount = investmentArchivesResourceService.getPayOnceAmount(it)
                 res.add(row)
             }
 //            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
-            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]
+            return [data: res, total: dc.count()]
         }
     }
 
