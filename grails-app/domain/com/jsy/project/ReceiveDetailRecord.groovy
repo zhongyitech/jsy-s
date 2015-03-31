@@ -18,7 +18,7 @@ class ReceiveDetailRecord {
 
     static belongsTo = [
             receiveRecord: ReceiveRecord,     //收款
-            payRecord: PayRecord,     //收款
+            payRecord: PayRecord,             //付款
 
     ];
 

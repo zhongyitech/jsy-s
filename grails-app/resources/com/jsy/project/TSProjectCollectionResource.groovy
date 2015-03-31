@@ -66,6 +66,20 @@ class TSProjectCollectionResource {
         return Response.ok(result.toString()).status(200).build()
     }
 
+
+    @GET
+    @Path('/selectList')
+    Response selectList(){
+        com.jsy.utility.MyResponse.ok{
+            def data=[]
+            //todo:最好能优化为只从数据库中返回指定字段的方法
+            TSProject.findAllByArchive(false).each{
+                data.push([id:it.id,mapName:it.name,])
+            }
+            data
+        }
+    }
+
     //新增
     @POST
     @Path('/create')

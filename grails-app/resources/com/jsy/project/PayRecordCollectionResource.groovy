@@ -91,7 +91,22 @@ class PayRecordCollectionResource {
         // get project
         org.json.JSONObject obj = JSON.parse(datastr)
 
+
+
         try{
+            //数据校验
+            if(obj.fundid==""||!obj.fundid){
+                result.put("rest_status", "error")
+                result.put("rest_result", "no fund set!")
+                return Response.ok(result.toString()).status(500).build()
+            }
+
+            if(obj.project==""||obj.project=="null"||!obj.project){
+                result.put("rest_status", "error")
+                result.put("rest_result", "no project set!")
+                return Response.ok(result.toString()).status(500).build()
+            }
+
             //数据保存
             Fund fund = Fund.get(obj.fundid)
             TSProject project = TSProject.get(obj.project)
