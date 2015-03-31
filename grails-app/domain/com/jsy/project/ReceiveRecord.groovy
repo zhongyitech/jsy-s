@@ -17,7 +17,6 @@ class ReceiveRecord {
     //款项性质
 //    String[] allPayTargets =["本金","第一年利息","管理费","渠道费","逾期利息","违约金","借款"]
     String[] allPayTargets =["original","firstyear","maintain","channel","overdue","penalty","borrow"]
-    String payTargets // 格式: original,firstyear,maintain,channel,overdue,penalty,borrow
 
     //银行账户
     BankAccount bankAccount

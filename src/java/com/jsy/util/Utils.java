@@ -22,6 +22,19 @@ public class Utils {
         return calculatedDate;
     }
 
+    public static Date addYears(final java.util.Date date, final int years) {
+        Date calculatedDate = null;
+
+        if (date != null) {
+            final GregorianCalendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            calendar.add(Calendar.YEAR, years);
+            calculatedDate = calendar.getTime();
+        }
+
+        return calculatedDate;
+    }
+
     public static long dayDifferent(Date dateStart,Date dateStop) throws Exception{
         if(dateStart.after(dateStop)){
             throw new Exception("dateStart after dateStop");

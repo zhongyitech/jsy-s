@@ -17,13 +17,15 @@ class PayRecord {
     //投资金额
     BigDecimal amount
 
+    //borrow, invest
     String payType
 
     String pdesc;
 
     BankAccount bankAccount
 
-
+    //是不是已经生成逾期应付记录
+    boolean isGenOverShouldPay=false
 
     /*固定产生的费用，这里是固定的参考总额*/
     BigDecimal manage_bill=0                //管理费
@@ -79,7 +81,7 @@ class PayRecord {
         interest_bill = amount * project.interest_per * project.year1   //第一年利率
     }
 
-
+    //理论上不存在这个情况
     def beforeUpdate() {
         manage_bill = amount * project.manage_per                       //管理费
         community_bill = amount * project.community_per                 //渠道费
@@ -88,8 +90,42 @@ class PayRecord {
         interest_bill = amount * project.interest_per * project.year1   //第一年利率
     }
 
+    //生成应付记录
+    def afterInsert(){
+        // 本金
+        new ShouldReceiveRecord(payRecord:this,target:'original',amount:amount).save(failOnError: true);
+
+        if("borrow".equals(payType)){
+            // 借款利息
+            new ShouldReceiveRecord(payRecord:this,target:'borrow',amount:amount * project.borrow_per).save(failOnError: true);
+
+        }else if("invest".equals(payType)){
+            // 管理费
+            new ShouldReceiveRecord(payRecord:this,target:'maintain',amount:amount * project.manage_per).save(failOnError: true);
+
+            // 渠道费
+            new ShouldReceiveRecord(payRecord:this,target:'channel',amount:amount * project.community_per).save(failOnError: true);
+
+            // 第一年利息
+            new ShouldReceiveRecord(payRecord:this,target:'firstyear',amount:amount * project.interest_per * project.year1).save(failOnError: true);
+
+        }
+
+        if(isOverDate()){
+            //逾期利息
+            new ShouldReceiveRecord(payRecord:this,target:'overdue',amount:getOverDue()).save(failOnError: true);
+
+            // 违约金
+            new ShouldReceiveRecord(payRecord:this,target:'penalty',amount:amount * project.penalty_per).save(failOnError: true);
+
+            //马上就生成了
+            isGenOverShouldPay = true
+        }
+    }
+
     /**
      * 获取逾期费
+     * 如果顾客在逾期之间还还过部分钱，这个算法还需要改进！！！
      * @return
      */
     def getOverDue(){
@@ -128,6 +164,10 @@ class PayRecord {
         }
     }
 
+    /**
+     * 计算总共相差多少钱：应该付款-已经付款
+     * @return
+     */
     def totalBalance(){
         BigDecimal should_pay=0;
         BigDecimal already_pay=0;
