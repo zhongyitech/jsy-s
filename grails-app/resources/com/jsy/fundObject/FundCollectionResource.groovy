@@ -2,6 +2,7 @@ package com.jsy.fundObject
 
 import com.jsy.auth.AuthorityService
 import com.jsy.utility.CreateNumberService
+import com.jsy.utility.DomainHelper
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject

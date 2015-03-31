@@ -28,20 +28,23 @@ class InvestmentArchivesResourceService {
 
     def update(InvestmentArchives dto, int id) {
         def obj = InvestmentArchives.get(id)
-        obj.customer.delete()
+//        obj.customer.delete()
 
-        obj?.payTimes.each {
-            obj.payTimes.remove(it)
-            it.delete(flush: true)
+        // def did = obj.customer?.id
+        try {
+            obj?.payTimes.each {
+                obj.removeFromPayTimes(it)
+            }
+        }catch (Exception ex){
+            print(ex.message)
         }
-
         //付息时间新增
 
         List times = scfxsj(dto.rgrq, dto.tzqx, dto.fxfs)
         int i = 1
         times.each {
-            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false).save(failOnError: true)
-            dto.addToPayTimes(payTime)
+            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: obj).save(failOnError: true)
+            obj.addToPayTimes(payTime)
             i++
         }
         if (!obj) {
@@ -49,6 +52,10 @@ class InvestmentArchivesResourceService {
         }
         obj.union(dto)
         obj.save(failOnError: true)
+        //  if (did) {
+        //      Customer.get(did).delete()
+        //   }
+//        obj
     }
 
     void delete(id) {

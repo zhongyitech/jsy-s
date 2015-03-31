@@ -275,7 +275,7 @@ class PaymentInfoResourceService {
                             paymentInfo.tzje = it.tzje
                             paymentInfo.tzqx = it.tzqx
                             paymentInfo.syl = it.nhsyl
-                            paymentInfo.bmjl = it.bmjl.chainName
+                            paymentInfo.bmjl = it.bmjl?.chainName
                             paymentInfo.khh = it.customer.khh
                             paymentInfo.yhzh = it.customer.yhzh
                             paymentInfo.gj = it.customer.country

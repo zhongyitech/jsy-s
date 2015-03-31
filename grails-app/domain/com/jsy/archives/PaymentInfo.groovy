@@ -74,6 +74,7 @@ class PaymentInfo {
     }
 
     static constraints = {
+        bmjl nullable: true
         zfsj nullable: true
         todoId nullable: true
     }

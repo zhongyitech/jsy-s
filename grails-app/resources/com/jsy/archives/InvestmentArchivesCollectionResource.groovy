@@ -218,15 +218,13 @@ class InvestmentArchivesCollectionResource {
     Response CreateOrUpdate(InvestmentArchives dto, @QueryParam('id') @DefaultValue("") String id) {
         MyResponse.ok {
 
-//            throw new Exception("test exception")
-            def exception = investmentArchivesResourceService.IVisible(dto.contractNum)
-            if (exception != null) {
-                throw exception
-            }
-
             def ia
             //create
             if ("" == id || null == id) {
+                def exception = investmentArchivesResourceService.IVisible(dto.contractNum)
+                if (exception != null) {
+                    throw exception
+                }
                 Customer cus = null
                 if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
@@ -486,48 +484,43 @@ class InvestmentArchivesCollectionResource {
         new InvestmentArchivesResource(investmentArchivesResourceService: investmentArchivesResourceService, id: id)
     }
 
+    void addKey(Map target, def it, def valueName) {
+        target.putAt(it.key, (it.value == null ? null : it.value[valueName]))
+    }
+
     @POST
     @Path('/IAOutput')
     Response IAOutput(Map finfo) {
 
-//        MyResponse.page {
-//
-//
-//        }
-        if (null == finfo.keyword) {
-            finfo.keyword = ""
-        }
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        def ia
-        org.codehaus.groovy.grails.web.json.JSONArray iao = new org.codehaus.groovy.grails.web.json.JSONArray()
-        try {
-
-            ia = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("page")
-            total = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("size")
-            ia.each {
-//            InvestmentArchives inves = it
-                if (null != it.customer) {
-                    IAOutput iaoo = new IAOutput(it)
-                    iao.put(iaoo)
-                } else {
-                    print(it.toString() + ".customer is null!!!")
+        MyResponse.page {
+            def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, finfo)
+//            def dc = dc.where {
+////                isNotNull('customer')
+//            };
+            def data = []
+            dc.list([max: finfo.pagesize, offset: finfo.startposition]).collect {
+                def row = [:]
+                row.putAt("id", it.id)
+                it.properties.each {
+                    switch (it.key) {
+                        case "customer":
+//                                row.putAt(it.key, it.value.name)
+                            addKey(row, it, "name")
+                            break
+                        case "fund":
+                            row.putAt(it.key, it.value.fundName)
+                            break
+                        case "ywjl":
+                            row.putAt(it.key, it.value.chainName)
+                            break
+                        default:
+                            row.putAt(it.key, it.value)
+                    }
                 }
+                data.push(row)
             }
-
-        } catch (Exception e) {
-            restStatus = REST_STATUS_FAI;
-            print(e)
+            return [data: data, total: dc.count()]
         }
-
-
-        print("customer NOT NULL.size = " + iao.size())
-        result.put("rest_status", restStatus)
-        result.put("rest_result", iao as JSON)
-        result.put("rest_total", total)
-
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     /**
