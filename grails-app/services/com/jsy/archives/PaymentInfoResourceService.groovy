@@ -681,6 +681,9 @@ class PaymentInfoResourceService {
     //同意生成兑付申请
     def toPay(Long payId) throws Exception{
         PaymentInfo paymentInfo=PaymentInfo.get(payId)
+        if(paymentInfo.type!=0){
+            return new Exception('正在处理或已处理！')
+        }
         //提交到OA不能修改了
         paymentInfo.type=1
         //OA通过了
@@ -690,6 +693,7 @@ class PaymentInfoResourceService {
         if(paymentInfo.yfbj!=0){
             new Payment(infoId:paymentInfo.id ,zfsj:paymentInfo.zfsj,fpe: paymentInfo.yfbj,fundName:paymentInfo.fundName,contractNum:paymentInfo.htbh,customerName:paymentInfo.customerName,khh: paymentInfo.khh,zh: paymentInfo.yhzh,bmjl: paymentInfo.bmjl,yfk: paymentInfo.yfbj,dflx: "bj").save(failOnError: true)
         }
+        paymentInfo.type=2
         paymentInfo.isAllow=true
         paymentInfo.save(failOnError: true)
         //修改待办任务

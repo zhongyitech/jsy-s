@@ -31,12 +31,12 @@ class CommissionInfoCollectionResource {
             def ci= commissionInfoResourceService.toPay(commissionInfo)
             ci
         }
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def ci= commissionInfoResourceService.toPay(commissionInfo)
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ci as JSON)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        def ci= commissionInfoResourceService.toPay(commissionInfo)
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ci as JSON)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
 //    @POST

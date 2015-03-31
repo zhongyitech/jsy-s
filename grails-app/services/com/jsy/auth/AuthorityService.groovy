@@ -1,5 +1,6 @@
 package com.jsy.auth
 
+import grails.converters.JSON
 import grails.transaction.Transactional
 import org.json.JSONArray
 import org.json.JSONObject
@@ -12,6 +13,9 @@ class AuthorityService {
     def getAuth(List list){
         String resourceName=list.get(0).class.toString()
         Resource resource=Resource.findByObjectName(resourceName)
+        if(!resource){
+            return list as JSON
+        }
         User user=springSecurityService.getCurrentUser()
         def roles=UserRole.findAllByUser(user).collect{it.role}
         def resourceRoles=ResourceRole.findAllByRoleInListAndResource(roles,resource)
@@ -50,9 +54,12 @@ class AuthorityService {
     //根据权限过滤字段-单个过滤
     def getAuth(Object obj){
         String resourceName=obj.class.toString()
+        Resource resource=Resource.findByObjectName(resourceName)
+        if(!resource){
+            return obj as JSON
+        }
         User user=springSecurityService.getCurrentUser()
         def roles=UserRole.findAllByUser(user).collect{it.role}
-        Resource resource=Resource.findByObjectName(resourceName)
         def resourceRoles=ResourceRole.findAllByRoleInListAndResource(roles,resource)
         //检查查看权限
         if(!checkAuth(resourceRoles,'read')){
@@ -73,6 +80,11 @@ class AuthorityService {
             }else {
                 jsonObject.put(it.key,null)
             }
+        }
+        if(map.containsKey("id")){
+            jsonObject.put("id",obj.id)
+        }else {
+            jsonObject.put("id",null)
         }
         return jsonObject
     }
