@@ -248,11 +248,6 @@ class BootStrap {
         resourceRole1.addToOperations(operation2)
         resourceRole1.addToOperations(operation3)
         resourceRole1.addToOperations(operation4)
-        //基金相关url与对应操作关系
-        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'PUT',czlx:'creat').save(failOnError: true)
-        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/update',method:'PUT',czlx:'update').save(failOnError: true)
-        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
-        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
 
         //客户资源
         ResourceRole resourceRole2=new ResourceRole(role: adminRole,resource:kh).save(failOnError: true)
@@ -478,6 +473,13 @@ class BootStrap {
         new MenusRole(menus: menus77,role: adminRole,visible: true).save(failOnError: true)
         new MenusRole(menus: menus78,role: adminRole,visible: true).save(failOnError: true)
 
+
+        //基金相关url与对应操作关系
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'PUT',czlx:'creat').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/update',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
+        //
     }
 
     def destroy = {
