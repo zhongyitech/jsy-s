@@ -219,6 +219,9 @@ class InvestmentArchivesCollectionResource {
         MyResponse.ok {
 
             def ia
+            dto.bmjl=dto.ywjl.department.leader
+            dto.bm=dto.bmjl.department.deptName
+
             //create
             if ("" == id || null == id) {
                 def exception = investmentArchivesResourceService.IVisible(dto.contractNum)
@@ -226,7 +229,7 @@ class InvestmentArchivesCollectionResource {
                     throw exception
                 }
                 Customer cus = null
-                if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto.customer==null ||dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
 
                     CustomerArchives cusa = CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
@@ -267,7 +270,7 @@ class InvestmentArchivesCollectionResource {
             } else {
                 //update
                 Customer cus = null
-                if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto.customer==null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
                     dto.status = 1
                     dto.username = cus.name
@@ -276,6 +279,36 @@ class InvestmentArchivesCollectionResource {
                 ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
                 return ia
             }
+        }
+    }
+
+    /**
+     * 为档案完善客户信息
+     * @param dto
+     * @param id
+     * @return
+     */
+    @POST
+    @Path('/customer')
+    Response customerEdit(Customer dto, @QueryParam('id') Long id, @QueryParam('sync') Boolean sync) {
+        MyResponse.ok {
+            def ia = InvestmentArchives.get(id)
+            def old = ia.customer
+            def obj = null
+            if (old) {
+                old.properties = dto.properties
+                old.save(failOnError: true)
+                obj = old
+            } else {
+                ia.customer = dto.save(failOnError: true)
+                obj = ia.customer
+            }
+            ia.save(failOnError: true)
+
+            if (sync) {
+                new CustomerArchivesResourceService().CopyCustom(obj);
+            }
+            return obj
         }
     }
 
@@ -497,10 +530,12 @@ class InvestmentArchivesCollectionResource {
 //            def dc = dc.where {
 ////                isNotNull('customer')
 //            };
+            def payMentInfo = new PaymentInfoResourceService()
             def data = []
-            dc.list([max: finfo.pagesize, offset: finfo.startposition]).collect {
+            dc.list([max: finfo.pagesize, offset: finfo.startposition]).each {
                 def row = [:]
                 row.putAt("id", it.id)
+
                 it.properties.each {
                     switch (it.key) {
                         case "customer":
@@ -516,7 +551,13 @@ class InvestmentArchivesCollectionResource {
                         default:
                             row.putAt(it.key, it.value)
                     }
+
                 }
+
+                def pay = payMentInfo.getPaymentAmount(it.id)
+
+                row.putAt("bj", pay["bj"])
+                row.putAt("lx", pay["lx"])
                 data.push(row)
             }
             return [data: data, total: dc.count()]

@@ -18,7 +18,14 @@ class FilePackageResourceService {
     }
 
     def create(FilePackage dto) {
+
+        def iv=InvestmentArchives.findByContractNum(dto.contractNum)
+        if(iv==null){
+
+        }
         dto.save(failOnError: true)
+        iv.status=1 //设置为正常状态
+        iv.save()
     }
 
     def read(id) {

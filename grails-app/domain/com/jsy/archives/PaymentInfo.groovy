@@ -44,7 +44,7 @@ class PaymentInfo {
     //付息生产时间
     Date fxsj
 
-    //兑付状态，true:已申请，false:未申请
+    //兑付状态，true:已兑付，false:未兑付
     boolean  isAllow=false
     //递交给OA的状态，0：未申请，1：已申请，2：申请处理了
     int type=0
@@ -74,7 +74,6 @@ class PaymentInfo {
     }
 
     static constraints = {
-        bmjl nullable: true
         zfsj nullable: true
         todoId nullable: true
     }
