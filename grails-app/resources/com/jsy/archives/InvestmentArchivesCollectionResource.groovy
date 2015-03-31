@@ -267,7 +267,7 @@ class InvestmentArchivesCollectionResource {
             } else {
                 //update
                 Customer cus = null
-                if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto?.customer.credentialsNumber == null || dto?.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
                     dto.status = 1
                     dto.username = cus.name
