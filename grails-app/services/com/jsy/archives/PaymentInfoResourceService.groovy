@@ -263,8 +263,10 @@ class PaymentInfoResourceService {
         investmentArchives.each {
             try {
                 int t = PaymentInfo.findAllByArchivesId(it.id).size()
+                print("ivnest:"+it.id)
                 //todo: status==1 正常(已入库)
                 if ( it.customer != null && it.status == 1 && it.payTimes.size() > t) {
+                    print("process..")
                     it.payTimes.each { p ->
                         if (p.px == t + 1 && p.sffx == false) {
                             if (p.fxsj.before(new Date())) {
@@ -304,7 +306,7 @@ class PaymentInfoResourceService {
                                     it.stopPay = true
                                     it.save(failOnError: true)
                                 }
-                                print("save ok!")
+                                print( it.fundName +" : save ok!")
                             }
                         }
                     }

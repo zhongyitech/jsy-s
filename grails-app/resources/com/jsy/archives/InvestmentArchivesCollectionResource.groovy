@@ -630,8 +630,9 @@ class InvestmentArchivesCollectionResource {
                         if (n_day == null) {
                             n_day = it.fxsj
                         }
-                        if (it.fxsj < n_day)
-                        { n_day = it.fxsj}
+                        if (it.fxsj < n_day) {
+                            n_day = it.fxsj
+                        }
                     }
                 }
                 print(n_day)
@@ -667,6 +668,39 @@ class InvestmentArchivesCollectionResource {
             data.put("suggestions", jsonArray)
 
             return data
+        }
+    }
+
+
+    @GET
+    @Path('/contractNumIsUse')
+    Response contractNumIsUse(@QueryParam('num') String num) {
+        MyResponse.ok {
+//            return true;
+            def ia = InvestmentArchives.findByContractNum(num).collect {
+
+            }
+            return ia
+        }
+    }
+    /**
+     * 获取后台算法产生的付息次数
+     * @param date
+     * @param qx
+     * @param fxfs
+     * @return
+     * @QueryParam('date') Date date,@QueryParam('fxfs') String qx,@QueryParam('fxfs') String fxfs
+     */
+    @POST
+    @Path('/getPayTimes')
+    Response getPayTimes(Map arg) {
+        MyResponse.ok{
+            String str=arg.date
+            str=str.replace("T"," ")
+            str=str.replace("Z","")
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            Date startDate = sdf.parse(str);
+            return investmentArchivesResourceService.scfxsj(startDate,arg.qx,arg.fxfs.toUpperCase())
         }
     }
 }

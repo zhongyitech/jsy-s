@@ -102,8 +102,8 @@ class FundCompanyInformation {
 
     static constraints = {
         hhrpx nullable: true
-        companyType nullable: true
-        companyName nullable: true
+//        companyType nullable: true
+//        companyName nullable: true
         corporate nullable: true
         address nullable: true
         province nullable: true
@@ -111,7 +111,7 @@ class FundCompanyInformation {
         area nullable: true
         groupCompany nullable: true
         telephone nullable: true
-        companyNickName nullable: true
+//        companyNickName nullable: true
         companyDescription nullable: true
         foundingDate nullable: true
         responsiblePerson nullable: true
