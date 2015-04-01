@@ -93,30 +93,30 @@ class PayRecord {
     //生成应付记录
     def afterInsert(){
         // 本金
-        new ShouldReceiveRecord(payRecord:this,target:'original',amount:amount).save(failOnError: true);
+        new ShouldReceiveRecord(seq: 1, payRecord:this,target:'original',amount:amount).save(failOnError: true);
 
         if("borrow".equals(payType)){
             // 借款利息
-            new ShouldReceiveRecord(payRecord:this,target:'borrow',amount:amount * project.borrow_per).save(failOnError: true);
+            new ShouldReceiveRecord(seq: 5, payRecord:this,target:'borrow',amount:amount * project.borrow_per).save(failOnError: true);
 
         }else if("invest".equals(payType)){
             // 管理费
-            new ShouldReceiveRecord(payRecord:this,target:'maintain',amount:amount * project.manage_per).save(failOnError: true);
+            new ShouldReceiveRecord(seq: 2, payRecord:this,target:'maintain',amount:amount * project.manage_per).save(failOnError: true);
 
             // 渠道费
-            new ShouldReceiveRecord(payRecord:this,target:'channel',amount:amount * project.community_per).save(failOnError: true);
+            new ShouldReceiveRecord(seq: 3, payRecord:this,target:'channel',amount:amount * project.community_per).save(failOnError: true);
 
             // 第一年利息
-            new ShouldReceiveRecord(payRecord:this,target:'firstyear',amount:amount * project.interest_per * project.year1).save(failOnError: true);
+            new ShouldReceiveRecord(seq: 4, payRecord:this,target:'firstyear',amount:amount * project.interest_per * project.year1).save(failOnError: true);
 
         }
 
         if(isOverDate()){
             //逾期利息
-            new ShouldReceiveRecord(payRecord:this,target:'overdue',amount:getOverDue()).save(failOnError: true);
+            new ShouldReceiveRecord(seq: 7, payRecord:this,target:'overdue',amount:getOverDue()).save(failOnError: true);
 
             // 违约金
-            new ShouldReceiveRecord(payRecord:this,target:'penalty',amount:amount * project.penalty_per).save(failOnError: true);
+            new ShouldReceiveRecord(seq: 6, payRecord:this,target:'penalty',amount:amount * project.penalty_per).save(failOnError: true);
 
             //马上就生成了
             isGenOverShouldPay = true
