@@ -102,6 +102,9 @@ class Fund {
     double getYieldRange(BigDecimal investment,String type){
         double y=0
         this.yieldRange.each {
+            print(it.investment1)
+            print(it.investment2)
+            print(investment)
             if(type.equalsIgnoreCase(it.vers)&&(investment<(it.investment2==0?9999999999999999:it.investment2))&&(investment>=it.investment1)){
                 y = it.yield
             }

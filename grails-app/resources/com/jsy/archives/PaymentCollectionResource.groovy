@@ -1,6 +1,8 @@
 package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
+import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
 import org.json.JSONArray
@@ -334,5 +336,13 @@ class PaymentCollectionResource {
     @Path('/{id}')
     PaymentResource getResource(@PathParam('id') Long id) {
         new PaymentResource(paymentResourceService: paymentResourceService, id:id)
+    }
+
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(Map arg){
+        MyResponse.page {
+            return DomainHelper.getPage(Payment,arg)
+        }
     }
 }

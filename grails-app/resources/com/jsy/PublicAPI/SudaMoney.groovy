@@ -55,7 +55,6 @@ class SudaMoney {
                 )
             }
             o.entry=oe
-
             return o
         }
     }

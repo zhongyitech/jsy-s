@@ -28,8 +28,13 @@ class FilePackageCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
 
-    def filePackageResourceService
+    FilePackageResourceService filePackageResourceService
 
+    /**
+     * 档案入库操作
+     * @param dto
+     * @return
+     */
     @POST
     Response create(FilePackage dto) {
         ok {

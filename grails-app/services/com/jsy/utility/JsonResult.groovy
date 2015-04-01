@@ -41,6 +41,7 @@ class JsonResult {
         def map=[:]
         map.rest_result=[msg:errorMsg,result:result]
         map.rest_status=REST_STATUS_FAI
+        print(errorMsg)
         return map as JSON
     }
 }

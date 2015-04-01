@@ -26,22 +26,28 @@ class InvestmentArchivesResourceService {
         InvestmentArchives.findAll()
     }
 
-    def update(InvestmentArchives dto, int id) {
+    def update(InvestmentArchives dto, int id) throws Exception {
         def obj = InvestmentArchives.get(id)
-        obj.customer.delete()
-
-        obj?.payTimes.each {
-            obj.payTimes.remove(it)
-            it.delete(flush: true)
+        if(obj.status==2){
+            throw new Exception("已归档，无法修改！")
         }
+//        obj.customer.delete()
 
+        // def did = obj.customer?.id
+        try {
+            obj?.payTimes.each {
+                obj.removeFromPayTimes(it)
+            }
+        }catch (Exception ex){
+            print(ex.message)
+        }
         //付息时间新增
 
         List times = scfxsj(dto.rgrq, dto.tzqx, dto.fxfs)
         int i = 1
         times.each {
-            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false).save(failOnError: true)
-            dto.addToPayTimes(payTime)
+            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: obj).save(failOnError: true)
+            obj.addToPayTimes(payTime)
             i++
         }
         if (!obj) {
@@ -49,6 +55,10 @@ class InvestmentArchivesResourceService {
         }
         obj.union(dto)
         obj.save(failOnError: true)
+        //  if (did) {
+        //      Customer.get(did).delete()
+        //   }
+//        obj
     }
 
     void delete(id) {
@@ -163,8 +173,8 @@ class InvestmentArchivesResourceService {
      * @return
      */
     def getPayOnceAmount(InvestmentArchives ia) {
-        if(ia.nhsyl == 0  || ia.sjtzje ==0 || ia.payTimes.size()==0){
-            return  0
+        if (ia.nhsyl == 0 || ia.sjtzje == 0 || ia.payTimes.size() == 0) {
+            return 0
         }
         return (ia.nhsyl * ia.sjtzje) / ia.payTimes.size()
     }
@@ -194,8 +204,46 @@ class InvestmentArchivesResourceService {
                 tcffsj = it.glffsj3
                 amount = it.tcje * 0.1
             }
-            list.add([user:it.user, time: tcffsj, amount: amount])
+            list.add([user: it.user, time: tcffsj, amount: amount])
         }
         return list
+    }
+    /**
+     * 获取可用于创建新档案的合同编号 (已经登记过,并且没有使用的合同编号)
+     * 过滤条件
+     */
+    def getVisibleContractNumber(String params) {
+
+        def list = []
+        if (params.length() < 5) {
+            return list;
+        }
+        def contract = Contract.findAllByHtbh("%" + params + "%")
+        def userContracts = InvestmentArchives.list()
+
+
+    }
+
+    /**
+     * 检测合同编号是否可用
+     * @param contractNum
+     * @return
+     */
+    def IVisible(def contractNum) {
+
+        if (contractNum == null || contractNum == "") {
+
+            return new Exception("合同编号格式不正确")
+        }
+
+        if (InvestmentArchives.findByContractNum(contractNum) != null) {
+            return new Exception("合同编号已经使用过了!")
+        }
+        def c = Contract.findByHtbh(contractNum)
+
+        if (c == null) {
+            return new Exception("合同编号未登记,请先进行合同登记!")
+        }
+        return null
     }
 }

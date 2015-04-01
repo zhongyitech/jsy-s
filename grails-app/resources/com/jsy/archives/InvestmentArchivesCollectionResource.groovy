@@ -178,14 +178,17 @@ class InvestmentArchivesCollectionResource {
     }
 
     //检测传入MODEL的合法性，属性的值
-    static def ValidationModel(InvestmentArchives dto) {
+    def ValidationModel(InvestmentArchives dto) {
+
         def error = [:]
         if (dto.fxfs == null || dto.fxfs.length() > 1) {
             error.fxfs = "付息方式参数不合法"
         }
         if (dto.dqrq == null || dto.dqrq <= dto.rgrq) error.dqrq = "到期日期不合法"
 
-//        if (Contract.findByHtbh(dto.contractNum) == null) error.contractNum = "合同编号没有登记"
+        if (!investmentArchivesResourceService.checkContractNumberIVisible(dto.contractNum)) {
+            error.contractNum = "合同编号没有登记"
+        }
 
         def contract = Contract.findByHtbh(dto.contractNum)
         if (contract != null && contract.fund.id != dto.fund.id) {
@@ -214,16 +217,19 @@ class InvestmentArchivesCollectionResource {
     @Path('/CreateOrUpdate')
     Response CreateOrUpdate(InvestmentArchives dto, @QueryParam('id') @DefaultValue("") String id) {
         MyResponse.ok {
-            def error = ValidationModel(dto)
-            if (error.size() > 0) {
-                def result = JsonResult.error("传递的参数不合法，请修改参数！", error)
-                return Response.ok(result).build()
-            }
+
             def ia
+            dto.bmjl = dto.ywjl.department.leader
+            dto.bm = dto.bmjl.department.deptName
+
             //create
             if ("" == id || null == id) {
+                def exception = investmentArchivesResourceService.IVisible(dto.contractNum)
+                if (exception != null) {
+                    throw exception
+                }
                 Customer cus = null
-                if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto.customer == null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
 
                     CustomerArchives cusa = CustomerArchives.findByCredentialsNumber(dto.customer.credentialsNumber)
@@ -264,7 +270,7 @@ class InvestmentArchivesCollectionResource {
             } else {
                 //update
                 Customer cus = null
-                if (!(dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
+                if (!(dto.customer == null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
                     dto.status = 1
                     dto.username = cus.name
@@ -273,6 +279,36 @@ class InvestmentArchivesCollectionResource {
                 ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
                 return ia
             }
+        }
+    }
+
+    /**
+     * 为档案完善客户信息
+     * @param dto
+     * @param id
+     * @return
+     */
+    @POST
+    @Path('/customer')
+    Response customerEdit(Customer dto, @QueryParam('id') Long id, @QueryParam('sync') Boolean sync) {
+        MyResponse.ok {
+            def ia = InvestmentArchives.get(id)
+            def old = ia.customer
+            def obj = null
+            if (old) {
+                old.properties = dto.properties
+                old.save(failOnError: true)
+                obj = old
+            } else {
+                ia.customer = dto.save(failOnError: true)
+                obj = ia.customer
+            }
+            ia.save(failOnError: true)
+
+            if (sync) {
+                new CustomerArchivesResourceService().CopyCustom(obj);
+            }
+            return obj
         }
     }
 
@@ -463,7 +499,6 @@ class InvestmentArchivesCollectionResource {
         result.put("rest_result", ia)
         result.put("rest_total", total)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     def formatClassToValue(JSONObject object) {
@@ -482,43 +517,51 @@ class InvestmentArchivesCollectionResource {
         new InvestmentArchivesResource(investmentArchivesResourceService: investmentArchivesResourceService, id: id)
     }
 
+    void addKey(Map target, def it, def valueName) {
+        target.putAt(it.key, (it.value == null ? null : it.value[valueName]))
+    }
+
     @POST
     @Path('/IAOutput')
-    Response IAOutput(Finfo finfo) {
-        if (null == finfo.keyword) {
-            finfo.keyword = ""
-        }
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        def ia
-        org.codehaus.groovy.grails.web.json.JSONArray iao = new org.codehaus.groovy.grails.web.json.JSONArray()
-        try {
+    Response IAOutput(Map finfo) {
 
-            ia = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("page")
-            total = investmentArchivesResourceService.IAOutput(finfo.pagesize, finfo.startposition, finfo.keyword).get("size")
-            ia.each {
-//            InvestmentArchives inves = it
-                if (null != it.customer) {
-                    IAOutput iaoo = new IAOutput(it)
-                    iao.put(iaoo)
-                } else {
-                    print(it.toString() + ".customer is null!!!")
+        MyResponse.page {
+            def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, finfo)
+//            def dc = dc.where {
+////                isNotNull('customer')
+//            };
+            def payMentInfo = new PaymentInfoResourceService()
+            def data = []
+            dc.list([max: finfo.pagesize, offset: finfo.startposition]).each {
+                def row = [:]
+                row.putAt("id", it.id)
+
+                it.properties.each {
+                    switch (it.key) {
+                        case "customer":
+//                                row.putAt(it.key, it.value.name)
+                            addKey(row, it, "name")
+                            break
+                        case "fund":
+                            row.putAt(it.key, it.value.fundName)
+                            break
+                        case "ywjl":
+                            row.putAt(it.key, it.value.chainName)
+                            break
+                        default:
+                            row.putAt(it.key, it.value)
+                    }
+
                 }
+
+                def pay = payMentInfo.getPaymentAmount(it.id)
+
+                row.putAt("bj", pay["bj"])
+                row.putAt("lx", pay["lx"])
+                data.push(row)
             }
-
-        } catch (Exception e) {
-            restStatus = REST_STATUS_FAI;
-            print(e)
+            return [data: data, total: dc.count()]
         }
-
-
-        print("customer NOT NULL.size = " + iao.size())
-        result.put("rest_status", restStatus)
-        result.put("rest_result", iao as JSON)
-        result.put("rest_total", total)
-
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     /**
@@ -572,18 +615,58 @@ class InvestmentArchivesCollectionResource {
                 row.next_tc_amount = next_tc_amount
 
                 //下次付息时间和金额
-                def next_pay = it.payTimes.sort {
-                    a, b -> a.px < b.px
-                }.find {
-                    print(it)
-                    it.fxsj > today
+//                def next_pay = it.payTimes.sort {
+//                    a, b ->
+//                        print(a.px + "," + b.px + ": " + it.id)
+//                        (a.px < b.px)
+//                }.find {
+//                    it.fxsj > today
+//                }
+
+                Date n_day
+                it.payTimes.each {
+                    print(it.fxsj)
+                    if (it.fxsj > today) {
+                        if (n_day == null) {
+                            n_day = it.fxsj
+                        }
+                        if (it.fxsj < n_day)
+                        { n_day = it.fxsj}
+                    }
                 }
-                row.next_pay_time = next_pay != null ? next_pay.fxsj : null
+                print(n_day)
+                print("----")
+
+                row.next_pay_time = n_day != null ? n_day : null
+                print("next_pay_time:" + row.next_pay_time)
                 row.next_pay_amount = investmentArchivesResourceService.getPayOnceAmount(it)
                 res.add(row)
             }
 //            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
-            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]
+            return [data: res, total: dc.count()]
+        }
+    }
+
+    //todo:.....
+    @GET
+    @Path('/nameLike')
+    Response findByNameLike(@QueryParam('params') String htbn) {
+        MyResponse.ok {
+
+            def ia = Contract.findAllByHtbh("%" + htbn + "%")
+
+            def jsonArray = []
+            ia.each {
+                def jso = [:]
+                jso.put("value", it.htbh)
+                jso.put("data", it.id)
+                jsonArray.add(jso)
+            }
+            def data = [:]
+            data.put("query", "Unit")
+            data.put("suggestions", jsonArray)
+
+            return data
         }
     }
 }
