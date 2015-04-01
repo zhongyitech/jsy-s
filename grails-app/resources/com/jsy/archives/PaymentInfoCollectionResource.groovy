@@ -1,6 +1,8 @@
 package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
+import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
 import org.json.JSONArray
@@ -30,7 +32,7 @@ class PaymentInfoCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
 
-    def paymentInfoResourceService
+    PaymentInfoResourceService paymentInfoResourceService
 
 //    @POST
 //    Response create(PaymentInfo dto) {
@@ -76,52 +78,72 @@ class PaymentInfoCollectionResource {
 
     @POST
     @Path("/readAllForPage")
-    Response readAllForPage(String datastr) {
-        ok {
-            org.json.JSONObject finfo = JSON.parse(datastr)
-            JSONObject result = new JSONObject();
-            String restStatus = REST_STATUS_SUC;
-            def total
-            def results
-            def ret = [:]
-
-            def criterib = new DetachedCriteria(PaymentInfo).build {
-                if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
-                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
-                    Date date1=sdf.parse(finfo.startsaledate1);
-                    Date date2=sdf.parse(finfo.startsaledate2);
-
-                    between("zfsj", date1, date2)
-                }
+    Response readAllForPage(Map arg) {
 
 
-                if(finfo.has('keyword') && finfo.keyword && !"".equals(finfo.keyword)){
-                    or {
-                        like("fundName", "%"+finfo.keyword+"%")
-                        like("customerName", "%"+finfo.keyword+"%")         //业务经理
-                    }
-                }
-                eq("isAllow",false)
+        MyResponse.page {
 
-                if(finfo.has('type') && finfo.type){
-                    eq("type", finfo.type)
-                }else{
-                    between("type", 0, 1)
-                }
+            //生成付息数据
+            paymentInfoResourceService.addPaymentInfo()
 
-                order("dateCreated", "desc")
-            }
-
-            def params = [:]
-            params.max = 10
-            params.offset = finfo.startposition ? finfo.startposition : 0
-
-            results = criterib.list(params)
-            total = criterib.size()
-            ret.result = results
-            ret.total = total
-            ret
+            print(arg)
+            def page=DomainHelper.getPage(PaymentInfo,arg)
+            return page
         }
+
+
+//        ok {
+//            //查询生成对付记录
+//            paymentInfoResourceService.addPaymentInfo()
+//
+//
+//            org.json.JSONObject finfo = JSON.parse(datastr)
+//            JSONObject result = new JSONObject();
+//            String restStatus = REST_STATUS_SUC;
+//            def total
+//            def results
+//            def ret = [:]
+//
+//            def criterib = new DetachedCriteria(PaymentInfo).build {
+//                if(finfo.has('startsaledate1') && finfo.has('startsaledate2') && finfo.startsaledate1 && finfo.startsaledate2){
+//                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+//                    Date date1=sdf.parse(finfo.startsaledate1);
+//                    Date date2=sdf.parse(finfo.startsaledate2);
+//
+//                    between("zfsj", date1, date2)
+//                }
+//
+//
+//                if(finfo.has('keyword') && finfo.keyword && !"".equals(finfo.keyword)){
+//                    or {
+//                        like("fundName", "%"+finfo.keyword+"%")
+//                        like("customerName", "%"+finfo.keyword+"%")         //业务经理
+//                    }
+//                }
+//                eq("isAllow",false)
+//
+//                if(finfo.has('type') && finfo.type){
+//                    eq("type", finfo.type)
+//                }else{
+//                    between("type", 0, 1)
+//                }
+//
+//                order("dateCreated", "desc")
+//            }
+//
+//            def params = [:]
+//            params.max = 10
+//            params.offset = finfo.startposition ? finfo.startposition : 0
+//
+//            results = criterib.list(params)
+//            total = criterib.size()
+//            ret.result = results
+//            ret.total = total
+//            ret
+//        }
+
+
+
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
 //

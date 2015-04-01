@@ -1,5 +1,6 @@
 package com.jsy.archives
 
+import com.jsy.customerObject.Customer
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 class CustomerArchivesResourceService {
@@ -34,5 +35,11 @@ class CustomerArchivesResourceService {
         if (obj) {
             obj.delete()
         }
+    }
+
+    def CopyCustom(Customer cus){
+
+
+        return cus
     }
 }
