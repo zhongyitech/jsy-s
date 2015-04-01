@@ -480,8 +480,10 @@ class BootStrap {
         new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
         new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
         //档案相关url
-            new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'creat').save(failOnError: true)
-            new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'creat').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/readAllForPage',method:'POST',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/nameLike',method:'GET',czlx:'read').save(failOnError: true)
     }
 
     def destroy = {

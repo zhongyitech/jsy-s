@@ -164,7 +164,10 @@ class InvestmentArchivesResourceService {
                 calendar.add(Calendar.MONTH, 1)
                 list.add(calendar.getTime())
             }
+        }else if(fxfs=="D"){
+            list.add(new Date())
         }
+
         return list
     }
     /**

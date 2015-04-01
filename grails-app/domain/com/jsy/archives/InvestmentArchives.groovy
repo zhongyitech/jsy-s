@@ -109,6 +109,9 @@ class InvestmentArchives {
 
     //能否兑付，要入库后
     boolean yrk=false
+    def beforeInsert() {
+        bj=tzje
+    }
 
     static constraints = {
         archiveNum unique: true
@@ -135,5 +138,6 @@ class InvestmentArchives {
 
         zjdysj nullable: true
 
+        bj nullable: true
     }
 }

@@ -273,7 +273,7 @@ class PaymentInfoResourceService {
                                 paymentInfo.archivesId = it.id
                                 paymentInfo.fxsj = p.fxsj
                                 paymentInfo.fundName = it.fund.fundName
-                                paymentInfo.htbh = it.archiveNum
+                                paymentInfo.htbh = it.contractNum
                                 paymentInfo.customerName = it.customer.name
                                 paymentInfo.tzje = it.tzje
                                 paymentInfo.tzqx = it.tzqx
@@ -290,7 +290,7 @@ class PaymentInfoResourceService {
                                 paymentInfo.yflx = yflx
                                 //计算应付本金
                                 BigDecimal yfbj = 0
-                                if (t == p.px + 1) {
+                                if (t == p.px + 1&&it.fxfs!="D") {
                                     yfbj = it.bj
                                 }
                                 paymentInfo.yfbj = yfbj
@@ -300,6 +300,7 @@ class PaymentInfoResourceService {
                                 p.sffx = true
                                 p.save(failOnError: true)
                                 if (t == p.px + 1) {
+                                    it.bj=0
                                     //将档案表的付款状态改为付款完成
                                     it.stopPay = true
                                     it.save(failOnError: true)
