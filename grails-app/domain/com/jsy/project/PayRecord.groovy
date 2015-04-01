@@ -173,23 +173,34 @@ class PayRecord {
         BigDecimal already_pay=0;
 
         should_pay+=amount;
-        should_pay+=manage_bill;
-        should_pay+=community_bill;
-        should_pay+=penalty_bill;
-        should_pay+=borrow_bill;
-        should_pay+=interest_bill;
+
+        if("borrow".equals(payType)){
+            should_pay+=borrow_bill;
+        }else if("invest".equals(payType)){
+            should_pay+=manage_bill;
+            should_pay+=community_bill;
+            should_pay+=interest_bill;
+        }
 
         if(isOverDate()){//需要计算逾期费
             should_pay+=getOverDue()
+            should_pay+=penalty_bill;
+
         }
 
         already_pay+=payMainBack
-        already_pay+=interest_pay
-        already_pay+=manage_pay
-        already_pay+=community_pay
-        already_pay+=penalty_pay
-        already_pay+=borrow_pay
-        already_pay+=overDue_pay
+        if("borrow".equals(payType)){
+            already_pay+=borrow_pay
+        }else if("invest".equals(payType)){
+            already_pay+=interest_pay
+            already_pay+=manage_pay
+            already_pay+=community_pay
+        }
+
+        if(isOverDate()){
+            already_pay+=penalty_pay
+            already_pay+=overDue_pay
+        }
 
         return should_pay-already_pay
     }
