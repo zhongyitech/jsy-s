@@ -40,6 +40,14 @@ class CustomerArchivesCollectionResource {
         }
     }
 
+    @GET
+    @Path('/getcustomer')
+    Response getCustomer(@QueryParam('cid') Long id){
+        ok{
+            CustomerArchives.get(id)
+        }
+    }
+
 
     @POST
     @Path('/update')

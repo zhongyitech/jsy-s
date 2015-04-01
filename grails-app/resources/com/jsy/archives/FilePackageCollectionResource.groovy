@@ -38,24 +38,9 @@ class FilePackageCollectionResource {
     @POST
     Response create(FilePackage dto) {
         ok {
-            dto = filePackageResourceService.create(dto)
-            dto
+            def result=filePackageResourceService.create(dto)
+            return result
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-////        def fp
-//        try {
-//            dto = filePackageResourceService.create(dto)
-//
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", dto as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
 //    @GET
