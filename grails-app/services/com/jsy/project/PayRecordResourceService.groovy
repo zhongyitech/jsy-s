@@ -1,5 +1,6 @@
 package com.jsy.project
 
+import com.jsy.fundObject.Fund
 import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
 import grails.converters.JSON
@@ -24,7 +25,7 @@ class PayRecordResourceService {
                 }else if(p.value && !"".equals(p.value) && "like".equals(property.get("operate"))){
                     like(p.key,"%"+p.value+"%")
                 }else if(p.value && !"".equals(p.value) && "eq".equals(property.get("operate"))){
-                    eq(p.key,p.value)
+                    eq(p.key,Fund.get(p.value)) // TODO hard code here.
                 }
             }
 

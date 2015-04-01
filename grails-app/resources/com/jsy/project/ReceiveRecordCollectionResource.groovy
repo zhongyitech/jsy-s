@@ -2,7 +2,10 @@ package com.jsy.project
 
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.util.OrderProperty
+import com.jsy.util.SearchProperty
 import grails.converters.JSON
+import grails.gorm.DetachedCriteria
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -51,18 +54,21 @@ class ReceiveRecordCollectionResource {
             def _paytotal = new BigDecimal(obj.paytotal)
             def receiveDetails = []
 
-
-            if(obj.invest_struct && obj.invest_struct.targets && obj.invest_struct.payRecords ){
-                _paytotal = consumePayRecords(_paytotal, obj.invest_struct, receiveDetails);
+            if(obj.receiveDetail_struct){
+                _paytotal = consumePayRecords(_paytotal, obj.receiveDetail_struct, receiveDetails);
             }
 
-            if(obj.borrow_struct && obj.borrow_struct.targets && obj.borrow_struct.payRecords){
-                _paytotal = consumePayRecords(_paytotal, obj.borrow_struct, receiveDetails);
-            }
+//            if(obj.invest_struct && obj.invest_struct.targets && obj.invest_struct.payRecords ){
+//                _paytotal = consumePayRecords(_paytotal, obj.invest_struct, receiveDetails);
+//            }
+//
+//            if(obj.borrow_struct && obj.borrow_struct.targets && obj.borrow_struct.payRecords){
+//                _paytotal = consumePayRecords(_paytotal, obj.borrow_struct, receiveDetails);
+//            }
 
 
             if(_paytotal!=remain_money_suggest){
-                throw new Exception("error remain count in front!$_paytotal vs $remain_money_suggest")
+                throw new Exception("error remain count in front: $_paytotal vs $remain_money_suggest")
             }
 
             //数据保存
@@ -84,108 +90,150 @@ class ReceiveRecordCollectionResource {
         }
     }
 
-    def consumePayRecords(_paytotal, invest_struct, receiveDetails){
+    def consumePayRecords(_paytotal, shouldReceiveIds, receiveDetails){
 
-        def payTargets = invest_struct.targets
-        def payRecords = invest_struct.payRecords
-
-        //保证顺序，dirty operate!!!
-        invest_struct.targets?.sort { targetA,targetB->
-            return targetA.id.compareTo(targetB.id)
+        //target的顺序很重要呢， 保证顺序，dirty operate!!!
+        def shouldReceives = []
+        shouldReceiveIds.each { receiveId ->
+            shouldReceives.push(ShouldReceiveRecord.get(receiveId));
+        }
+        shouldReceives?.sort { targetA,targetB->
+            return -targetA.seq.compareTo(targetB.seq)
         }
 
-        invest_struct.payRecords?.each{payRecordId->
-            PayRecord payRecord = PayRecord.get(payRecordId)
-            if(payRecord){
+        shouldReceives.each{shouldReceiveRecord->
 
-                invest_struct.targets?.each{target->
-                    //target的顺序很重要呢
-                    if("main_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
+            //处理一条应收记录
+            if(shouldReceiveRecord){
+                def payRecord = shouldReceiveRecord.payRecord
 
-                        if(_paytotal>payRecord.amount){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.amount,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                            payRecord.payMainBack = _paytotal
-                        }
-                        _paytotal= _paytotal - payRecord.amount
+                if("original".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
 
+                    if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
 
-                    }else if("interest_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: payRecord.amount,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){//少量余额
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
 
-                        if(_paytotal>payRecord.interest_bill){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.interest_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }
-                        _paytotal= _paytotal - payRecord.interest_bill
-
-                    }else if("manage_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
-
-                        if(_paytotal>payRecord.manage_bill){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.manage_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }
-                        _paytotal= _paytotal - payRecord.manage_bill
-                    }else if("community_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
-
-                        if(_paytotal>payRecord.community_bill){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.community_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }
-                        _paytotal= _paytotal - payRecord.community_bill
-                    }else if("borrow_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
-
-                        if(_paytotal>payRecord.borrow_bill){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.borrow_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }
-                        _paytotal= _paytotal - payRecord.borrow_bill
-                    }else if("penalty_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
-
-                        if(_paytotal>payRecord.penalty_bill){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: payRecord.penalty_bill,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }
-                        _paytotal= _paytotal - payRecord.penalty_bill
-                    }else if("over_money".equals(target.name)){
-                        ReceiveDetailRecord detailRecord
-                        def dueMoney = payRecord.getOverDue()
-
-                        if(_paytotal>dueMoney){//有多余的钱
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: dueMoney,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }else if(_paytotal>0){
-                            detailRecord = new ReceiveDetailRecord(target: target.name, amount: _paytotal,payRecord:payRecord);
-                            receiveDetails.push(detailRecord)
-                        }
-                        _paytotal= _paytotal - dueMoney
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                        payRecord.payMainBack = _paytotal
                     }
+                    _paytotal= _paytotal - payRecord.amount
+
+                }else if("firstyear".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
+
+                    if(_paytotal>payRecord.interest_bill){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: payRecord.interest_bill,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }
+                    _paytotal= _paytotal - payRecord.interest_bill
+
+                }else if("maintain".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
+
+                    if(_paytotal>payRecord.manage_bill){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: payRecord.manage_bill,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }
+                    _paytotal= _paytotal - payRecord.manage_bill
+                }else if("channel".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
+
+                    if(_paytotal>payRecord.community_bill){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: payRecord.community_bill,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }
+                    _paytotal= _paytotal - payRecord.community_bill
+                }else if("borrow".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
+
+                    if(_paytotal>payRecord.borrow_bill){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: payRecord.borrow_bill,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }
+                    _paytotal= _paytotal - payRecord.borrow_bill
+                }else if("penalty".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
+
+                    if(_paytotal>payRecord.penalty_bill){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: payRecord.penalty_bill,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }
+                    _paytotal= _paytotal - payRecord.penalty_bill
+                }else if("overdue".equals(shouldReceiveRecord.target)){
+                    ReceiveDetailRecord detailRecord
+                    def dueMoney = payRecord.getOverDue()
+
+                    if(_paytotal>dueMoney){//有多余的钱
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: dueMoney,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }else if(_paytotal>0){
+                        shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
+                        shouldReceiveRecord.save(failOnError: true)
+
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: _paytotal,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+                    }
+                    _paytotal= _paytotal - dueMoney
                 }
             }
         }
+
 
         return _paytotal;
     }
@@ -228,6 +276,49 @@ class ReceiveRecordCollectionResource {
 
     }
 
+    @POST
+    @Path('/findReceiveByFund')
+    Response findReceiveByFund(String criteriaStr) {
+        org.json.JSONObject obj = JSON.parse(criteriaStr)
+
+        def criterib = new DetachedCriteria(ReceiveRecord).build {
+            //and
+            eq("fund",Fund.get(obj.get("fundid")))
+
+
+            //orderby
+            Object orderByObj = obj.get("orderby-prperties")
+            JSONArray array3 = (JSONArray)orderByObj;
+            if(array3.size()>0){
+                or {
+                    array3.each{property->
+                        OrderProperty p =new OrderProperty(property);
+                        order(p.key,p.value)
+                    }
+                }
+            }
+        }
+
+        def params = [:]
+        params.max = Math.min(obj.get("page").max?.toInteger() ?: 25, 100)
+        params.offset = obj.get("page").offset ? obj.get("page").offset.toInteger() : 0
+
+        def results = criterib.list(params)
+        results = results.collect {receiveRecord->
+            receiveRecord.getShowProperties();
+        }
+        def total = criterib.size()
+
+        org.json.JSONObject result = new org.json.JSONObject();
+        String restStatus = 200;
+        result.put("rest_status", restStatus)
+        result.put("rest_result", results as JSON)
+        result.put("rest_total", total)
+
+        return Response.ok(result.toString()).status(200).build()
+
+    }
+
     @Path('/{id}')
     ReceiveRecordResource getResource(@PathParam('id') Long id) {
         new ReceiveRecordResource(receiveRecordResourceService: receiveRecordResourceService, id:id)
@@ -249,11 +340,10 @@ class ReceiveRecordCollectionResource {
                 return Response.ok(result.toString()).status(500).build()
             }
 
-
-            def receiveDetails = ReceiveDetailRecord.findAllByPayRecord(payRecord)
+            def shouldReceiveRecords = ShouldReceiveRecord.findAllByPayRecordAndAmountGreaterThan(payRecord,0)
 
             result.put("rest_status", restStatus)
-            result.put("rest_result", receiveDetails as JSON)
+            result.put("rest_result", shouldReceiveRecords as JSON)
             return Response.ok(result.toString()).status(200).build()
         }catch (Exception e){
             restStatus = "500";
