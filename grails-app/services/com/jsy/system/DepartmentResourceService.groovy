@@ -52,4 +52,13 @@ class DepartmentResourceService {
         return  json
 
     }
+
+    /**
+     * 获取所有的子级部门
+     * @param dep
+     */
+    def getChild(Department dep){
+
+        return Department.findAllByParent(dep)
+    }
 }

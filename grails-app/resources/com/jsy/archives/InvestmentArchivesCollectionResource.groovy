@@ -677,9 +677,8 @@ class InvestmentArchivesCollectionResource {
     Response contractNumIsUse(@QueryParam('num') String num) {
         MyResponse.ok {
 //            return true;
-            def ia = InvestmentArchives.findByContractNum(num).collect {
 
-            }
+            def ia = InvestmentArchives.findByContractNum(num)
             return ia
         }
     }
