@@ -1,8 +1,11 @@
 package com.jsy.fundObject
 
+import Models.MsgModel
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.JsonResult
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -31,9 +34,8 @@ class FundCompanyInformationCollectionResource {
 
     @POST
     Response create(FundCompanyInformation dto) {
-
-        ok {
-            return fundCompanyInformationResourceService.create(dto)
+        MyResponse.ok{
+            fundCompanyInformationResourceService.create(dto)
         }
     }
 

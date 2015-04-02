@@ -10,6 +10,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
@@ -89,7 +90,6 @@ class TSProjectCollectionResource {
         String restStatus = "200";
 
         try{
-
             projectResourceService.createProject(dto)
 
             result.put("rest_status", restStatus)
@@ -280,15 +280,17 @@ class TSProjectCollectionResource {
             //数据保存
             projectResourceService.completeMeeting(project,obj)
 
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", "")
+//            return Response.ok(result.toString()).status(200).build()
+             ok JsonResult.success()
         }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
+//            restStatus = "500";
+//            e.printStackTrace()
+//            result.put("rest_status", restStatus)
+//            result.put("rest_result", e.getLocalizedMessage())
+//            return Response.ok(result.toString()).status(500).build()
+            ok JsonResult.error(e.message);
         }
     }
 
@@ -310,6 +312,7 @@ class TSProjectCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", "no such project found")
             return Response.ok(result.toString()).status(500).build()
+//            ok JsonResult.error("no such project found");
         }
 
         try{
@@ -322,6 +325,7 @@ class TSProjectCollectionResource {
                 result.put("rest_status", restStatus)
                 result.put("rest_result", "you can not access this phase")
                 return Response.ok(result.toString()).status(500).build()
+//                ok JsonResult.error("you can not access this phase")
             }
 
             //数据保存
@@ -330,12 +334,14 @@ class TSProjectCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", "")
             return Response.ok(result.toString()).status(200).build()
+//            ok JsonResult.success();
         }catch (Exception e){
             restStatus = "500";
             e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", e.getLocalizedMessage())
             return Response.ok(result.toString()).status(500).build()
+//            ok JsonResult.error(e.message);
         }
     }
 
@@ -402,6 +408,7 @@ class TSProjectCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", "no such project found")
             return Response.ok(result.toString()).status(500).build()
+//            ok(JsonResult.error("no such project found"));
         }
 
         try{
@@ -414,6 +421,7 @@ class TSProjectCollectionResource {
                 result.put("rest_status", restStatus)
                 result.put("rest_result", "you can not access this phase")
                 return Response.ok(result.toString()).status(500).build()
+//                ok(JsonResult.error("you can not access this phase"))
             }
 
             //数据保存
@@ -422,12 +430,14 @@ class TSProjectCollectionResource {
             result.put("rest_status", restStatus)
             result.put("rest_result", "")
             return Response.ok(result.toString()).status(200).build()
+//            ok(JsonResult.success())
         }catch (Exception e){
             restStatus = "500";
             e.printStackTrace()
             result.put("rest_status", restStatus)
             result.put("rest_result", e.getLocalizedMessage())
             return Response.ok(result.toString()).status(500).build()
+//            ok(JsonResult.error(e.message));
         }
     }
 
@@ -437,28 +447,25 @@ class TSProjectCollectionResource {
         JSONObject result = new JSONObject();
         JSONArray table = new JSONArray();
         String restStatus = "200";
-
-
         try{
             //校验
-            if(!fileName || "".equals(fileName) || !filePath || "".equals(filePath)){
-//                restStatus = "500";
-//                result.put("rest_status", restStatus)
-//                result.put("rest_result", "lack of fileName or filePath")
-//                return Response.ok(result.toString()).status(500).build()
-                return  Response.ok(JsonResult.success("lack of fileName or filePath")).build()
+            if(!fileName || "".equals(fileName) || !filePath || "".equals(filePath)) {
+                restStatus = "500";
+                result.put("rest_status", restStatus)
+                result.put("rest_result", "lack of fileName or filePath")
+                return Response.ok(result.toString()).status(500).build()
+                ok(JsonResult.error("lack of fileName or filePath"));
+//                return Response.ok(JsonResult.success("lack of fileName or filePath")).build()
             }
-
-
 //
-
-//            projectResourceService.completeGather(project,obj)
-
+            projectResourceService.completeGather(project,obj)
             result.put("rest_status", restStatus)
             result.put("rest_result", "")
             return Response.ok(result.toString()).status(200).build()
+//            ok(JsonResult.success());
         }catch (Exception e){
-            ok JsonResult.error(e.message)
+//            ok JsonResult.error(e.message);
+            return Response.ok(e.message).status(500).build()
         }
 
     }
@@ -466,21 +473,22 @@ class TSProjectCollectionResource {
     @POST
     @Path('/delTsFile')
     Response delTsFile(@QueryParam('id') int  id) {
-//        JSONObject result = new JSONObject();
-//        JSONArray table = new JSONArray();
-//        String restStatus = "200";
+        JSONObject result = new JSONObject();
+        JSONArray table = new JSONArray();
+        String restStatus = "200";
         try{
-//            projectResourceService.completeGather(project,obj)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", "")
-//            return Response.ok(result.toString()).status(200).build()
-            ok JsonResult.success()
+            projectResourceService.completeGather(project,obj)
+            result.put("rest_status", restStatus)
+            result.put("rest_result", "")
+            return Response.ok(result.toString()).status(200).build()
+//            ok JsonResult.success()
         }catch (Exception e){
-//            restStatus = "500";
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", e.getLocalizedMessage())
-//            return Response.ok(result.toString()).status(500).build()
+//            ok JsonResult.error(e.message);
+            restStatus = "500";
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", e.getLocalizedMessage())
+            return Response.ok(result.toString()).status(500).build()
         }
     }
 
@@ -493,17 +501,15 @@ class TSProjectCollectionResource {
     @GET
     @Path('/getSpecailAccess')
     Response getSpecailAccess(@QueryParam("projectId") int projectId,@QueryParam("phaseIndex") int phaseIndex){
-        MsgModel msgModel = projectResourceService.getSpecailAccess(projectId,phaseIndex);
 
-        if(!msgModel){
-            MsgModel msg = MsgModel.getErrorMsg("JAVA ERROR!");
-            return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
-        }
-
-        if(msgModel.isSuccess()){
-            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(200).build();
-        }else{
-            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(500).build();
+        try{
+            MsgModel msgModel = projectResourceService.getSpecailAccess(projectId,phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
         }
     }
 
@@ -517,26 +523,68 @@ class TSProjectCollectionResource {
     Response setSpecailAccess(SpecailAccess specailAccess){
         try{
             def msgModel = projectResourceService.setSpecailAccess(specailAccess);
-
-            ok JsonResult.success(msgModel)
-        }catch (Exception e){
+            ok JsonResult.success(msgModel.getResult())
+        }catch (Exception e) {
             ok JsonResult.error(e.message)
         }
+    }
 
+    /**
+     * 获取项目模板某个节点的所有角色
+     * @param phaseIndex
+     * @return
+     */
+    @GET
+    @Path('/getProjectModelRole')
+    Response getProjectModelRole(@QueryParam("phaseIndex") int phaseIndex){
+        try{
+            MsgModel msgModel = projectResourceService.getProjectModelRole(phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
+        }
+    }
 
-//
-//        if(msgModel == null){
-//            MsgModel msg = MsgModel.getErrorMsg("JAVA ERROR");
-//            return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
-//        }
-//
-//        if(msgModel.isSuccess()){
-//            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(200).build()
-//        }else{
-//            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(500).build();
-//        }
+    /**
+     * 删除项目节点的角色
+     * @param phaseIndex
+     * @return
+     */
+    @DELETE
+    @Path('removeProjectModelrRoles')
+    Response removeProjectModelrRoles(@QueryParam("phaseIndex") int phaseIndex){
+        try{
+            MsgModel msgModel = projectResourceService.removeProjectModelrRoles(phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
+        }
+    }
 
-
+    /**
+     * 添加项目节点角色
+     * @param id
+     * @param phaseIndex
+     * @return
+     */
+    @POST
+    @Path('/setProjectModelRole')
+    Response setProjectModelRole(@QueryParam("id") Long id,@QueryParam("phaseIndex") int phaseIndex){
+        try{
+            MsgModel msgModel = projectResourceService.setProjectModelRole(id,phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
+        }
     }
 }
 

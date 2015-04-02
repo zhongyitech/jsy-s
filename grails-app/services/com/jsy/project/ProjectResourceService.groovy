@@ -2,6 +2,8 @@ package com.jsy.project
 
 import GsonTools.GsonTool
 import Models.MsgModel
+import Models.ProjectModelPhaseRole
+import com.jsy.auth.Role
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
@@ -84,7 +86,18 @@ class ProjectResourceService {
 
 
     def createProject(TSProject project){
-        project.save(failOnError: true)
+        if(project == null){
+            return MsgModel.getErrorMsg("project is null");
+        }
+
+        if(project.creator == null){
+            return MsgModel.getErrorMsg("project creator is null project id " + project.id);
+        }
+
+        if(project.projectOwner == null) {
+            return MsgModel.getErrorMsg("project owner is null project id " + project.id);
+        }
+        project.save(failOnError: true);
         workflowResourceService.createFlow(project.id)
     }
 
@@ -855,11 +868,11 @@ class ProjectResourceService {
      * @param phaseIndex
      */
     def getSpecailAccess(int projectId, int phaseIndex){
-        SpecailAccess specailAccess = SpecailAccess.findWhere(projectId: projectId,phaseIndex: phaseIndex);
+        List<SpecailAccess> specailAccess = SpecailAccess.findAllWhere(projectId: projectId,phaseIndex: phaseIndex);
         if(!specailAccess){
-            return  MsgModel.getErrorMsg(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
+            throw new Exception(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
+//            return  MsgModel.getErrorMsg(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
         }
-
         String json = specailAccess as JSON;
         return MsgModel.getSuccessMsg(json);
     }
@@ -869,18 +882,20 @@ class ProjectResourceService {
      * @param specailAccesses
      */
     def setSpecailAccess(SpecailAccess specailAccesses){
+        MsgModel msgModel = null;
         if(!specailAccesses){
-            return MsgModel.getErrorMsg(TAG + "SpecailAccess List Error, null pointer");
+            msgModel = MsgModel.getErrorMsg(TAG + "SpecailAccess List Error, null pointer");
         }
 
         int projectId = specailAccesses.projectId;
         if(projectId == 0){
-            return MsgModel.getErrorMsg(TAG + "add SpecailAccess Error projectId is 0");
+            msgModel = MsgModel.getErrorMsg(TAG + "add SpecailAccess Error projectId is 0");
         }
 
         int phaseIndex = specailAccesses.phaseIndex;
         if(phaseIndex == 0){
-            return MsgModel.getErrorMsg(TAG + "add SpecailAccess Error phaseIndex is 0");
+            msgModel = MsgModel.getErrorMsg(TAG + "add SpecailAccess Error phaseIndex is 0");
+
         }
 
         SpecailAccess specailAccess = SpecailAccess.findWhere(projectId: projectId,phaseIndex: phaseIndex);
@@ -889,15 +904,108 @@ class ProjectResourceService {
             specailAccess.save(failOnError: true);
 
             if(specailAccess.hasErrors()){
-                return MsgModel.getErrorMsg(TAG + specailAccess.getErrors().toString());
+                msgModel = MsgModel.getErrorMsg(TAG + specailAccess.getErrors().toString());
             }
         }else{
 
             specailAccesses.save(failOnError: true);
             if(specailAccesses.hasErrors()){
-                return MsgModel.getErrorMsg(TAG + specailAccesses.getErrors().toString());
+                msgModel = MsgModel.getErrorMsg(TAG + specailAccesses.getErrors().toString());
             }
         }
+
+        if(msgModel != null){
+            throw new Exception(msgModel.result);
+        }
         return MsgModel.getSuccessMsg("save success");
+    }
+
+    /**
+     * 获取项目模板某个节点的所有角色
+     * @param phaseIndex
+     * @return
+     */
+    def getProjectModelRole(int phaseIndex){
+        MsgModel msgModel = null;
+        TSWorkflowModel tsWorkflowModel = TSWorkflowModel.get(1);
+        if(tsWorkflowModel == null){
+            msgModel = MsgModel.getErrorMsg("can not find project model where project_id = 1");
+        }
+
+        TSWorkflowModelPhase tsWorkflowModelPhase = TSWorkflowModelPhase.findWhere(phaseIndex: phaseIndex);
+        if(tsWorkflowModelPhase == null){
+            msgModel = MsgModel.getErrorMsg("can not find workflow model phase where phase_index " + phaseIndex);
+        }
+
+        Set<Role> roles = tsWorkflowModelPhase.getPhaseParticipants();
+        if(roles == null){
+            msgModel = MsgModel.getErrorMsg("workflow model phase has no roles where phase_index " + phaseIndex);
+        }
+
+        if(msgModel != null){
+            throw new Exception(msgModel.result);
+        }
+        String rolesJson = roles as JSON;
+        ProjectModelPhaseRole projectModelPhaseRole = new ProjectModelPhaseRole(phaseIndex,rolesJson);
+
+        return MsgModel.getSuccessMsg(GsonTool.getProjectModelPhaseRolesJson(projectModelPhaseRole));
+    }
+
+    /**
+     * 删除项目节点的角色
+     * @param phaseIndext
+     */
+    def removeProjectModelrRoles(int phaseIndex){
+        MsgModel msgModel = null;
+        TSWorkflowModelPhase tsWorkflowModelPhase = TSWorkflowModelPhase.findWhere(phaseIndex: phaseIndex);
+        if(tsWorkflowModelPhase == null){
+            msgModel = MsgModel.getErrorMsg("can not find work flow model phase where phase_index "+phaseIndex);
+        }
+
+        Set<Role> roles = tsWorkflowModelPhase.getPhaseParticipants();
+        if(roles == null){
+            msgModel = MsgModel.getErrorMsg("has no roles");
+        }
+
+        while(roles.iterator().hasNext()){
+            Role role = roles.iterator().next();
+            tsWorkflowModelPhase.removeFromPhaseParticipants(role);
+        }
+
+        if(msgModel != null){
+            throw new Exception(msgModel.result);
+        }
+
+        return MsgModel.getSuccessMsg("delete success");
+    }
+
+    /**
+     * 添加项目节点角色
+     * @param id   角色ID
+     * @param phaseIndex
+     */
+    def setProjectModelRole(Long id,int phaseIndex){
+        MsgModel msgModel = null;
+        Role role = Role.get(id);
+        if(role == null){
+            msgModel = MsgModel.getErrorMsg("can not find role where role_id "+id);
+        }
+
+        TSWorkflowModelPhase tsWorkflowModelPhase = TSWorkflowModelPhase.findWhere(phaseIndex: phaseIndex);
+        if(tsWorkflowModelPhase == null){
+            msgModel = MsgModel.getErrorMsg("can not find work flow model phase where phase_index "+phaseIndex);
+        }
+
+        tsWorkflowModelPhase.addToPhaseParticipants(role);
+        tsWorkflowModelPhase.save(failOnError: true);
+
+        if(tsWorkflowModelPhase.hasErrors()){
+            msgModel = MsgModel.getErrorMsg(tsWorkflowModelPhase.getErrors());
+        }
+
+        if(msgModel != null){
+            throw new Exception(msgModel.result);
+        }
+        return  MsgModel.getSuccessMsg("add success");
     }
 }

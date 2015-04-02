@@ -18,6 +18,7 @@
       <configuration>
         <datasource-map>
           <unit-entry name="Gorm" />
+          <unit-entry name="hibernate.cfg.xml" />
           <unit-entry name="sessionFactory" />
         </datasource-map>
         <naming-strategy-map />
@@ -100,10 +101,9 @@
     <content url="file://$MODULE_DIR$/target/work/plugins/webxml-1.4.1">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.3.11" level="application" />
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library name="Grails User Library (jsy-grailsPlugins)">
         <CLASSES>
           <root url="file://$MODULE_DIR$/target/work/plugins/jaxrs-0.10/lib" />
@@ -169,6 +169,7 @@
         <jarDirectory url="file://$MODULE_DIR$/target/work/plugins/jaxrs-0.10/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="grails-2.3.11" level="application" />
   </component>
 </module>
 

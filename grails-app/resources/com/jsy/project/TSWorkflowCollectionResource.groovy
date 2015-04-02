@@ -55,6 +55,12 @@ class TSWorkflowCollectionResource {
 
         ok "init FundCompanyInformation ok";
     }
+
+    @GET
+    @Path('/initUser')
+     Response initUser(){
+
+    }
 }
 
 

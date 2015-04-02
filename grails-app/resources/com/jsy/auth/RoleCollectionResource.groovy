@@ -124,4 +124,24 @@ class RoleCollectionResource {
 
     }
 
+    @GET
+    @Path('/nameLike')
+    Response findByNameLike(@QueryParam('params') String username) {
+        ok {
+            def roles = Role.findAllByNameLike("%" + username + "%")
+            def jsonArray = []
+            roles.each {
+                def jso = [:]
+                jso.put("value", it.name)
+                jso.put("data", it.id)
+                jsonArray.add(jso)
+            }
+            def data = [:]
+            data.put("query", "Unit")
+            data.put("suggestions", jsonArray)
+
+            return data
+        }
+    }
+
 }
