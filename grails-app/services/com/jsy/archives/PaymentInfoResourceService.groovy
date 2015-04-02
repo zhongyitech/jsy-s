@@ -263,8 +263,10 @@ class PaymentInfoResourceService {
         investmentArchives.each {
             try {
                 int t = PaymentInfo.findAllByArchivesId(it.id).size()
+                print("ivnest:"+it.id)
                 //todo: status==1 正常(已入库)
                 if ( it.customer != null && it.status == 1 && it.payTimes.size() > t) {
+                    print("process..")
                     it.payTimes.each { p ->
                         if (p.px == t + 1 && p.sffx == false) {
                             if (p.fxsj.before(new Date())) {
@@ -273,7 +275,7 @@ class PaymentInfoResourceService {
                                 paymentInfo.archivesId = it.id
                                 paymentInfo.fxsj = p.fxsj
                                 paymentInfo.fundName = it.fund.fundName
-                                paymentInfo.htbh = it.archiveNum
+                                paymentInfo.htbh = it.contractNum
                                 paymentInfo.customerName = it.customer.name
                                 paymentInfo.tzje = it.tzje
                                 paymentInfo.tzqx = it.tzqx
@@ -290,7 +292,7 @@ class PaymentInfoResourceService {
                                 paymentInfo.yflx = yflx
                                 //计算应付本金
                                 BigDecimal yfbj = 0
-                                if (t == p.px + 1) {
+                                if (t == p.px + 1&&it.fxfs!="D") {
                                     yfbj = it.bj
                                 }
                                 paymentInfo.yfbj = yfbj
@@ -300,11 +302,12 @@ class PaymentInfoResourceService {
                                 p.sffx = true
                                 p.save(failOnError: true)
                                 if (t == p.px + 1) {
+                                    it.bj=0
                                     //将档案表的付款状态改为付款完成
                                     it.stopPay = true
                                     it.save(failOnError: true)
                                 }
-                                print("save ok!")
+                                print( it.fundName +" : save ok!")
                             }
                         }
                     }

@@ -41,5 +41,24 @@ class ReceiveRecord {
         pdesc nullable: true
     }
 
+    def getShowProperties(){
+        def rtn = [
+                id:id,
+                amount:amount,
+                receiveDate:receiveDate,
 
+                bankName:bankAccount.bankName,              //    银行名称
+                bankOfDeposit:bankAccount.bankOfDeposit,    //    开户行
+                accountName:bankAccount.accountName,        //    户名
+                account: bankAccount.account,               //    账号
+
+
+                fundid:fund.id,
+                fundname:fund.fundName,
+                projectid:project.id,
+                projectname:project.name,
+
+        ]
+        rtn
+    }
 }

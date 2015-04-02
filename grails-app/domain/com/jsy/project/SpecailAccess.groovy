@@ -7,8 +7,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder
  * 特殊时间段的访问
  */
 class SpecailAccess implements Serializable{
-    String fromDate
-    String toDate
+    Date fromDate
+    Date toDate
     String accessor
     int projectId
     int phaseIndex;

@@ -1,3 +1,4 @@
+import com.jsy.archives.CustomerArchives
 import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
@@ -31,6 +32,35 @@ class BootStrap {
 
 //        def users = User.findAllByUsername('')
             //部门的职能
+
+
+            new TypeConfig(type: 1,mapName:"待售",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 1,mapName:"在售",mapValue: 2).save(failOnError: true)
+            new TypeConfig(type: 1,mapName:"售罄",mapValue: 3).save(failOnError: true)
+            //类型
+            new TypeConfig(type: 2,mapName:"机密",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 2,mapName:"公开",mapValue: 2).save(failOnError: true)
+            //档案类型
+            new TypeConfig(type: 3,mapName:"基金认购合同",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 3,mapName:"项目合作合同",mapValue: 2).save(failOnError: true)
+            new TypeConfig(type: 3,mapName:"项目总结资料",mapValue: 3).save(failOnError: true)
+            //档案室
+            new TypeConfig(type: 4,mapName:"机要室",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 4,mapName:"公办室",mapValue: 2).save(failOnError: true)
+            //状态
+            new TypeConfig(type: 5,mapName:"在库",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 5,mapName:"外借",mapValue: 2).save(failOnError: true)
+            new TypeConfig(type: 5,mapName:"遗失",mapValue: 3).save(failOnError: true)
+            new TypeConfig(type: 5,mapName:"销毁",mapValue: 4).save(failOnError: true)
+            //公司类型
+            new TypeConfig(type: 6,mapName:"普通公司",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 6,mapName:"有限合伙",mapValue: 2).save(failOnError: true)
+            //银行类型
+            new TypeConfig(type: 7,mapName:"兑付",mapValue: 1).save(failOnError: true)
+            new TypeConfig(type: 7,mapName:"日常支出",mapValue: 2).save(failOnError: true)
+            new TypeConfig(type: 7,mapName:"募集",mapValue: 3).save(failOnError: true)
+            new TypeConfig(type: 7,mapName:"其它",mapValue: 4).save(failOnError: true)
+
             TypeConfig performance1 = new TypeConfig(type: 8, mapName: "管理", mapValue: 1, description: "默认职能")
             performance1.save(failOnError: true)
             TypeConfig performance2 = new TypeConfig(type: 8, mapName: "销售", mapValue: 2, description: "基金销售部门选择此职能")
@@ -52,27 +82,27 @@ class BootStrap {
         def user1 = User.findByUsername('admin') ?: new User(
                 skr:'oswaldl',
                 khh:'平安银行',
-                yhzh:'136541615646156',
+                yhzh:'8888888888',
                 username: 'admin',
                 password: 'admin',
                 department:department,
-                chainName: "张三",
+                chainName: "管理员",
                 enabled: true).save(flush: true)
         def ordinary = User.findByUsername('ordinary') ?: new User(
                 skr:'oswaldl',
                 khh:'平安银行',
-                yhzh:'136541615646156',
+                yhzh:'888888888888',
                 username: 'ordinary',
                 password: 'ordinary',
                 department:department,
-                chainName: "张四",
+                chainName: "测试账号",
                 enabled: true).save(flush: true)
         def user2 = User.findByUsername('pengyh') ?: new User(
                 skr:'rela',
                 khh:'平安银行',
                 yhzh:'52624623',
                 username: 'zhangj',
-                chainName: '张五',
+                chainName: '测试账号2',
                 password: 'zhangj',
                 department:department,
                 enabled: true).save(flush: true)
@@ -81,7 +111,7 @@ class BootStrap {
                 khh:'平安银行',
                 yhzh:'436461352352',
                 username: 'liujw',
-                chainName: '刘六',
+                chainName: '测试账号3',
                 password: 'liujw',
                 department:department,
                 enabled: true).save(flush: true)
@@ -90,7 +120,7 @@ class BootStrap {
                 khh:'平安银行',
                 yhzh:'465742632',
                 username: 'li',
-                chainName: '李四',
+                chainName: '测试账号4',
                 password: 'li',
                 department:department,
                 enabled: true).save(flush: true)
@@ -158,32 +188,7 @@ class BootStrap {
             UserRole.create ordinary, userRole
         }
         //基金状态
-        new TypeConfig(type: 1,mapName:"待售",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 1,mapName:"在售",mapValue: 2).save(failOnError: true)
-        new TypeConfig(type: 1,mapName:"售罄",mapValue: 3).save(failOnError: true)
-        //类型
-        new TypeConfig(type: 2,mapName:"机密",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 2,mapName:"公开",mapValue: 2).save(failOnError: true)
-        //档案类型
-        new TypeConfig(type: 3,mapName:"基金认购合同",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 3,mapName:"项目合作合同",mapValue: 2).save(failOnError: true)
-        new TypeConfig(type: 3,mapName:"项目总结资料",mapValue: 3).save(failOnError: true)
-        //档案室
-        new TypeConfig(type: 4,mapName:"机要室",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 4,mapName:"公办室",mapValue: 2).save(failOnError: true)
-        //状态
-        new TypeConfig(type: 5,mapName:"在库",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 5,mapName:"外借",mapValue: 2).save(failOnError: true)
-        new TypeConfig(type: 5,mapName:"遗失",mapValue: 3).save(failOnError: true)
-        new TypeConfig(type: 5,mapName:"销毁",mapValue: 4).save(failOnError: true)
-        //公司类型
-        new TypeConfig(type: 6,mapName:"普通公司",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 6,mapName:"有限合伙",mapValue: 2).save(failOnError: true)
-        //银行类型
-        new TypeConfig(type: 7,mapName:"兑付",mapValue: 1).save(failOnError: true)
-        new TypeConfig(type: 7,mapName:"日常支出",mapValue: 2).save(failOnError: true)
-        new TypeConfig(type: 7,mapName:"募集",mapValue: 3).save(failOnError: true)
-        new TypeConfig(type: 7,mapName:"其它",mapValue: 4).save(failOnError: true)
+
 
 
 
@@ -480,8 +485,16 @@ class BootStrap {
         new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund/mainPage',method:'POST',czlx:'read').save(failOnError: true)
         new OperationsAPI(resoureClass:Fund.class.toString(),url:'/api/fund',method:'GET',czlx:'read').save(failOnError: true)
         //档案相关url
-            new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'creat').save(failOnError: true)
-            new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'creat').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'update').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/readAllForPage',method:'POST',czlx:'read').save(failOnError: true)
+        new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/nameLike',method:'GET',czlx:'read').save(failOnError: true)
+        //客户相关url
+            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/nameLike',method:'GET',czlx:'read').save(failOnError: true)
+            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives',method:'PUT',czlx:'creat').save(failOnError: true)
+            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/readAllForPage',method:'GET',czlx:'read').save(failOnError: true)
+            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/update',method:'POST',czlx:'update').save(failOnError: true)
+            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/getcustomer',method:'GET',czlx:'read').save(failOnError: true)
     }
 
     def destroy = {

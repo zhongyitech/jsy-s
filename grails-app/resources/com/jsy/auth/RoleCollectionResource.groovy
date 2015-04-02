@@ -1,5 +1,6 @@
 package com.jsy.auth
 
+import com.jsy.utility.DomainHelper
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -29,6 +30,9 @@ class RoleCollectionResource {
     Response create(Role dto) {
 
         ok {
+            if(Role.findByName(dto.name)){
+                throw  new Exception("角色名称重复了!")
+            }
             return roleResourceService.create(dto)
         }
 
@@ -55,62 +59,15 @@ class RoleCollectionResource {
             def ia = roleResourceService.readAll()
             ia
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ia
-//        try {
-//            ia = roleResourceService.readAll()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", ia as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", ia as JSON)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
     }
-
-//    @GET
-//    @Path('/manager')
-//    Response findManager(){
-//
-//    }
     @POST
     @Path('/readAllForPage')
     Response readAllForPage(Map arg) {
 
         page {
-            print arg
-            def result = roleResourceService.readAllForPage(arg)
+            def result = DomainHelper.getPage(Role,arg)
             result
         }
-//        print("Role.readAllForPage()")
-//        int total
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ra
-//        def r
-//        try {
-//            ra=roleResourceService.readAllForPage(arg)
-//            total = ra.get("size")
-//            print(total)
-//            r = ra.get("page")
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", r as JSON)
-//            result.put("rest_total", total)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", r)
-//            result.put("rest_total", total)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
     }
 
     @Path('/{id}')
@@ -122,31 +79,14 @@ class RoleCollectionResource {
     Response update(Role dto, @QueryParam('id') int id) {
 
         ok {
+            if(Role.findByName(dto.name)){
+                throw  new Exception("角色名称重复了!")
+            }
             dto.id = id
             def map = [:]
             map.name = dto.name
             return roleResourceService.update(dto, map)
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def dd
-//        try {
-//            dto.id=id
-//            def map = [:]
-//            map.name=dto.name
-//            dd=roleResourceService.update(dto,map)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", dd as JSON)
-//
-//
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", dd as JSON)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
     }
 
     @DELETE
@@ -154,23 +94,6 @@ class RoleCollectionResource {
         ok {
             return roleResourceService.delete(id)
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def dd
-//        try {
-//
-//            dd=roleResourceService.delete(id)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", dd as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", dd as JSON)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
     }
 
     /**
@@ -190,18 +113,6 @@ class RoleCollectionResource {
             return UserRole.getRoleListForUser(user)
         }
 
-//        try {
-//            def user = User.get(uid)
-//            if (user != null) {
-//                def rolelist = UserRole.getRoleListForUser(user)
-//                ok JsonResult.success(rolelist)
-//            } else {
-//                ok JsonResult.error("没有此用户ID")
-//            }
-//        }
-//        catch (Exception e) {
-//            ok JsonResult.error(e.message)
-//        }
     }
 
     @Path("/getResourceRole")
@@ -210,23 +121,6 @@ class RoleCollectionResource {
         ok{
             return ResourceRole.findAllByRole(Role.get(id))
         }
-//
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def dd
-//        try {
-//            dd = ResourceRole.findAllByRole(Role.get(id))
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", dd as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", dd as JSON)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
 
     }
 

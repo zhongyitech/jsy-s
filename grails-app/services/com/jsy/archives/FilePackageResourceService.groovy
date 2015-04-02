@@ -25,7 +25,8 @@ class FilePackageResourceService {
         }
         dto.save(failOnError: true)
         iv.status=1 //设置为正常状态
-        iv.save()
+        iv.save(failOnError: true)
+        dto
     }
 
     def read(id) {

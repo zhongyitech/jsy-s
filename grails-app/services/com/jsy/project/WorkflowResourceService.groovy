@@ -237,7 +237,7 @@ class WorkflowResourceService {
 
 
     def initCommissionData={
-        Customer customer = new Customer(name:'liayi',credentialsAddr:'at sss',credentialsNumber:'1111');
+        Customer customer = new Customer(name:'liayi',credentialsAddr:'at sss',credentialsNumber:'1111',credentialsType:'typ1',khh:'平安 ',yhzh:'2352223');
         customer.save(failOnError: true)
 
         CustomerArchives customerArchive = new CustomerArchives(

@@ -6,6 +6,7 @@ package com.jsy.project
  */
 class ShouldReceiveRecord {
 
+    int seq
     String target               // "original","firstyear","maintain","channel","overdue","penalty","borrow"
     BigDecimal amount           // 这个字段会一直变化，随着收款的情况
 
