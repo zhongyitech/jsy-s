@@ -126,25 +126,67 @@ class PayRecord {
     /**
      * 获取逾期费
      * 如果顾客在逾期之间还还过部分钱，这个算法还需要改进！！！
+     *
+     * 从逾期开始时间算起，计算到当前（stopDate）的逾期利息，样例区间：
+     *
+     * 本金是amount0，利息和是interest1，
+     * Date1到期，仍有amount1本金未还，
+     * 到了Date2又还了一笔amount2
+     * 到了Date3还amount3(amount3=amount1-amount2)终于把本金还请
+     * 到了Date4要结算逾期费
+     *
+     * 逾期费计算方式分：单利/复利/日复利，详情如下，
+     * 单利：看未还本金，本金没有还完毕，不能计算逾期费，每次还一笔本金都会影响到逾期费的变化，本金还完毕，逾期费就不会变化了
+     * amount1*interest1/365*(Date2-Date1)+amount3*interest1/365*(Date3-Date2)
+     *
+     * 复利：看应收费用（欠本金+利息），应收费用没有还完毕，不能计算逾期费，每次还一笔本金都会影响到逾期费的变化，本金还完毕，逾期费就不会变化了
+     * (amount1+amount1*interest1)*interest1/365*(Date2-Date1)+(amount3+amount3*interest1)*interest1/365*(Date3-Date2)
+     *
+     * 日复利：看应收费用（欠本金+利息），应收费用没有还完毕，不能计算逾期费，每次还一笔本金都会影响到逾期费的变化，本金还完毕，逾期费仍会变化了
+     * (amount1+amount1*interest1)*interest1/365^(Date2-Date1)+(amount3+amount3*interest1)*interest1/365^(Date3-Date2)
+     *
+     *
      * @return
      */
-    def getOverDue(){
+    def getOverDue(Date stopDate){
         def over_interest_pay = 0
         Date nowDate = new Date()
+        if(stopDate){
+            nowDate = stopDate
+        }
+
         Date lastDate = Utils.addYears(payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
+        //利息和：管理费率+渠道费率+本金的年利率
+        BigDecimal allinallpre = project.manage_per + project.community_per + project.interest_per
 
         if(nowDate.after(lastDate)) {//判断超出预定时间
             def owe_money = amount - payMainBack
             def over_days = Utils.dayDifferent(lastDate,nowDate)
             if(owe_money > 0){
-                if("singleCount".equals(project.interestType)){//单利：欠款*interest_per/365*超出的天数
-                    over_interest_pay = (owe_money * project.interest_per * over_days / 365)
+                if("singleCount".equals(project.interestType)){
+                    //查询逾期开始时间到现在之间的receive记录
+                    ReceiveDetailRecord.findAllByTargetAndPayRecordAndDateCreatedBetween("original" , this, lastDate, nowDate)?.each{receiveDetailRecord->
+                        lastDate = receiveDetailRecord.dateCreated
+                        over_days = Utils.dayDifferent(lastDate,nowDate)
+                        over_interest_pay += (receiveDetailRecord.ownOriginal * allinallpre/365*over_days    )
+                    }
                 }else if("costCount".equals(project.interestType)){//复利：(欠款+欠款*interest_per)*penalty_per/365*超出的天数
                     over_interest_pay = ((owe_money+ amount*project.interest_per)*project.interest_per * over_days * project.interest_per/ 365)
+
+                    //查询逾期开始时间到现在之间的receive记录
+                    ReceiveDetailRecord.findAllByTargetAndPayRecordAndDateCreatedBetween("original" , this, lastDate, nowDate)?.each{receiveDetailRecord->
+                        lastDate = receiveDetailRecord.dateCreated
+                        over_days = Utils.dayDifferent(lastDate,nowDate)
+                        over_interest_pay += ((receiveDetailRecord.ownOriginal + receiveDetailRecord.ownOriginal*allinallpre) * allinallpre/365*over_days    )
+                    }
+
                 }else if("dayCount".equals(project.interestType)){//日复利：便历每一天，做加法：第一天:(欠款+欠款*penalty_per)*penalty_per/365*1 ,第二天：第一天的利息*penalty_per/365*1，如此类推
-                    over_interest_pay=(owe_money * (1+project.interest_per) / 365);  //第一天
-                    for(int i=1;i<over_days;i++){//第二天起
-                        over_interest_pay += (over_interest_pay * (1+project.interest_per) / 365);
+                    //查询逾期开始时间到现在之间的receive记录
+                    ReceiveDetailRecord.findAllByTargetAndPayRecordAndDateCreatedBetween("original" , this, lastDate, nowDate)?.each{receiveDetailRecord->
+                        lastDate = receiveDetailRecord.dateCreated
+                        over_days = Utils.dayDifferent(lastDate,nowDate)
+                        def thisPeriodBaseMoney= ((receiveDetailRecord.ownOriginal + receiveDetailRecord.ownOriginal*allinallpre) * allinallpre/365)
+                        over_interest_pay += Math.pow(thisPeriodBaseMoney, over_days)
                     }
                 }
             }
@@ -153,8 +195,14 @@ class PayRecord {
         over_interest_pay
     }
 
-    boolean isOverDate(){
+    boolean isOverDate(Date stopDate){
         Date nowDate = new Date()
+
+        if(stopDate){
+            nowDate = stopDate;
+        }
+
+
         Date lastDate = Utils.addYears(payDate,Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
 
         if(nowDate.after(lastDate)){
@@ -163,6 +211,23 @@ class PayRecord {
             return false;
         }
     }
+
+    def getPenaltyBill(Date stopDate) {
+        Date nowDate = new Date()
+        if (stopDate) {
+            nowDate = stopDate
+        }
+
+        Date lastDate = Utils.addYears(payDate, Integer.parseInt(new java.text.DecimalFormat("0").format((project.year1 + project.year2))))
+
+        if (nowDate.after(lastDate)) {//判断超出预定时间
+            return amount * project.penalty_per
+        }else{
+            return 0;
+        }
+    }
+
+
 
     /**
      * 计算总共相差多少钱：应该付款-已经付款
@@ -206,11 +271,17 @@ class PayRecord {
     }
 
 
-    def getInvestDays(){
-        Utils.dayDifferent(payDate,new Date())
+    def getInvestDays(Date stopDate){
+        Date nowDate = new Date()
+
+        if(stopDate){
+            nowDate = stopDate
+        }
+
+        Utils.dayDifferent(payDate,nowDate)
     }
 
-    def getShowProperties(){
+    def getShowProperties(Date stopDate){
         def balance = 0
 
         def rtn = [
@@ -228,8 +299,8 @@ class PayRecord {
                 payMainBack:payMainBack,
                 manage_bill:manage_bill,
                 community_bill:community_bill,
-                isOverDate:isOverDate(),
-                penalty_bill:penalty_bill,
+                isOverDate:isOverDate(stopDate),
+                penalty_bill:getPenaltyBill(stopDate),
                 borrow_bill:borrow_bill,
                 interest_bill:interest_bill,
 
@@ -239,8 +310,8 @@ class PayRecord {
                 projectname:project.name,
 
 
-                overDue:getOverDue(),
-                investDays:getInvestDays()
+                overDue:getOverDue(stopDate),
+                investDays:getInvestDays(stopDate)
 
         ]
         rtn

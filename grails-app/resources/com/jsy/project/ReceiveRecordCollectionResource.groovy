@@ -287,6 +287,7 @@ class ReceiveRecordCollectionResource {
         def criterib = new DetachedCriteria(ReceiveRecord).build {
             //and
             eq("fund",Fund.get(obj.get("fundid")))
+//            eq("bankAccount.accountName",obj.get("bank_person"))    //TODO
 
 
             //orderby

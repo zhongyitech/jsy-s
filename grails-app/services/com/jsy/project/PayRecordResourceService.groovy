@@ -9,10 +9,26 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.json.JSONObject
 
+import java.text.SimpleDateFormat
+
 class PayRecordResourceService {
 
+    /**
+     * 查询付款记录信息
+     *
+     * StopDate是一个假设性日期，如果没有则默认是查询截止至今天的数据情况
+     * @param criteriaStr
+     * @return
+     */
     def readAllForPage(String criteriaStr){
         JSONObject obj = JSON.parse(criteriaStr)
+
+        //get stop date
+        Date stopDate = null
+        if(obj.has("stopDate")){
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+            stopDate = sf.parse(obj.stopDate)
+        }
 
         def criterib = new DetachedCriteria(PayRecord).build {
             //and
@@ -66,7 +82,7 @@ class PayRecordResourceService {
 
         def results = criterib.list(params)
         results = results.collect {payRecord->
-            payRecord.getShowProperties();
+            payRecord.getShowProperties(stopDate);
         }
         def total = criterib.size()
 
