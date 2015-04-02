@@ -137,34 +137,34 @@ class InvestmentArchivesResourceService {
         calendar.setTime(startTime);
         //获取期限的数值
         Double t = Double.valueOf(qx.substring(0, qx.length() - 1))
-        if (fxfs == "N") {
+        if (fxfs == "N") {//一次付
             if (qx.contains("天")) {
                 calendar.add(Calendar.DATE, (int) t)
             } else if (qx.contains("年")) {
                 calendar.add(Calendar.MONTH, (int) (t * 12))
             }
             list.add(calendar.getTime())
-        } else if (fxfs == "J") {
+        } else if (fxfs == "J") {//季付
             (1..(int) (t * 4)).each {
                 calendar.add(Calendar.MONTH, 3)
                 list.add(calendar.getTime())
             }
-        } else if (fxfs == "B") {
+        } else if (fxfs == "W") {//半年付
             (1..(int) (t * 2)).each {
                 calendar.add(Calendar.MONTH, 6)
                 list.add(calendar.getTime())
             }
-        } else if (fxfs == "Y") {
+        } else if (fxfs == "Y") {//年付
             (1..(int) t).each {
                 calendar.add(Calendar.YEAR, 1)
                 list.add(calendar.getTime())
             }
-        } else if (fxfs == "M") {
+        } else if (fxfs == "M") {//月付
             (1..(int) t * 12).each {
                 calendar.add(Calendar.MONTH, 1)
                 list.add(calendar.getTime())
             }
-        }else if(fxfs=="D"){
+        }else if(fxfs=="D"){//即时付
             list.add(new Date())
         }
 
