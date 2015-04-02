@@ -12,6 +12,9 @@ class ReceiveDetailRecord {
     String target // "original","firstyear","maintain","channel","overdue","penalty","borrow"
     BigDecimal amount
 
+    //当时付完之后本金还欠款多少
+    BigDecimal ownOriginal = 0
+
     //common
     Date dateCreated
     Date lastUpdated
@@ -23,7 +26,7 @@ class ReceiveDetailRecord {
     ];
 
     static constraints = {
-
+        ownOriginal nullable: true
     }
 
 
@@ -33,6 +36,7 @@ class ReceiveDetailRecord {
         }
         if("original".equals(target)){
             payRecord.payMainBack+=amount
+            ownOriginal = payRecord.amount - payRecord.payMainBack
         }else if("firstyear".equals(target)){
             payRecord.interest_pay+=amount
         }else if("maintain".equals(target)){
@@ -47,6 +51,7 @@ class ReceiveDetailRecord {
             payRecord.borrow_pay+=amount
         }
         payRecord.totalPayBack += amount
+        payRecord.save(failOnError: true)
     }
 
 }

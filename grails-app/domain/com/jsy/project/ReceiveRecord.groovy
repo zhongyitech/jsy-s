@@ -58,6 +58,8 @@ class ReceiveRecord {
                 projectid:project.id,
                 projectname:project.name,
 
+                remain_charge:remain_charge,                //多余的钱
+
         ]
         rtn
     }

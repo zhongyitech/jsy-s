@@ -1,8 +1,11 @@
 package com.jsy.fundObject
 
+import Models.MsgModel
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.JsonResult
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -31,9 +34,8 @@ class FundCompanyInformationCollectionResource {
 
     @POST
     Response create(FundCompanyInformation dto) {
-
-        ok {
-            return fundCompanyInformationResourceService.create(dto)
+        MyResponse.ok{
+            fundCompanyInformationResourceService.create(dto)
         }
     }
 
@@ -117,6 +119,8 @@ class FundCompanyInformationCollectionResource {
                     rtn2.id = fund.id
                     rtn2.fundName = fund.fundName
                     rtn2
+                }else{
+                    null
                 }
             }
             return rtn.banks = rtn.banks.unique()
@@ -136,7 +140,7 @@ class FundCompanyInformationCollectionResource {
                     def projects = TSProject.findAllByFund(fund)
 
                     def project_banks = projects.collect { project ->
-                        project.company?.bankAccount?.collect { bank ->
+                        project.fund.funcCompany?.bankAccount?.collect { bank ->
                             def rtn2 = [:]
                             rtn2.id = bank.id
                             rtn2.bankName = bank.bankName
