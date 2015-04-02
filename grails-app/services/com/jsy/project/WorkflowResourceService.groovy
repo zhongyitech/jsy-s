@@ -30,11 +30,11 @@ class WorkflowResourceService {
 
     def initData = {
         initCompany();
+        createProjects()
         initFund();
         initFund_Company_Relate();
         initInvestment();
         initCommissionData();
-        createProjects()
 //        initPayRecords();
         initRole();
         initFlowModel()
@@ -124,7 +124,9 @@ class WorkflowResourceService {
     }
 
     def initFund() {
+        def project = TSProject.findByName("project1")
         Fund fund = new Fund(
+                project: project,
                 fundName: 'fund1',
                 fundNo: '001',
                 startSaleDate: new Date(),
@@ -305,9 +307,9 @@ class WorkflowResourceService {
     }
 
     def createProjects() {
-        FundCompanyInformation fundCompanyInformation = FundCompanyInformation.findByCompanyName("金赛银")
-        def fund1 = Fund.findByFundName("fund1")
-        def fund2 = Fund.findByFundName("fund2")
+//        FundCompanyInformation fundCompanyInformation = FundCompanyInformation.findByCompanyName("金赛银")
+//        def fund1 = Fund.findByFundName("fund1")
+//        def fund2 = Fund.findByFundName("fund2")
         def admin = User.findByUsername('admin') ?: new User(
                 username: 'admin',
                 password: 'admin',
@@ -327,8 +329,8 @@ class WorkflowResourceService {
                 interest_per: 0.06,
                 year1: 1,
                 year2: 0,
-                fund: fund1,
-                company: fundCompanyInformation,
+//                fund: fund1,
+//                company: fundCompanyInformation,
                 interestType: "costCount"
         ).save(failOnError: true)
 

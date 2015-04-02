@@ -117,6 +117,8 @@ class FundCompanyInformationCollectionResource {
                     rtn2.id = fund.id
                     rtn2.fundName = fund.fundName
                     rtn2
+                }else{
+                    null
                 }
             }
             return rtn.banks = rtn.banks.unique()
@@ -136,7 +138,7 @@ class FundCompanyInformationCollectionResource {
                     def projects = TSProject.findAllByFund(fund)
 
                     def project_banks = projects.collect { project ->
-                        project.company?.bankAccount?.collect { bank ->
+                        project.fund.funcCompany?.bankAccount?.collect { bank ->
                             def rtn2 = [:]
                             rtn2.id = bank.id
                             rtn2.bankName = bank.bankName

@@ -32,7 +32,7 @@ class TSProject {
     /*****冗余字段*******/
     String currentStageName;    //当前阶段名称
     String currentStageEn;      //当前阶段英文名
-    String fundName            //关联基金名称
+    String fundName             //关联基金名称
     String creatorName;         //创建者名称
     String ownerName;           //负责人名称
 
@@ -68,7 +68,7 @@ class TSProject {
 
 
     //步骤2   makeContact
-    FundCompanyInformation company       //有限合伙
+//    FundCompanyInformation company       //有限合伙
     Fund fund                            //关联基金
     BigDecimal manage_per                //管理费率
     BigDecimal community_per             //渠道费率
@@ -167,8 +167,9 @@ class TSProject {
         thirdPartyFile nullable: true
         thirdPartyOthersFiles nullable: true
 
-        company nullable: true
+//        company nullable: true
         fund nullable: true
+        fund unique: true
         interestType : ["singleCount", "costCount", "dayCount"] //单利  复利  日复利
 
 

@@ -361,12 +361,11 @@ class ProjectResourceService {
                 }
 
 
-
                 resultObj.makeContactBean = [
                         "signers":signers,
                         "attentions":attentions,
                         "other_attachments":other_attachments,
-                        "company":project.company?.id,
+                        "company":project.fund?.funcCompany?.id,
                         "fund":project.fund?.id,
                         "manage_per":project.manage_per,
                         "community_per":project.community_per,
@@ -763,18 +762,18 @@ class ProjectResourceService {
         project.year2 = Float.parseFloat(obj.year2)
         project.interestType = obj.interestType
 
-        FundCompanyInformation company = FundCompanyInformation.get(obj.company)
-        if(!company){
-            return false;
-        }
-        project.company=company
-        Fund fund = Fund.get(obj.fund)
-        if(!fund){
-            return false;
-        }
-        project.fund=fund
-        fund.project=project        // 一对一关系
-        fund.save(failOnError: true)
+//        FundCompanyInformation company = FundCompanyInformation.get(obj.company)
+//        if(!company){
+//            return false;
+//        }
+//        project.company=company
+//        Fund fund = Fund.get(obj.fund)
+//        if(!fund){
+//            return false;
+//        }
+//        project.fund=fund
+//        fund.project=project        // 一对一关系
+//        fund.save(failOnError: true)
 
         obj.signers?.each{signer->
             if(signer.name && signer.value){
