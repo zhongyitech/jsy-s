@@ -3,7 +3,6 @@ package com.jsy.auth
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
-import org.json.JSONArray
 
 class MenusRoleResourceService {
     def springSecurityService
@@ -12,21 +11,21 @@ class MenusRoleResourceService {
         User user=springSecurityService.getCurrentUser()
         def roles=UserRole.findAllByUser(user).collect{it.role}
         def menus=MenusRole.findAllByRoleInListAndVisible(roles,true).collect {it.menus}.toSet().sort {it.id}
-        JSONArray jsonArray=new JSONArray()
+        def array=[]
         menus.each {
             if(it.parentId==0){
                 JSONObject jsonObject =new JSONObject((it as JSON).toString());
-                JSONArray ja=new JSONArray()
+                def childArray=[]
                 menus.each {me->
                     if(me.parentId==it.id){
-                        ja.put(me.properties)
+                        childArray.push(me.properties)
                     }
                 }
-                jsonObject.put("children",ja)
-                jsonArray.put(jsonObject)
+                jsonObject.put("children",childArray)
+                array.push(jsonObject)
             }
         }
-        return jsonArray.toString()
+        return array
     }
 
     def create(MenusRole dto) {
