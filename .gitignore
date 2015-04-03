@@ -155,3 +155,6 @@ ClientBin/
 *.publishsettings
 /.git/
 /.git/
+
+jsy-grailsPlugins.iml
+jsy.iml
