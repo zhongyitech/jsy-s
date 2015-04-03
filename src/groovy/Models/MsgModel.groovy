@@ -37,4 +37,7 @@ class MsgModel {
             return false;
         }
     }
+    public String getResult(){
+        return rest_result;
+    }
 }

@@ -1,6 +1,7 @@
 package GsonTools
 
 import Models.MsgModel
+import Models.ProjectModelPhaseRole
 
 /**
  * Created by libosong on 2015/3/17.
@@ -38,31 +39,8 @@ class GsonTool {
         return model;
     }
 
-    /**
-     * msgModel 生成 json
-     * @param msgModel
-     * @return
-     */
-    public static String getMsgModelJson(MsgModel msgModel){
-        return getGsoInstance().toJson(msgModel);
-    }
-
-    /**
-     * TSWorkflow list 生成 json
-     * @param modelList
-     * @return
-     */
-    public static String getTSWrolflowPhaseJson(List<TSWorkflowPhase> modelList){
-        Type type = new TypeToken<List<TSWorkflowPhase>>(){}.getType();
-        return getGsoInstance().toJson(modelList,type);
-    }
-
-    /**
-     * TSWorkflowPhase list 生成 json
-     * @param modelList
-     * @return
-     */
-    public static String getTSWorkflowPhaseJson(List<TSWorkflowPhase> modelList){
-        return getGsoInstance().toJson(modelList);
+    public static String getProjectModelPhaseRolesJson(ProjectModelPhaseRole phaseRole){
+        String json = getGsoInstance().toJson(phaseRole);
+        return json;
     }
 }
