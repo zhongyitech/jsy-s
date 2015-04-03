@@ -1,4 +1,3 @@
-import com.jsy.archives.CustomerArchives
 import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
@@ -489,12 +488,6 @@ class BootStrap {
         new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/CreateOrUpdate',method:'PUT',czlx:'update').save(failOnError: true)
         new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/readAllForPage',method:'POST',czlx:'read').save(failOnError: true)
         new OperationsAPI(resoureClass:InvestmentArchives.class.toString(),url:'/api/investmentArchives/nameLike',method:'GET',czlx:'read').save(failOnError: true)
-        //客户相关url
-            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/nameLike',method:'GET',czlx:'read').save(failOnError: true)
-            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives',method:'PUT',czlx:'creat').save(failOnError: true)
-            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/readAllForPage',method:'GET',czlx:'read').save(failOnError: true)
-            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/update',method:'POST',czlx:'update').save(failOnError: true)
-            new OperationsAPI(resoureClass:CustomerArchives.class.toString(),url:'/api/customerArchives/getcustomer',method:'GET',czlx:'read').save(failOnError: true)
     }
 
     def destroy = {

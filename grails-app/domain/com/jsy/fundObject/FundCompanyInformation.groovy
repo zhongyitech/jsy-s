@@ -5,6 +5,7 @@ import com.jsy.project.TSFlowFile
 import com.jsy.system.Company
 import com.jsy.system.Department
 import com.jsy.system.TypeConfig
+
 //基金公司信息表
 class FundCompanyInformation {
     //公司名称

@@ -8,7 +8,6 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.QueryParam
-import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -185,56 +184,4 @@ class PayRecordCollectionResource {
     PayRecordResource getResource(@PathParam('id') Long id) {
         new PayRecordResource(payRecordResourceService: payRecordResourceService, id:id)
     }
-
-    @POST
-    @Path('/changeByDate')
-    Response changeByDate(String datastr) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
-
-        // get project
-        org.json.JSONObject obj = JSON.parse(datastr)
-
-
-
-        try{
-            //数据校验
-//            if(obj.has("payRecords")){
-//                result.put("rest_status", "error")
-//                result.put("rest_result", "no payRecords set!")
-//                return Response.ok(result.toString()).status(500).build()
-//            }
-
-//            if(obj.has("stopDate")){
-//                result.put("rest_status", "error")
-//                result.put("rest_result", "no stopDate set!")
-//                return Response.ok(result.toString()).status(500).build()
-//            }
-
-            //
-            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
-            def stopDate = sf.parse(obj.stopDate)
-
-            def results = []
-            obj.payRecords.each{
-                results.push(PayRecord.get(it))
-            }
-            results = results.collect {payRecord->
-                payRecord.getShowProperties(stopDate);
-            }
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", results as JSON)
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
-        }
-    }
-
-
 }

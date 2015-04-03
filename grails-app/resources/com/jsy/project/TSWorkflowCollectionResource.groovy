@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response
 class TSWorkflowCollectionResource {
 
     WorkflowResourceService workflowResourceService
-    TestService testService
+
 
     @GET
     @Path('/irData')
@@ -45,7 +45,43 @@ class TSWorkflowCollectionResource {
     @GET
     @Path('/irData2')
     Response initData2() {
-        return Response.ok(testService.testTransation()).status(200).build()
+        Customer customer = new Customer(name:'liayi',credentialsAddr:'at sss',credentialsNumber:'1111');
+        customer.save(failOnError: true)
+
+        CustomerArchives customerArchive = new CustomerArchives(
+                name:'1',
+                country:'2',
+                credentialsType:'3',
+                credentialsNumber:'4',
+                credentialsAddr:'5',
+                fddbr:'6',
+                zch:'7',
+                khh:'8',
+                telephone:'9',
+                phone:'10',
+                postalcode:'11',
+                callAddress:'12');
+        customerArchive.save(failOnError: true)
+
+        def typeConfig =TypeConfig.findByMapName("在库")
+        Kxzqx kxzqx1=new Kxzqx(jsz: 1,dw: '年')
+        Kxzqx kxzqx2=new Kxzqx(jsz: 2,dw: '年')
+        def fund = Fund.findByFundName('fund1')?:new Fund(fundName:'fund1',fundNo:'F001',startSaleDate:new Date(),status:TypeConfig.findByTypeAndMapValue(1,2),owner:'张三',memo:'备注').save(failOnError: true)
+        fund.addToKxzqx(kxzqx1)
+        fund.addToKxzqx(kxzqx2)
+        def user = User.findByUsername("admin")
+
+        InvestmentArchives archives1 = new InvestmentArchives(markNum:'2141412',customerArchive:customerArchive,customer:customer,
+                archiveNum:1,contractNum:'124214',fund:fund,tzje:1,tzqx:'2015-06-01',rgrq:new Date(),dqrq:new Date(),fxfs:'fukuan',nhsyl:0.01,
+                htzt:typeConfig,bm:'abc',gltc:0.1,ywtc:0.1,bj:10000,
+        )
+        archives1.save(failOnError: true)
+        PaymentInfo paymentInfo = new PaymentInfo(fundName:'fund3',htbh:'3000',customerName:'sss',tzje:12,
+                tzqx:'2015-05-14',syl:0.1,yflx:0.1,yfbj:100,
+                zj:100,khh:'211111',yhzh:'cc',gj:'bbb',zjlx:'dd',zjhm:'ddd',bmjl:'ddd',
+                archivesId:archives1.id,fxsj:new Date(),type:0)
+        paymentInfo.save(failOnError: true)
+        ok "good2"
     }
 
     @GET
@@ -54,12 +90,6 @@ class TSWorkflowCollectionResource {
         workflowResourceService.initFundCompanyInformation();
 
         ok "init FundCompanyInformation ok";
-    }
-
-    @GET
-    @Path('/initUser')
-     Response initUser(){
-
     }
 }
 
