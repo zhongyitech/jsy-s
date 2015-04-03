@@ -107,16 +107,27 @@ log4j = {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
 
-    appenders {// write by liujw 15.03.31.15.30
-        console name: "stdout",
-                layout: pattern(conversionPattern: "%c{2} %m%n")
+    appenders {
+        console name: 'stdout', layout: pattern(conversionPattern: '%d{yyyy-MM-dd hh:mm:ss}:%p %t %c - %m%n')
+
         environments {
             production {
-                rollingFile name: "myAppender", maxFileSize: 1024,
-                        file: "D:/tmp/logs/myApp.log"
+                rollingFile name: "file",
+                        file: "/tmp/logs/jsy.log"
             }
         }
     }
+
+//    appenders {// write by liujw 15.03.31.15.30
+//        console name: "stdout",
+//                layout: pattern(conversionPattern: "%c{2} %m%n")
+//        environments {
+//            production {
+//                rollingFile name: "myAppender", maxFileSize: 1024,
+//                        file: "D:/tmp/logs/myApp.log"
+//            }
+//        }
+//    }
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
