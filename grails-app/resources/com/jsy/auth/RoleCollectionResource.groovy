@@ -79,6 +79,10 @@ class RoleCollectionResource {
     Response update(Role dto, @QueryParam('id') int id) {
 
         ok {
+            def role=Role.get(id);
+            if(role.name==dto.name){
+                return  true;
+            }
             if(Role.findByName(dto.name)){
                 throw  new Exception("角色名称重复了!")
             }

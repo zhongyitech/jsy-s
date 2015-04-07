@@ -1,15 +1,15 @@
 package com.jsy.system
 
-import com.jsy.fundObject.Finfo
-import com.jsy.utility.JsonResult
+import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.DELETE
+import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
-import static org.grails.jaxrs.response.Responses.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -28,37 +28,6 @@ class DepartmentCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     def departmentResourceService
 
-//    JSONObject result = new JSONObject();
-//    String restStatus = REST_STATUS_SUC;
-//    def **
-//    try{
-//        ** = departmentResourceService.readAll()
-//    }catch (Exception e){
-//        restStatus = REST_STATUS_FAI
-//        print(e)
-//    }
-//    result.put("rest_status", restStatus)
-//    result.put("rest_result", dp as JSON)
-//    return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-    @GET
-    @Path('/readAll')
-    Response readAll(){
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        def bfpr
-        try {
-            bfpr = Department.findAll()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", bfpr as JSON)
-            return Response.ok(result.toString()).status(500).build()
-        }
-    }
     /**
      * 创建部门信息
      * @param dto
@@ -66,13 +35,9 @@ class DepartmentCollectionResource {
      */
     @PUT
     Response create(Department dto) {
-        def bfpr
-        try {
-            bfpr = departmentResourceService.create(dto)
-                ok JsonResult.success(bfpr)
-        }catch (Exception e){
-            e.printStackTrace()
-            ok JsonResult.error(e.message)
+        MyResponse.ok {
+
+            departmentResourceService.create(dto)
         }
     }
 
@@ -83,57 +48,57 @@ class DepartmentCollectionResource {
      * @return
      */
     @POST
-    Response update(Department dto,@QueryParam('id') Long id){
-        dto.id = id
-        def  rc
-        try {
-            rc = departmentResourceService.update(dto)
-            ok JsonResult.success(rc)
-        }catch (Exception e){
-            print(e)
-            ok JsonResult.error(e.message)
+    Response update(Department dto, @QueryParam('id') Long id) {
+        MyResponse.ok {
+            if (dto.parent == id) {
+                throw new Exception("上级部门不能是自己")
+            }
+            dto.id = id
+            departmentResourceService.update(dto)
         }
     }
 
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
-        org.json.JSONObject result = new org.json.JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        org.json.JSONObject json
-        def fp
-        try {
-            json = departmentResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            print(total)
-            fp = json.get("page")
-            print(fp)
-            result.put("rest_status", restStatus)
-            result.put("rest_result", fp as JSON)
-            result.put("rest_total", total)
-            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-        }catch (Exception e){
-            restStatus = REST_STATUS_FAI;
-            print(e)
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", fp as JSON)
-            result.put("rest_total", total)
-            return Response.ok(result.toString()).status(500).build()
+    Response readAllForPage(Map arg) {
+
+        MyResponse.page {
+
+            DomainHelper.getPage(Department, arg)
+        }
+    }
+
+    /**
+     * 返回select 列表
+     * @param depId 过滤某一部门(ID)
+     * @return
+     */
+    @GET
+    @Path('/selectList')
+    Response seleectList(@QueryParam('depId') @DefaultValue('0') Long depId) {
+        MyResponse.ok {
+            def list = Department.list()
+            if (depId > 0) {
+                list = Department.where {
+                    ne("id", depId)
+                }.list()
+            }
+            list.collect {
+                [text: it.deptName + "|" + it.fundCompanyInformation?.companyName, value: it.id]
+            }
         }
     }
 
     @GET
     @Path('/findByName')
-    Response findByName(@QueryParam('parm') String parm){
+    Response findByName(@QueryParam('parm') String parm) {
         JSONObject result = new JSONObject();
         String restStatus = REST_STATUS_SUC;
         def dp
-        try{
+        try {
             dp = Department.findAllByDeptNameLike(parm)
 
-        }catch (Exception e){
+        } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             print(e)
         }
@@ -141,15 +106,11 @@ class DepartmentCollectionResource {
         result.put("rest_result", dp as JSON)
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
+
     @DELETE
-    Response delete(@QueryParam('id') Long id){
-        def dp
-        try{
-            dp = departmentResourceService.delete(id)
-            ok JsonResult.success(dp)
-        }catch (Exception e){
-            print(e)
-            ok JsonResult.error(e.message)
+    Response delete(@QueryParam('id') Long id) {
+        MyResponse.ok {
+            departmentResourceService.delete(id)
         }
     }
 

@@ -648,7 +648,7 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
-    //todo:.....
+    //todo:修改为新的数据返回方式
     @GET
     @Path('/nameLike')
     Response findByNameLike(@QueryParam('params') String htbn) {
@@ -677,9 +677,8 @@ class InvestmentArchivesCollectionResource {
     Response contractNumIsUse(@QueryParam('num') String num) {
         MyResponse.ok {
 //            return true;
-            def ia = InvestmentArchives.findByContractNum(num).collect {
 
-            }
+            def ia = InvestmentArchives.findByContractNum(num)
             return ia
         }
     }
@@ -701,6 +700,20 @@ class InvestmentArchivesCollectionResource {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             Date startDate = sdf.parse(str);
             return investmentArchivesResourceService.scfxsj(startDate,arg.qx,arg.fxfs.toUpperCase())
+        }
+    }
+
+
+    @POST
+    @Path('/detail')
+    Response getDetail(@QueryParam('id') Long id,@QueryParam('contractNum') String contractNum){
+        ok{
+            if(id==0 || (contractNum.isEmpty()|| contractNum=="" )) {
+                throw new Exception("Arg is error!")
+            }
+            def result=[:]
+            result.investment=InvestmentArchives.get(id).properties
+            return result
         }
     }
 }
