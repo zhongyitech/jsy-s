@@ -49,7 +49,7 @@ class ReceiveRecordResourceService {
 
 
         //根据前台的计算结果，进行再次验证，check same suggest： remain_money_suggest
-        def _paytotal = new BigDecimal(obj.paytotal)
+        def _paytotal = new BigDecimal(obj.paytotal) + bankAccount.overReceive
         def receiveDetails = []
 
         if(obj.receiveDetail_struct){
@@ -62,9 +62,11 @@ class ReceiveRecordResourceService {
 
         //数据保存
         if(remain_money_suggest>0){
-            bankAccount.overReceive = bankAccount.overReceive + remain_money_suggest
-            bankAccount.save(failOnError: true)
+            bankAccount.overReceive = remain_money_suggest
+        }else{
+            bankAccount.overReceive = 0
         }
+        bankAccount.save(failOnError: true)
 
         ReceiveRecord dto = new ReceiveRecord(receiveDate:paydate,amount:paytotal,
                 project:project,fund:fund,bankAccount:bankAccount,remain_charge:remain_money_suggest);

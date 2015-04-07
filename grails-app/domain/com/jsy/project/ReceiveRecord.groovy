@@ -50,7 +50,7 @@ class ReceiveRecord {
                 bankName:bankAccount.bankName,              //    银行名称
                 bankOfDeposit:bankAccount.bankOfDeposit,    //    开户行
                 accountName:bankAccount.accountName,        //    户名
-                account: bankAccount.account,               //    账号
+                account: bankAccount.account+"("+bankAccount.overReceive+")",               //    账号
 
 
                 fundid:fund.id,
@@ -58,7 +58,7 @@ class ReceiveRecord {
                 projectid:project.id,
                 projectname:project.name,
 
-                remain_charge:bankAccount.overReceive,                //多余的钱
+                remain_charge:remain_charge,                //多余的钱
 
         ]
         rtn

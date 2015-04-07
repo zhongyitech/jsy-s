@@ -145,6 +145,7 @@ class FundCompanyInformationCollectionResource {
                             rtn2.account = bank.account
                             rtn2.defaultAccount = bank.defaultAccount
                             rtn2.purposeName = bank.purposeName
+                            rtn2.overReceive = bank.overReceive
                             rtn2
 
                         }
