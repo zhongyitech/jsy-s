@@ -230,7 +230,7 @@ class PayRecord {
                         def over_days = Utils.dayDifferent(startDate,nowDate)
                         startDate = nowDate
                         def balance = totalBalance()
-                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre, over_days) - balance)
+                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre/365, over_days) - balance)
                     }
 
 
@@ -238,7 +238,7 @@ class PayRecord {
                     if(startDate.before(nowDate)){
                         def over_days = Utils.dayDifferent(startDate,nowDate)
                         def balance = totalBalance()
-                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre, over_days) - balance)
+                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre/365, over_days) - balance)
                     }
                 }
             }
