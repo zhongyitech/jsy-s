@@ -38,7 +38,7 @@ class summary {
         ok {
 
             def sql = new Sql(dataSource)
-            def list = sql.rows("SELECT * FROM fund_month_summry")
+            def list = sql.rows("SELECT * FROM fund_month_summary")
             print(list)
             def columns = []
             Map columnMap = [:]
