@@ -5,10 +5,12 @@ import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.json.JSONObject
 
+@Transactional(rollbackFor = Throwable.class)
 class PayRecordResourceService {
 
     def readAllForPage(String criteriaStr){

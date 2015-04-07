@@ -14,6 +14,8 @@ class BankAccount {
     boolean defaultAccount = false      //是否默认账户
     TypeConfig purpose          //用途
 
+    BigDecimal overReceive = 0 //收款时，往这个帐号收款，多收的钱
+
     /**
      * 冗余设计
      */

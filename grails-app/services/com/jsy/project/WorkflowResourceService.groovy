@@ -24,6 +24,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+@Transactional(rollbackFor = Throwable.class)
 class WorkflowResourceService {
     private static String TAG = "WorkflowResourceService ";
     CommissionInfoResourceService commissionInfoResourceService

@@ -3,6 +3,7 @@ package com.jsy.project
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
 import com.jsy.util.Utils
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -91,8 +92,6 @@ class PayRecordCollectionResource {
 
         // get project
         org.json.JSONObject obj = JSON.parse(datastr)
-
-
 
         try{
             //数据校验

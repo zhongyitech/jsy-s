@@ -10,11 +10,13 @@ import com.jsy.system.UploadFile
 import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import grails.gorm.*
 import org.json.JSONObject
 
+@Transactional(rollbackFor = Throwable.class)
 class ProjectResourceService {
     public static String TAG = "ProjectResourceService ";
 

@@ -21,7 +21,7 @@ class ReceiveRecord {
     //银行账户
     BankAccount bankAccount
 
-    //本次付款，系统计算多余的钱
+    //本次付款，系统计算多余的钱，这里可能未负数
     BigDecimal remain_charge
 
     String pdesc;
@@ -58,7 +58,7 @@ class ReceiveRecord {
                 projectid:project.id,
                 projectname:project.name,
 
-                remain_charge:remain_charge,                //多余的钱
+                remain_charge:bankAccount.overReceive,                //多余的钱
 
         ]
         rtn
