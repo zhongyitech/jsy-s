@@ -353,7 +353,7 @@ class BootStrap {
 
 
         //菜单权限数据
-        String localhost='http://192.168.1.59'
+        String localhost='http://localhost:8081'
         Menus menus1=new Menus(name:'jjgl',title:'基金管理',url:'').save(failOnError: true)
         Menus menus11=new Menus(name:'jjxx',title:'基金信息','fund-list.jsp',parentId:menus1.id).save(failOnError: true)
         Menus menus12=new Menus(name:'xzjj',title:'新增基金','fund-create.jsp',parentId:menus1.id).save(failOnError: true)

@@ -179,44 +179,66 @@ class PayRecord {
 
         if(nowDate.after(lastDate)) {//判断超出预定时间
             def owe_money = amount - payMainBack
-            def over_days = Utils.dayDifferent(lastDate,nowDate)
+            def startDate =  lastDate //变化的开始时间,这个时间开始是逾期时间，这段时间有汇款对结果是有影响的
             if(owe_money > 0){
                 if("singleCount".equals(project.interestType)){
                     //查询逾期开始时间到现在之间的receive记录
-                    ReceiveDetailRecord.findAllByTargetAndPayRecordAndDateCreatedBetween("original" , this, lastDate, nowDate)?.each{receiveDetailRecord->
-                        over_days = Utils.dayDifferent(lastDate,receiveDetailRecord.dateCreated)
-                        lastDate = receiveDetailRecord.dateCreated
+                    def receiveDetailRecords = ReceiveDetailRecord.findAllByTargetAndPayRecordAndDateCreatedBetween("original" , this, startDate, nowDate)
+                    if(receiveDetailRecords){
+                        receiveDetailRecords.each{receiveDetailRecord->
+                            def over_days = Utils.dayDifferent(startDate,receiveDetailRecord.dateCreated)
+                            startDate = receiveDetailRecord.dateCreated
 
-                        over_interest_pay += CompoundCalculator.fv(receiveDetailRecord.ownOriginal, allinallpre, over_days)
+                            over_interest_pay += CompoundCalculator.fv(receiveDetailRecord.ownOriginal, allinallpre, over_days)
+                        }
+                    }else{
+                        def over_days = Utils.dayDifferent(startDate,nowDate)
+                        over_interest_pay += CompoundCalculator.fv(amount, allinallpre, over_days)
                     }
-
                 }else if("costCount".equals(project.interestType)){
                     //查询逾期开始时间到现在之间的receive记录
-                    ReceiveDetailRecord.findAllByPayRecordAndDateCreatedBetween(this, lastDate, nowDate)?.each{receiveDetailRecord->
-                        over_days = Utils.dayDifferent(lastDate,receiveDetailRecord.dateCreated)
-                        lastDate = receiveDetailRecord.dateCreated
+                    def receiveDetailRecords = ReceiveDetailRecord.findAllByPayRecordAndDateCreatedBetween(this, startDate, nowDate)
+                    if(receiveDetailRecords){
+                        receiveDetailRecords.each{receiveDetailRecord->
+                            def over_days = Utils.dayDifferent(startDate,receiveDetailRecord.dateCreated)
+                            startDate = receiveDetailRecord.dateCreated
 
-                        over_interest_pay += CompoundCalculator.fv(receiveDetailRecord.totalBalance, allinallpre, over_days)
+                            over_interest_pay += CompoundCalculator.fv(receiveDetailRecord.totalBalance, allinallpre, over_days)
+                        }
+                    }else {
+                        def over_days = Utils.dayDifferent(startDate, nowDate)
+                        startDate = nowDate
+                        over_interest_pay += CompoundCalculator.fv(totalBalance(), allinallpre, over_days)
                     }
 
                     //时间是一直都又效的
-                    if(lastDate.before(nowDate)){
-                        over_days = Utils.dayDifferent(lastDate,nowDate)
+                    if(startDate.before(nowDate)){
+                        def over_days = Utils.dayDifferent(startDate,nowDate)
                         over_interest_pay += CompoundCalculator.fv(totalBalance(), allinallpre, over_days)
                     }
                 }else if("dayCount".equals(project.interestType)){
                     //查询逾期开始时间到现在之间的receive记录
-                    ReceiveDetailRecord.findAllByPayRecordAndDateCreatedBetween(this, lastDate, nowDate)?.each{receiveDetailRecord->
-                        lastDate = receiveDetailRecord.dateCreated
-                        over_days = Utils.dayDifferent(lastDate,nowDate)
+                    def receiveDetailRecords = ReceiveDetailRecord.findAllByPayRecordAndDateCreatedBetween(this, startDate, nowDate)
+                    if(receiveDetailRecords){
+                        receiveDetailRecords.each{receiveDetailRecord->
+                            def over_days = Utils.dayDifferent(startDate,receiveDetailRecord.dateCreated)
+                            startDate = receiveDetailRecord.dateCreated
 
-                        over_interest_pay += CompoundCalculator.rfv(receiveDetailRecord.totalBalance, allinallpre, over_days)
+                            over_interest_pay += CompoundCalculator.rfv(receiveDetailRecord.totalBalance, allinallpre, over_days)
+                        }
+                    }else{
+                        def over_days = Utils.dayDifferent(startDate,nowDate)
+                        startDate = nowDate
+                        def balance = totalBalance()
+                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre, over_days) - balance)
                     }
 
+
                     //时间是一直都又效的
-                    if(lastDate.before(nowDate)){
-                        over_days = Utils.dayDifferent(lastDate,nowDate)
-                        over_interest_pay += CompoundCalculator.rfv(totalBalance(), allinallpre, over_days)
+                    if(startDate.before(nowDate)){
+                        def over_days = Utils.dayDifferent(startDate,nowDate)
+                        def balance = totalBalance()
+                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre, over_days) - balance)
                     }
                 }
             }
