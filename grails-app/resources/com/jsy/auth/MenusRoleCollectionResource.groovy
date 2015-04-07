@@ -1,6 +1,6 @@
 package com.jsy.auth
 
-import static org.grails.jaxrs.response.Responses.*
+import static com.jsy.utility.MyResponse.*;
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -20,17 +20,23 @@ class MenusRoleCollectionResource {
     @GET
     @Path('/getMenus')
     Response getMenus() {
-        ok menusRoleResourceService.getMenus()
+        ok {
+            menusRoleResourceService.getMenus()
+        }
     }
 
     @POST
     Response create(MenusRole dto) {
-        created menusRoleResourceService.create(dto)
+        ok {
+            menusRoleResourceService.create(dto)
+        }
     }
 
     @GET
     Response readAll() {
-        ok menusRoleResourceService.readAll()
+        ok {
+            menusRoleResourceService.readAll()
+        }
     }
 
     @Path('/{id}')

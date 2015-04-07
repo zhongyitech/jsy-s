@@ -14,6 +14,8 @@ class ReceiveDetailRecord {
 
     //当时付完之后本金还欠款多少
     BigDecimal ownOriginal = 0
+    //当时付完之后各种费用总欠款多少
+    BigDecimal totalBalance = 0
 
     //common
     Date dateCreated
@@ -36,7 +38,6 @@ class ReceiveDetailRecord {
         }
         if("original".equals(target)){
             payRecord.payMainBack+=amount
-            ownOriginal = payRecord.amount - payRecord.payMainBack
         }else if("firstyear".equals(target)){
             payRecord.interest_pay+=amount
         }else if("maintain".equals(target)){
@@ -50,6 +51,8 @@ class ReceiveDetailRecord {
         }else if("borrow".equals(target)){
             payRecord.borrow_pay+=amount
         }
+        ownOriginal = payRecord.amount - payRecord.payMainBack
+        totalBalance = payRecord.totalBalance()
         payRecord.totalPayBack += amount
         payRecord.save(failOnError: true)
     }

@@ -149,21 +149,4 @@ class Fund {
         //todo:remove this
         funcCompany nullable: true
     }
-
-
-    def beforeInsert() {
-        if (project && !project.fund) {
-            project.fund = this
-            project.save(failOnError: true)
-        }
-
-    }
-
-
-    def beforeUpdate() {
-        if (project && !project.fund) {
-            project.fund = this
-            project.save(failOnError: true)
-        }
-    }
 }

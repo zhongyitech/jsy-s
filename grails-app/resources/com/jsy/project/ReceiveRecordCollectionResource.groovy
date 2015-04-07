@@ -6,7 +6,6 @@ import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -25,8 +24,8 @@ import javax.ws.rs.core.Response
 @Path('/api/receiveRecord')
 @Consumes(['application/xml','application/json'])
 @Produces(['application/xml','application/json'])
-@Transactional(rollbackFor = Throwable.class)
 class ReceiveRecordCollectionResource {
+
     def receiveRecordResourceService
 
     @POST
@@ -69,9 +68,7 @@ class ReceiveRecordCollectionResource {
 
 
             if(_paytotal!=remain_money_suggest){
-                if(Math.abs(remain_money_suggest-_paytotal) > 1){
-                    throw new Exception("error remain count in front: $_paytotal vs $remain_money_suggest")
-                }
+                throw new Exception("error remain count in front: $_paytotal vs $remain_money_suggest")
             }
 
             //数据保存
@@ -287,7 +284,6 @@ class ReceiveRecordCollectionResource {
         def criterib = new DetachedCriteria(ReceiveRecord).build {
             //and
             eq("fund",Fund.get(obj.get("fundid")))
-//            eq("bankAccount.accountName",obj.get("bank_person"))    //TODO
 
 
             //orderby

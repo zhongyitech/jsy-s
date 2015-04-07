@@ -12,15 +12,15 @@ import com.jsy.fundObject.FundCompanyInformation
 class TSProject {
 
     /*****普通字段******/
-    String name                //项目名称 not null
-    String projectDealer     //项目方   not null
-    User projectOwner;       //项目负责人 not null
-    User creator;             //创建者   not null
-    String pdesc;             //备注
+    String name              //项目名称
+    String projectDealer     //项目方
+    User projectOwner;       //项目负责人
+    User creator;            //创建者
+    String pdesc;            //备注
 
     boolean isEnded=false;   //创建流程是否结束
     boolean archive=false;   //项目是否归档
-    String endSummary         //项目结算描述
+    String endSummary        //项目结算描述
 
     String director          //董事
     String supervisor        //监事
@@ -32,7 +32,7 @@ class TSProject {
     /*****冗余字段*******/
     String currentStageName;    //当前阶段名称
     String currentStageEn;      //当前阶段英文名
-    String fundName             //关联基金名称
+    String fundName            //关联基金名称
     String creatorName;         //创建者名称
     String ownerName;           //负责人名称
 
@@ -68,7 +68,7 @@ class TSProject {
 
 
     //步骤2   makeContact
-//    FundCompanyInformation company       //有限合伙
+    FundCompanyInformation company       //有限合伙
     Fund fund                            //关联基金
     BigDecimal manage_per                //管理费率
     BigDecimal community_per             //渠道费率
@@ -167,9 +167,8 @@ class TSProject {
         thirdPartyFile nullable: true
         thirdPartyOthersFiles nullable: true
 
-//        company nullable: true
+        company nullable: true
         fund nullable: true
-        fund unique: true
         interestType : ["singleCount", "costCount", "dayCount"] //单利  复利  日复利
 
 
