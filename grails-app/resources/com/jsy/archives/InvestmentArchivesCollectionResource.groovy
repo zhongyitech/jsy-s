@@ -298,9 +298,11 @@ class InvestmentArchivesCollectionResource {
             if (old) {
                 old.properties = dto.properties
                 old.save(failOnError: true)
+                ia.username=ia.customer.name
                 obj = old
             } else {
                 ia.customer = dto.save(failOnError: true)
+                ia.username=ia.customer.name
                 obj = ia.customer
             }
             ia.save(failOnError: true)
@@ -671,15 +673,32 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
-
+    /**
+     * 检测合同是否已经使用
+     * @param num
+     * @return
+     */
     @GET
     @Path('/contractNumIsUse')
     Response contractNumIsUse(@QueryParam('num') String num) {
         MyResponse.ok {
-//            return true;
+            InvestmentArchives.findByContractNum(num)
+        }
+    }
 
+    @GET
+    @Path('/contractNumCanAdd')
+    Response contractNumCanAdd(@QueryParam('num') String num) {
+        MyResponse.ok {
             def ia = InvestmentArchives.findByContractNum(num)
-            return ia
+            if (ia != null) {
+                throw new Exception("合同编号已经使用了")
+            }
+            def c = Contract.findByHtbh(num)
+            if (c == null) {
+                throw new Exception("合同编号还没有登记")
+            }
+            c.properties
         }
     }
     /**
@@ -688,32 +707,42 @@ class InvestmentArchivesCollectionResource {
      * @param qx
      * @param fxfs
      * @return
-     * @QueryParam('date') Date date,@QueryParam('fxfs') String qx,@QueryParam('fxfs') String fxfs
+     * @QueryParam ( ' d a t e ' ) Date date,@QueryParam('fxfs') String qx,@QueryParam('fxfs') String fxfs
      */
     @POST
     @Path('/getPayTimes')
     Response getPayTimes(Map arg) {
-        MyResponse.ok{
-            String str=arg.date
-            str=str.replace("T"," ")
-            str=str.replace("Z","")
+        MyResponse.ok {
+            String str = arg.date
+            str = str.replace("T", " ")
+            str = str.replace("Z", "")
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             Date startDate = sdf.parse(str);
-            return investmentArchivesResourceService.scfxsj(startDate,arg.qx,arg.fxfs.toUpperCase())
+            return investmentArchivesResourceService.scfxsj(startDate, arg.qx, arg.fxfs.toUpperCase())
         }
     }
 
 
-    @POST
+    @GET
     @Path('/detail')
-    Response getDetail(@QueryParam('id') Long id,@QueryParam('contractNum') String contractNum){
-        ok{
-            if(id==0 || (contractNum.isEmpty()|| contractNum=="" )) {
-                throw new Exception("Arg is error!")
+    Response detail(@QueryParam('id') Long id) {
+        MyResponse.ok {
+            def result = [:]
+            def res = investmentArchivesResourceService.read(id)
+            result.putAll(res.properties)
+            result.ywtcs = []
+            res.ywtcs.each {
+                result.ywtcs.push(it.properties)
             }
-            def result=[:]
-            result.investment=InvestmentArchives.get(id).properties
-            return result
+            result.gltcs = []
+            res.gltcs.each {
+                result.gltcs.push(it.properties)
+            }
+            //附加付息信息
+            result.paymentInfo = PaymentInfo.findAllByArchivesId(res.id)
+            //退伙信息
+            //续投信息
+            result
         }
     }
 }
