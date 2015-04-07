@@ -368,8 +368,8 @@ class ProjectResourceService {
                         "signers":signers,
                         "attentions":attentions,
                         "other_attachments":other_attachments,
-                        "company":project.company?.id,
-                        "fund":project.fund?.id,
+                        "company":project.fund?.funcCompany?.companyName,
+                        "fund":project.fund?.fundName,
                         "manage_per":project.manage_per,
                         "community_per":project.community_per,
                         "penalty_per":project.penalty_per,
@@ -765,19 +765,6 @@ class ProjectResourceService {
         project.year2 = Float.parseFloat(obj.year2)
         project.interestType = obj.interestType
 
-        FundCompanyInformation company = FundCompanyInformation.get(obj.company)
-        if(!company){
-            return false;
-        }
-        project.company=company
-        Fund fund = Fund.get(obj.fund)
-        if(!fund){
-            return false;
-        }
-        project.fund=fund
-        fund.project=project        // 一对一关系
-        fund.save(failOnError: true)
-
         obj.signers?.each{signer->
             if(signer.name && signer.value){
                 SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
@@ -903,4 +890,7 @@ class ProjectResourceService {
         }
         return MsgModel.getSuccessMsg("save success");
     }
+
+
+
 }

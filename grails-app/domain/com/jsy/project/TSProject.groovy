@@ -2,7 +2,6 @@ package com.jsy.project
 
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
-import com.jsy.fundObject.FundCompanyInformation
 
 /**
  * 基金项目，这里记录了项目的基本信息，以及创建项目流程的所有业务数据
@@ -68,7 +67,6 @@ class TSProject {
 
 
     //步骤2   makeContact
-    FundCompanyInformation company       //有限合伙
     Fund fund                            //关联基金
     BigDecimal manage_per                //管理费率
     BigDecimal community_per             //渠道费率
@@ -167,7 +165,7 @@ class TSProject {
         thirdPartyFile nullable: true
         thirdPartyOthersFiles nullable: true
 
-        company nullable: true
+//        company nullable: true
         fund nullable: true
         interestType : ["singleCount", "costCount", "dayCount"] //单利  复利  日复利
 

@@ -6,6 +6,7 @@ import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.JsonResult
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -538,6 +539,43 @@ class TSProjectCollectionResource {
 
 
     }
+
+
+    @GET
+    @Path('/getProjectFromFund')
+    Response getProjectFromFund(@QueryParam("fundId") int fundId){
+        MyResponse.ok {
+            Fund fund = Fund.get(fundId)
+            if(fund){
+                def rtn = [:]
+                rtn.id = fund.project?.id
+                rtn.name = fund.project?.name
+                return rtn
+            }else{
+                return null
+            }
+
+        }
+    }
+
+    @POST
+    @Path('/updateProjectAttr')
+    Response updateProjectAttr(@QueryParam("id") int projectid,@QueryParam("mark") int mark){
+        MyResponse.ok {
+            TSProject project = TSProject.get(projectid)
+            if(project){
+                project.archive = true
+                project.endSummary = mark
+                project.save(failOnError: true)
+                return "done"
+            }else{
+                return null
+            }
+
+        }
+    }
+
+
 }
 
 
