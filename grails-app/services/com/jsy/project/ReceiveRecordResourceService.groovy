@@ -103,11 +103,12 @@ class ReceiveRecordResourceService {
                     def temp = shouldReceiveRecord.amount   //临时保存一下 shouldReceiveRecord.amount ,因为这个值在过程中会改变
 
                     if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
-                        shouldReceiveRecord.amount = 0
-                        shouldReceiveRecord.save(failOnError: true)
-
                         detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
                         receiveDetails.push(detailRecord)
+
+                        //钱用了
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
                     }else if(_paytotal>0){//少量余额
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
@@ -123,11 +124,12 @@ class ReceiveRecordResourceService {
                     def temp = shouldReceiveRecord.amount   //临时保存一下 shouldReceiveRecord.amount ,因为这个值在过程中会改变
 
                     if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
+                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
+                        receiveDetails.push(detailRecord)
+
                         shouldReceiveRecord.amount = 0
                         shouldReceiveRecord.save(failOnError: true)
 
-                        detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
-                        receiveDetails.push(detailRecord)
                     }else if(_paytotal>0){
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
@@ -142,12 +144,11 @@ class ReceiveRecordResourceService {
                     def temp = shouldReceiveRecord.amount   //临时保存一下 shouldReceiveRecord.amount ,因为这个值在过程中会改变
 
                     if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
-                        shouldReceiveRecord.amount = 0
-                        shouldReceiveRecord.save(failOnError: true)
-
                         detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
                         receiveDetails.push(detailRecord)
 
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
                     }else if(_paytotal>0){
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
@@ -164,11 +165,11 @@ class ReceiveRecordResourceService {
                     def temp = shouldReceiveRecord.amount   //临时保存一下 shouldReceiveRecord.amount ,因为这个值在过程中会改变
 
                     if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
-                        shouldReceiveRecord.amount = 0
-                        shouldReceiveRecord.save(failOnError: true)
-
                         detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
                         receiveDetails.push(detailRecord)
+
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
                     }else if(_paytotal>0){
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
@@ -182,11 +183,11 @@ class ReceiveRecordResourceService {
                     def temp = shouldReceiveRecord.amount   //临时保存一下 shouldReceiveRecord.amount ,因为这个值在过程中会改变
 
                     if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
-                        shouldReceiveRecord.amount = 0
-                        shouldReceiveRecord.save(failOnError: true)
-
                         detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
                         receiveDetails.push(detailRecord)
+
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
                     }else if(_paytotal>0){
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
@@ -200,11 +201,11 @@ class ReceiveRecordResourceService {
                     def temp = shouldReceiveRecord.amount   //临时保存一下 shouldReceiveRecord.amount ,因为这个值在过程中会改变
 
                     if(_paytotal>shouldReceiveRecord.amount){//有多余的钱
-                        shouldReceiveRecord.amount = 0
-                        shouldReceiveRecord.save(failOnError: true)
-
                         detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: shouldReceiveRecord.amount,payRecord:payRecord);
                         receiveDetails.push(detailRecord)
+
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
                     }else if(_paytotal>0){
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
@@ -218,11 +219,11 @@ class ReceiveRecordResourceService {
                     def dueMoney = payRecord.getOverDue()
 
                     if(_paytotal>dueMoney){//有多余的钱
-                        shouldReceiveRecord.amount = 0
-                        shouldReceiveRecord.save(failOnError: true)
-
                         detailRecord = new ReceiveDetailRecord(target: shouldReceiveRecord.target, amount: dueMoney,payRecord:payRecord);
                         receiveDetails.push(detailRecord)
+
+                        shouldReceiveRecord.amount = 0
+                        shouldReceiveRecord.save(failOnError: true)
                     }else if(_paytotal>0){
                         shouldReceiveRecord.amount = shouldReceiveRecord.amount-_paytotal
                         shouldReceiveRecord.save(failOnError: true)
