@@ -1,3 +1,4 @@
+import com.jsy.archives.CustomerArchives
 import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
 import com.jsy.auth.Menus
