@@ -60,14 +60,14 @@ class ReceiveRecordCollectionResource {
         try{
 
             PayRecord payRecord = PayRecord.get(payRecordId)
-            if(!payRecord){
+            if(!payRecord && !payRecord.archive){
                 result.put("rest_status", restStatus)
                 result.put("rest_result", "no pay record found")
                 return Response.ok(result.toString()).status(500).build()
             }
 
 
-            def receiveDetails = ReceiveDetailRecord.findAllByPayRecord(payRecord)
+            def receiveDetails = ReceiveDetailRecord.findAllByPayRecordAndArchive(payRecord, false)
 
             result.put("rest_status", restStatus)
             result.put("rest_result", receiveDetails as JSON)
@@ -90,19 +90,20 @@ class ReceiveRecordCollectionResource {
         def criterib = new DetachedCriteria(ReceiveRecord).build {
             //and
             eq("fund",Fund.get(obj.get("fundid")))
-
+            eq("archive",false)
 
             //orderby
-            Object orderByObj = obj.get("orderby-prperties")
-            JSONArray array3 = (JSONArray)orderByObj;
-            if(array3.size()>0){
-                or {
-                    array3.each{property->
-                        OrderProperty p =new OrderProperty(property);
-                        order(p.key,p.value)
-                    }
-                }
-            }
+//            Object orderByObj = obj.get("orderby-prperties")
+//            JSONArray array3 = (JSONArray)orderByObj;
+//            if(array3.size()>0){
+//                or {
+//                    array3.each{property->
+//                        OrderProperty p =new OrderProperty(property);
+//                        order(p.key,p.value)
+//                    }
+//                }
+//            }
+            order("dateCreated","desc")
         }
 
         def params = [:]
@@ -140,13 +141,13 @@ class ReceiveRecordCollectionResource {
         try{
 
             PayRecord payRecord = PayRecord.get(payRecordId)
-            if(!payRecord){
+            if(!payRecord && !payRecord.archive){
                 result.put("rest_status", restStatus)
                 result.put("rest_result", "no pay record found")
                 return Response.ok(result.toString()).status(500).build()
             }
 
-            def shouldReceiveRecords = ShouldReceiveRecord.findAllByPayRecordAndAmountGreaterThan(payRecord,0)
+            def shouldReceiveRecords = ShouldReceiveRecord.findAllByPayRecordAndAmountGreaterThanAndArchive(payRecord,0,false)
 
             result.put("rest_status", restStatus)
             result.put("rest_result", shouldReceiveRecords as JSON)
@@ -181,5 +182,19 @@ class ReceiveRecordCollectionResource {
         }
 
 
+    }
+
+    @POST
+    @Path('/del')
+    Response del(@QueryParam('recvRecordId') Long recvRecordId) {
+        MyResponse.ok {
+            ReceiveRecord recvRecord = ReceiveRecord.get(recvRecordId)
+            if(recvRecord){
+                receiveRecordResourceService.delRecvRecord(recvRecord)
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }

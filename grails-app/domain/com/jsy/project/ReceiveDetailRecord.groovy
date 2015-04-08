@@ -8,6 +8,8 @@ import com.jsy.fundObject.Fund
  * 该记录不能更新，否则自己手动更新对应的payRecord
  */
 class ReceiveDetailRecord {
+    //是否删除
+    boolean archive = false;
 
     String target // "original","firstyear","maintain","channel","overdue","penalty","borrow"
     BigDecimal amount

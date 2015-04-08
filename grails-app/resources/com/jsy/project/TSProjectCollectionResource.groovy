@@ -523,21 +523,6 @@ class TSProjectCollectionResource {
         }catch (Exception e){
             ok JsonResult.error(e.message)
         }
-
-
-//
-//        if(msgModel == null){
-//            MsgModel msg = MsgModel.getErrorMsg("JAVA ERROR");
-//            return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
-//        }
-//
-//        if(msgModel.isSuccess()){
-//            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(200).build()
-//        }else{
-//            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(500).build();
-//        }
-
-
     }
 
 
@@ -558,6 +543,23 @@ class TSProjectCollectionResource {
         }
     }
 
+    @GET
+    @Path('/getProjectSimpleInterestInfo1')
+    Response getProjectInterestType(@QueryParam("projectid") int projectid){
+        MyResponse.ok {
+            TSProject project = TSProject.get(projectid)
+            if(project){
+                def rtn = [:]
+                rtn.interestType = project.interestType
+                rtn.daycount_per = project.daycount_per
+                return rtn
+            }else{
+                return null
+            }
+
+        }
+    }
+
     @POST
     @Path('/updateProjectAttr')
     Response updateProjectAttr(@QueryParam("id") int projectid,@QueryParam("mark") int mark){
@@ -566,6 +568,38 @@ class TSProjectCollectionResource {
             if(project){
                 project.archive = true
                 project.endSummary = mark
+                project.save(failOnError: true)
+                return "done"
+            }else{
+                return null
+            }
+
+        }
+    }
+
+    @POST
+    @Path('/updateProjectDaycount_per')
+    Response updateProjectDaycount_per(@QueryParam("daycount_per") BigDecimal daycount_per,@QueryParam("projectid") int projectid){
+        MyResponse.ok {
+            TSProject project = TSProject.get(projectid)
+            if(project){
+                project.daycount_per = daycount_per
+                project.save(failOnError: true)
+                return "done"
+            }else{
+                return null
+            }
+
+        }
+    }
+
+    @POST
+    @Path('/saveProjectInterestType')
+    Response saveProjectInterestType(@QueryParam("interestType") String interestType,@QueryParam("projectid") int projectid){
+        MyResponse.ok {
+            TSProject project = TSProject.get(projectid)
+            if(project){
+                project.interestType = interestType
                 project.save(failOnError: true)
                 return "done"
             }else{

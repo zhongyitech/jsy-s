@@ -7,6 +7,8 @@ import com.jsy.fundObject.Fund
  * 收款记录
  */
 class ReceiveRecord {
+    //是否删除
+    boolean archive = false;
 
     //付款日期
     Date receiveDate
@@ -20,6 +22,9 @@ class ReceiveRecord {
 
     //银行账户
     BankAccount bankAccount
+
+    //本次收款用到账户余额多少
+    BigDecimal useOverRecvAmount = 0
 
     //本次付款，系统计算多余的钱，这里可能未负数
     BigDecimal remain_charge
