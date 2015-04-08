@@ -10,7 +10,7 @@ dataSource {
 //    username = "jsy"
 //    password = "jsy1qaz"
     username = "root"
-    password = "1234"
+    password = "123654"
     dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
 }
@@ -31,7 +31,7 @@ environments {
             dbCreate = "update"
 //            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
 //            url = "jdbc:mysql://192.168.4.141:3306/test1?user=root&password=surewin&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
-            url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=1234&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+            url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=123654&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             properties {
                 // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                 jmxEnabled = true
@@ -66,8 +66,8 @@ environments {
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
 
             dbCreate = "update"
-            url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=1234&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
-//            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+//            url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=1234&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             properties {
                 // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                 jmxEnabled = true

@@ -28,6 +28,31 @@ class MenusRoleResourceService {
         return array
     }
 
+    /**
+     * 获取系统菜单列表
+     */
+    def getMenuList(Long userRoleId){
+        def role=Role.get(userRoleId)
+        def menus=Menus.findAll()
+        def menuList=MenusRole.findAllByRoleAndVisible(role,true).collect {it.menus}.collect {it.id}
+        def array=[]
+        def mapArray=[:]
+        menus.each {
+            def parentId=it.parentId
+            def object=[id:it.id]
+            object.putAll(it.properties)
+            if(menuList.contains(it.id)) object.checked=true
+            if(parentId==0){
+                array.add(object)
+            }else {
+                if(!mapArray[parentId]) mapArray[parentId]=[]
+                mapArray[parentId].add(object)
+            }
+        }
+        array.each {it.children=mapArray[it.id]}
+        return array
+    }
+
     def create(MenusRole dto) {
         dto.save()
     }
