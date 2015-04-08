@@ -1,7 +1,9 @@
 package com.jsy.archives
 
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class UserCommisionResourceService {
 
     def create(UserCommision dto) {

@@ -1,7 +1,9 @@
 package com.jsy.fundObject
 
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class YieldRangeResourceService {
 
     def create(YieldRange dto) {

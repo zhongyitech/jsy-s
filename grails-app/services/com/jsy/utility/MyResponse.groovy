@@ -1,5 +1,6 @@
 package com.jsy.utility
 
+import grails.transaction.Transactional
 import grails.validation.ValidationException
 
 import javax.ws.rs.core.Response
@@ -8,6 +9,7 @@ import javax.ws.rs.core.Response
  * 替换原有 OK返回方式,对代码的异常进行标准封装
  * Created by lioa on 2015/3/20.
  */
+@Transactional(rollbackFor = Throwable.class)
 class MyResponse {
     static Response ok(Closure closure) {
         try {

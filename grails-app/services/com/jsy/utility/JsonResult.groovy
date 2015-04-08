@@ -3,11 +3,13 @@ package com.jsy.utility
 import com.jsy.auth.AuthorityService
 import com.jsy.auth.User
 import grails.converters.JSON
+import grails.transaction.Transactional
 
 /**
  * Created by lioa on 2015/3/10.
  * 封装返回的结果
  */
+@Transactional(rollbackFor = Throwable.class)
 class JsonResult {
     public static final String REST_STATUS_SUC = "suc"
     public static final String REST_STATUS_FAI = "err"

@@ -1,7 +1,9 @@
 package com.jsy.customerObject
 
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class CustomerResourceService {
 
     def create(Customer dto) {

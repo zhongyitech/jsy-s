@@ -3,7 +3,7 @@ package com.jsy.system
 import com.jsy.utility.JsonResult
 import grails.transaction.Transactional
 
-@Transactional
+@Transactional(rollbackFor = Throwable.class)
 class ReflectService {
 
     def getObject(String id, String className, String fields) {

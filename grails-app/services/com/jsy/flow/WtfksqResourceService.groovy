@@ -1,7 +1,9 @@
 package com.jsy.flow
 
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class WtfksqResourceService {
 
     def create(Wtfksq dto) {

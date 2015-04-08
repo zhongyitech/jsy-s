@@ -3,10 +3,12 @@ package com.jsy.fundObject
 import com.jsy.auth.User
 import com.jsy.system.Department
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class RegisterContractResourceService {
 
     def create(RegisterContract dto) {

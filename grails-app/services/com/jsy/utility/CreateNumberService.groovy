@@ -4,7 +4,7 @@ import grails.transaction.Transactional
 
 import java.text.SimpleDateFormat
 
-@Transactional
+@Transactional(rollbackFor = Throwable.class)
 class CreateNumberService {
 
     def serviceMethod() {

@@ -5,8 +5,10 @@ import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.system.ToDoTask
 import com.jsy.system.TypeConfig
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class CommissionInfoResourceService {
     def springSecurityService
 
