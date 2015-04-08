@@ -1,5 +1,7 @@
 package com.jsy.auth
 
+import javax.ws.rs.QueryParam
+
 import static com.jsy.utility.MyResponse.*;
 
 import javax.ws.rs.Consumes
@@ -22,6 +24,14 @@ class MenusRoleCollectionResource {
     Response getMenus() {
         ok {
             menusRoleResourceService.getMenus()
+        }
+    }
+
+    @GET
+    @Path('/getMenuList')
+    Response getMenuList(@QueryParam("id")Long roleId) {
+        ok {
+            menusRoleResourceService.getMenuList(roleId)
         }
     }
 
