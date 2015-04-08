@@ -761,6 +761,7 @@ class ProjectResourceService {
         project.community_per = obj.community_per
         project.penalty_per = obj.notNormal_per
         project.borrow_per = obj.borrow_per
+        //project.daycount_per = obj.daycount_per
         project.year1 = Float.parseFloat(obj.year1)
         project.year2 = Float.parseFloat(obj.year2)
         project.interestType = obj.interestType

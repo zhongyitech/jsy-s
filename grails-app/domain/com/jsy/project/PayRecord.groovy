@@ -7,6 +7,8 @@ import com.jsy.system.UploadFile
 import com.jsy.util.CompoundCalculator
 import com.jsy.util.Utils
 
+import java.text.DecimalFormat
+
 /**
  * 付款记录
  */
@@ -162,7 +164,7 @@ class PayRecord {
      * @return
      */
     def getOverDue(Date stopDate){
-        def over_interest_pay = 0
+        BigDecimal over_interest_pay = new BigDecimal(0)
         Date nowDate = new Date()
         if(stopDate){
             nowDate = stopDate
@@ -250,7 +252,10 @@ class PayRecord {
             }
         }
 
-        over_interest_pay
+
+        //保留2位小数点
+        over_interest_pay.setScale(2,   BigDecimal.ROUND_HALF_UP)
+
     }
 
     boolean isOverDate(Date stopDate){
@@ -291,9 +296,10 @@ class PayRecord {
      * 计算总共相差多少钱：应该付款-已经付款
      * @return
      */
-    def totalBalance(){
+    def totalBalance(Date stopDate){
         BigDecimal should_pay=0;
         BigDecimal already_pay=0;
+        boolean isOverDate = isOverDate(stopDate)
 
         should_pay+=amount;
 
@@ -305,9 +311,9 @@ class PayRecord {
             should_pay+=interest_bill;
         }
 
-        if(isOverDate()){//需要计算逾期费
-            should_pay+=getOverDue()
-            should_pay+=penalty_bill;
+        if(isOverDate){//需要计算逾期费
+            should_pay+=getOverDue(stopDate)
+            should_pay+=getPenaltyBill(stopDate);
 
         }
 
@@ -320,9 +326,10 @@ class PayRecord {
             already_pay+=community_pay
         }
 
-        if(isOverDate()){
-            already_pay+=penalty_pay
-            already_pay+=overDue_pay
+        //已经付过的违约金和逾期费
+        if(isOverDate){
+            already_pay+= penalty_pay
+            already_pay+= overDue_pay
         }
 
         return should_pay-already_pay
