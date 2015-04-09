@@ -1,7 +1,9 @@
 package com.jsy.bankConfig
 
+/**
+ * 银行流水表
+ */
 class BankTransactionsRecord {
-
 
 //    数据写入时间（自动设置）
     Date createDate
@@ -52,6 +54,9 @@ class BankTransactionsRecord {
 //    处理状态 0未处理  1已处理  2放弃
     int manageType = 0
 
+    //数据处理时间
+    Date processedDate
+
 //    备注 （可空）
     String remark
 
@@ -60,9 +65,27 @@ class BankTransactionsRecord {
     }
     static constraints = {
         createDate nullable: true
+        processedDate nullable: true
         summary nullable: true
         transactionsCode nullable: true
         evidenceCode nullable: true
         remark nullable: true
+    }
+    /**
+     * 记录已经处理的状态设置
+     */
+    void setProcessedOK(){
+        managed=true
+        processedDate=new Date()
+        manageType=1
+    }
+
+    /**
+     * 记录弃用的状态设置
+     */
+    void setDeletedTag(){
+        processedDate=new Date()
+        managed=true
+        manageType=2
     }
 }
