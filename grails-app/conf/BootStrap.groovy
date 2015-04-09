@@ -409,6 +409,7 @@ class BootStrap {
             Menus menus76 = new Menus(name: 'jsgl', title: '角色管理', url: 'role-list.jsp', parentId: menus7.id).save(failOnError: true)
 //            Menus menus77 = new Menus(name: 'xzjs', title: '新增角色', url: 'role-create.jsp', parentId: menus7.id).save(failOnError: true)
             Menus menus78 = new Menus(name: 'yhgl', title: '用户管理', url: 'user-list.jsp', parentId: menus7.id).save(failOnError: true)
+            Menus menus79 = new Menus(name: 'xmgl', title: '项目管理', url: 'project-model-setting.jsp', parentId: menus7.id).save(failOnError: true)
 
             //权限关系
             new MenusRole(menus: menus1, role: managerRole, visible: true).save(failOnError: true)
@@ -472,6 +473,8 @@ class BootStrap {
             new MenusRole(menus: menus76, role: adminRole, visible: true).save(failOnError: true)
 //            new MenusRole(menus: menus77, role: adminRole, visible: true).save(failOnError: true)
             new MenusRole(menus: menus78, role: adminRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus79, role: adminRole, visible: true).save(failOnError: true)
+
 
             print("init meuns end")
 

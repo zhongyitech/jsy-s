@@ -35,7 +35,7 @@ class ProjectResourceService {
                     between(p.key,new Long(p.gapValue1),new Long(p.gapValue2))
                 }else if(p.value && !"".equals(p.value) && "like".equals(property.get("operate"))){
                     like(p.key,"%"+p.value+"%")
-                }else if(p.value && !"".equals(p.value) && "eq".equals(property.get("operate"))){
+                }else if(p.value!=null && !"".equals(p.value) && "eq".equals(property.get("operate"))){
                     eq(p.key,p.value)
                 }
             }
@@ -764,7 +764,7 @@ class ProjectResourceService {
         //project.daycount_per = obj.daycount_per
         project.year1 = Float.parseFloat(obj.year1)
         project.year2 = Float.parseFloat(obj.year2)
-        project.interestType = obj.interestType
+//        project.interestType = obj.interestType
 
         obj.signers?.each{signer->
             if(signer.name && signer.value){

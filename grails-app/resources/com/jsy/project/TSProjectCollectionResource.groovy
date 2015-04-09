@@ -126,74 +126,50 @@ class TSProjectCollectionResource {
         ok jsonObject.toString()
     }
 
+    /**
+     * 获取该项目的流程节点信息
+     * @param projectid
+     * @return
+     */
     @GET
     @Path('/stepInfo')
     Response fetchStepInfo(@QueryParam('projectid') int projectid){
-        JSONObject result = new JSONObject();
-        String restStatus = "200";
+        MyResponse.ok {
+            TSProject project=TSProject.get(projectid)
+            if(!project){
+                result.put("rest_status", 500)
+                result.put("err","no.project.found")
+                return Response.ok(result.toString()).status(500).build()
+            }
 
-        TSProject project=TSProject.get(projectid)
-        if(!project){
-            result.put("rest_status", 500)
-            result.put("err","no.project.found")
-            return Response.ok(result.toString()).status(500).build()
+            def allPhaseInfos = projectResourceService.getAllFlowPhaseInfo(project,springSecurityService.getCurrentUser());
+            return allPhaseInfos
         }
-
-        def allPhaseInfos = projectResourceService.getAllFlowPhaseInfo(project,springSecurityService.getCurrentUser());
-
-        result.put("rest_status", 200)
-        result.put("rest_result", allPhaseInfos as JSON)
-
-        return Response.ok(result.toString()).status(200).build()
     }
 
     //提交收集
     @POST
     @Path('/complete_gather')
     Response completeGather(String datastr) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
 
-        // get project
-        org.json.JSONObject obj = JSON.parse(datastr)
-        def projectid = obj.projectid
-        TSProject project = TSProject.get(projectid);
-        if(!project){
-            restStatus = "500";
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "no such project found")
-            return Response.ok(result.toString()).status(500).build()
-        }
-
-        try{
             //权限校验
             def user = springSecurityService.getCurrentUser();
             def phase = project.getProjectWorkflow().getGatherInfo()
             def accessable = projectResourceService.checkUserAccessable(phase,project,user);
             if(!accessable){
-                restStatus = "500";
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "you can not access this phase")
-                return Response.ok(result.toString()).status(500).build()
+                throw new Exception("you can not access this phase")
             }
 
-
-
             //数据保存
-
-
             projectResourceService.completeGather(project,obj)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
         }
     }
 
@@ -201,47 +177,25 @@ class TSProjectCollectionResource {
     @POST
     @Path('/complete_research')
     Response completeResearch(String datastr) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
 
-        // get project
-        org.json.JSONObject obj = JSON.parse(datastr)
-        def projectid = obj.projectid
-        TSProject project = TSProject.get(projectid);
-        if(!project){
-            restStatus = "500";
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "no such project found")
-            return Response.ok(result.toString()).status(500).build()
-        }
-
-        try{
             //权限校验
             def user = springSecurityService.getCurrentUser();
             def phase = project.getProjectWorkflow().getResearch()
             def accessable = projectResourceService.checkUserAccessable(phase,project,user);
             if(!accessable){
-                restStatus = "500";
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "you can not access this phase")
-                return Response.ok(result.toString()).status(500).build()
+                throw new Exception("you can not access this phase")
             }
-
-
 
             //数据保存
             projectResourceService.completeResearch(project,obj)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
         }
     }
 
@@ -249,47 +203,25 @@ class TSProjectCollectionResource {
     @POST
     @Path('/complete_meeting')
     Response completeMeeting(String datastr) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
 
-        // get project
-        org.json.JSONObject obj = JSON.parse(datastr)
-        def projectid = obj.projectid
-        TSProject project = TSProject.get(projectid);
-        if(!project){
-            restStatus = "500";
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "no such project found")
-            return Response.ok(result.toString()).status(500).build()
-        }
-
-        try{
             //权限校验
             def user = springSecurityService.getCurrentUser();
             def phase = project.getProjectWorkflow().getMeeting()
             def accessable = projectResourceService.checkUserAccessable(phase,project,user);
             if(!accessable){
-                restStatus = "500";
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "you can not access this phase")
-                return Response.ok(result.toString()).status(500).build()
+                throw new Exception("you can not access this phase")
             }
-
-
 
             //数据保存
             projectResourceService.completeMeeting(project,obj)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
         }
     }
 
@@ -298,137 +230,54 @@ class TSProjectCollectionResource {
     @POST
     @Path('/complete_thirdpartyLow')
     Response completeThirdpartyLow(String datastr) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
 
-        // get project
-        org.json.JSONObject obj = JSON.parse(datastr)
-        def projectid = obj.projectid
-        TSProject project = TSProject.get(projectid);
-        if(!project){
-            restStatus = "500";
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "no such project found")
-            return Response.ok(result.toString()).status(500).build()
-        }
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
 
-        try{
             //权限校验
             def user = springSecurityService.getCurrentUser();
             def phase = project.getProjectWorkflow().getOtherEA()
             def accessable = projectResourceService.checkUserAccessable(phase,project,user);
             if(!accessable){
-                restStatus = "500";
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "you can not access this phase")
-                return Response.ok(result.toString()).status(500).build()
+                throw new Exception("you can not access this phase")
             }
 
             //数据保存
             projectResourceService.completeThirdpartyLow(project,obj)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
         }
     }
 
-//    //提交添加合作伙伴
-//    @POST
-//    @Path('/complete_addCompany')
-//    Response completeAddCompany(String datastr) {
-//        JSONObject result = new JSONObject();
-//        JSONArray table = new JSONArray();
-//        String restStatus = "200";
-//
-//        // get project
-//        org.json.JSONObject obj = JSON.parse(datastr)
-//        def projectid = obj.projectid
-//        TSProject project = TSProject.get(projectid);
-//        if(!project){
-//            restStatus = "500";
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", "no such project found")
-//            return Response.ok(result.toString()).status(500).build()
-//        }
-//
-//        try{
-//            //权限校验
-//            def user = springSecurityService.getCurrentUser();
-//            def phase = project.getProjectWorkflow().getAddCompany()
-//            def accessable = projectResourceService.checkUserAccessable(phase,project,user);
-//            if(!accessable){
-//                restStatus = "500";
-//                result.put("rest_status", restStatus)
-//                result.put("rest_result", "you can not access this phase")
-//                return Response.ok(result.toString()).status(500).build()
-//            }
-//
-//            //数据保存
-//            projectResourceService.completeAddCompany(project,obj)
-//
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", "")
-//            return Response.ok(result.toString()).status(200).build()
-//        }catch (Exception e){
-//            restStatus = "500";
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", e.getLocalizedMessage())
-//            return Response.ok(result.toString()).status(500).build()
-//        }
-//    }
 
     //提交添加合作伙伴
     @POST
     @Path('/complete_makeContact')
     Response completeMakeContact(String datastr) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
+        println datastr
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
 
-        // get project
-        org.json.JSONObject obj = JSON.parse(datastr)
-        def projectid = obj.projectid
-        TSProject project = TSProject.get(projectid);
-        if(!project){
-            restStatus = "500";
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "no such project found")
-            return Response.ok(result.toString()).status(500).build()
-        }
-
-        try{
             //权限校验
             def user = springSecurityService.getCurrentUser();
             def phase = project.getProjectWorkflow().getMakeContact()
             def accessable = projectResourceService.checkUserAccessable(phase,project,user);
             if(!accessable){
-                restStatus = "500";
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "you can not access this phase")
-                return Response.ok(result.toString()).status(500).build()
+                throw new Exception("you can not access this phase")
             }
 
             //数据保存
             projectResourceService.completeMakeContact(project, obj)
-
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "")
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            e.printStackTrace()
-            result.put("rest_status", restStatus)
-            result.put("rest_result", e.getLocalizedMessage())
-            return Response.ok(result.toString()).status(500).build()
         }
     }
 
@@ -450,10 +299,6 @@ class TSProjectCollectionResource {
                 return  Response.ok(JsonResult.success("lack of fileName or filePath")).build()
             }
 
-
-//
-
-//            projectResourceService.completeGather(project,obj)
 
             result.put("rest_status", restStatus)
             result.put("rest_result", "")
@@ -561,12 +406,13 @@ class TSProjectCollectionResource {
     }
 
     @POST
-    @Path('/updateProjectAttr')
+    @Path('/endProject')
     Response updateProjectAttr(@QueryParam("id") int projectid,@QueryParam("mark") int mark){
         MyResponse.ok {
             TSProject project = TSProject.get(projectid)
             if(project){
                 project.archive = true
+                project.isEnded = true
                 project.endSummary = mark
                 project.save(failOnError: true)
                 return "done"
