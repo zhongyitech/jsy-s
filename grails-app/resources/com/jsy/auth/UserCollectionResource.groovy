@@ -11,6 +11,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
 import org.restlet.ext.json.JsonConverter
 
+import javax.management.Query
 import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
@@ -249,7 +250,7 @@ class UserCollectionResource {
     Response findUserDeparemnt(@QueryParam('uid') Long uid) {
         ok {
             def user = User.get(uid)
-                user.department
+            user.department
         }
     }
 
@@ -363,10 +364,26 @@ class UserCollectionResource {
         }
     }
 
-
+    /**
+     *
+     * @param name
+     * @return
+     */
     @GET
     @Path('/selectList')
-    Response getSelectList() {
+    Response getSelectList(@QueryParam("name") String name) {
+        ok {
+            print(name)
 
+            if (name != null && name.size() > 2) {
+                return User.findAllByUsernameLikeOrChainNameLike("%" + name + "%","%" + name + "%").collect {
+                    [mapName: it.chainName, id: it.id]
+                }
+            } else {
+                return User.list().collect {
+                    [mapName: it.chainName, id: it.id]
+                }
+            }
+        }
     }
 }

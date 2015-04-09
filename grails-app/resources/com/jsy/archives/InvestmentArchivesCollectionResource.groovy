@@ -39,6 +39,7 @@ class InvestmentArchivesCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
+    def paymentInfoResourceService
 
     //根据档案id取附件
     @GET
@@ -526,13 +527,8 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/IAOutput')
     Response IAOutput(Map finfo) {
-
         MyResponse.page {
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, finfo)
-//            def dc = dc.where {
-////                isNotNull('customer')
-//            };
-            def payMentInfo = new PaymentInfoResourceService()
             def data = []
             dc.list([max: finfo.pagesize, offset: finfo.startposition]).each {
                 def row = [:]
@@ -541,7 +537,6 @@ class InvestmentArchivesCollectionResource {
                 it.properties.each {
                     switch (it.key) {
                         case "customer":
-//                                row.putAt(it.key, it.value.name)
                             addKey(row, it, "name")
                             break
                         case "fund":
@@ -555,9 +550,7 @@ class InvestmentArchivesCollectionResource {
                     }
 
                 }
-
-                def pay = payMentInfo.getPaymentAmount(it.id)
-
+                def pay = paymentInfoResourceService.getPaymentAmount(it.id)
                 row.putAt("bj", pay["bj"])
                 row.putAt("lx", pay["lx"])
                 data.push(row)
