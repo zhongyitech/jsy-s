@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat
 @Transactional(rollbackFor = Throwable.class)
 class WorkflowResourceService {
     private static String TAG = "WorkflowResourceService ";
-    CommissionInfoResourceService commissionInfoResourceService
 
     def initData = {
         initCompany();
@@ -407,15 +406,36 @@ class WorkflowResourceService {
         //银行信息
         BankAccount bankAccount = new BankAccount();
         bankAccount.bankName = "工商银行";
-        bankAccount.bankOfDeposit = "工商银行";
-        bankAccount.accountName = "金赛银";
-        bankAccount.account = "1111111111111111";
+        bankAccount.bankOfDeposit = "某条街的工商银行";
+        bankAccount.accountName = "金赛银1";
+        bankAccount.account = "92654684613";
         bankAccount.defaultAccount = true;
         TypeConfig purpose = TypeConfig.findByTypeAndMapValue(7,1);
         bankAccount.purpose = purpose;
-        bankAccount.purpose.save(failOnError: true);
         bankAccount.save(failOnError: true);
         fundCompanyInformation.addToBankAccount(bankAccount);
+        fundCompanyInformation.save(failOnError: true);
+
+        BankAccount bankAccount2 = new BankAccount();
+        bankAccount2.bankName = "平安银行";
+        bankAccount2.bankOfDeposit = "某条街的平安银行";
+        bankAccount2.accountName = "金赛银2";
+        bankAccount2.account = "9855135485544";
+        bankAccount2.defaultAccount = false;
+        bankAccount2.purpose = purpose;
+        bankAccount2.save(failOnError: true);
+        fundCompanyInformation.addToBankAccount(bankAccount2);
+        fundCompanyInformation.save(failOnError: true);
+
+        BankAccount bankAccount3 = new BankAccount();
+        bankAccount3.bankName = "农业银行";
+        bankAccount3.bankOfDeposit = "某条街的农业银行";
+        bankAccount3.accountName = "金赛银3";
+        bankAccount3.account = "98854715324";
+        bankAccount3.defaultAccount = false;
+        bankAccount3.purpose = purpose;
+        bankAccount3.save(failOnError: true);
+        fundCompanyInformation.addToBankAccount(bankAccount3);
         fundCompanyInformation.save(failOnError: true);
 
     }

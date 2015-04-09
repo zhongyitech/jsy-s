@@ -1,8 +1,10 @@
 package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class PaymentResourceService {
 
     //更新状态到3

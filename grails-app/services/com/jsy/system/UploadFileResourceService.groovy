@@ -1,7 +1,9 @@
 package com.jsy.system
 
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class UploadFileResourceService {
 
     def create(UploadFile dto) {

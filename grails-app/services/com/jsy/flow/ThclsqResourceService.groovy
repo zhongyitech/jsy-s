@@ -2,9 +2,11 @@ package com.jsy.flow
 
 import com.jsy.archives.InvestmentArchives
 import com.jsy.archives.PaymentInfo
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class ThclsqResourceService {
 
     def create(Thclsq dto) {

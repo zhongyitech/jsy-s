@@ -36,6 +36,11 @@ class ReceiveRecordResourceService {
         }
     }
 
+    /**
+     * 收款！！！
+     * @param obj
+     * @return
+     */
     def create(JSONObject obj) {
         //基础数据转换
         Fund fund = Fund.get(obj.fundid)
@@ -46,6 +51,7 @@ class ReceiveRecordResourceService {
 
         def paytotal = obj.paytotal
         def remain_money_suggest = new BigDecimal(obj.remain_money_suggest)
+        def useOverRecAmount
 
 
         //根据前台的计算结果，进行再次验证，check same suggest： remain_money_suggest
@@ -54,6 +60,17 @@ class ReceiveRecordResourceService {
 
         if(obj.receiveDetail_struct){
             _paytotal = consumePayRecords(_paytotal, obj.receiveDetail_struct, receiveDetails);
+
+            //计算实际用了多少钱
+            BigDecimal tempTotal = new BigDecimal(0)
+            receiveDetails.each {
+                tempTotal += it.amount
+            }
+            if(tempTotal >= bankAccount.overReceive){//大于等于余额，那么就全用了
+                useOverRecAmount = bankAccount.overReceive
+            }else{//小过余额，肯定只是用了余额部分钱而已
+                useOverRecAmount = tempTotal
+            }
         }
 
         if(_paytotal!=remain_money_suggest && Math.abs(_paytotal-remain_money_suggest)>1){
@@ -69,7 +86,7 @@ class ReceiveRecordResourceService {
         bankAccount.save(failOnError: true)
 
         ReceiveRecord dto = new ReceiveRecord(receiveDate:paydate,amount:paytotal,
-                project:project,fund:fund,bankAccount:bankAccount,remain_charge:remain_money_suggest);
+                project:project,fund:fund,bankAccount:bankAccount,remain_charge:remain_money_suggest,useOverRecvAmount: useOverRecAmount);
         dto.save(failOnError: true)
 
         //创建receive detail
@@ -249,7 +266,7 @@ class ReceiveRecordResourceService {
     }
 
     def readAll() {
-        ReceiveRecord.findAll()
+        ReceiveRecord.findAllByArchive(false)
     }
 
     def update(ReceiveRecord dto) {
@@ -267,4 +284,45 @@ class ReceiveRecordResourceService {
             obj.delete()
         }
     }
+
+    def delRecvRecord(ReceiveRecord revcRecord){
+        revcRecord.archive = true
+        revcRecord.save(failOnError: true)
+
+        ReceiveDetailRecord.findAllByReceiveRecordAndArchive(revcRecord,false)?.each{
+            it.archive = true
+            it.save(failOnError: true);
+
+
+            //还原PayRecord的数据
+            if("original".equals(it.target)){
+                it.payRecord.payMainBack-=it.amount
+            }else if("firstyear".equals(it.target)){
+                it.payRecord.interest_pay-=it.amount
+            }else if("maintain".equals(it.target)){
+                it.payRecord.manage_pay-=it.amount
+            }else if("channel".equals(it.target)){
+                it.payRecord.community_pay-=it.amount
+            }else if("overdue".equals(it.target)){
+                it.payRecord.overDue_pay-=it.amount
+            }else if("penalty".equals(it.target)){
+                it.payRecord.penalty_pay-=it.amount
+            }else if("borrow".equals(it.target)){
+                it.payRecord.borrow_pay-=it.amount
+            }
+            it.payRecord.totalPayBack -= it.amount
+
+            //还原shouldReceiveRecord的数据
+            ShouldReceiveRecord shouldReceiveRecord = ShouldReceiveRecord.findByPayRecordAndTarget(it.payRecord,it.target);
+            shouldReceiveRecord.amount = shouldReceiveRecord.amount+it.amount
+            shouldReceiveRecord.save(failOnError: true)
+
+            revcRecord.bankAccount.overReceive = revcRecord.bankAccount.overReceive + revcRecord.useOverRecvAmount
+            revcRecord.bankAccount.save(failOnError: true)
+
+        }
+
+
+    }
+
 }

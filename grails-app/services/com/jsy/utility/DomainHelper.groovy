@@ -1,12 +1,14 @@
 package com.jsy.utility
 
 import grails.gorm.DetachedCriteria
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 
 /**
  * Created by lioa on 2015/3/19.
  */
+@Transactional(rollbackFor = Throwable.class)
 class DomainHelper {
     public static DetachedCriteria getDetachedCriteria(Class domain, def query) {
         VaildQueryObj(query)

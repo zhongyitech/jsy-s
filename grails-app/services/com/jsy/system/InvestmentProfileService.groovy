@@ -2,7 +2,7 @@ package com.jsy.system
 
 import grails.transaction.Transactional
 
-@Transactional
+@Transactional(rollbackFor = Throwable.class)
 class InvestmentProfileService {
 /**
  * 到期转投

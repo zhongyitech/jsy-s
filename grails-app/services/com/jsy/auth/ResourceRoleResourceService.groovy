@@ -1,7 +1,9 @@
 package com.jsy.auth
 
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class ResourceRoleResourceService {
 
     def create(ResourceRole dto) {

@@ -1,8 +1,10 @@
 package com.jsy.auth
 
 import com.jsy.utility.DomainHelper
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class UserResourceService {
 
     def findByName(def username) {

@@ -1,10 +1,12 @@
 package com.jsy.fundObject
 
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.json.JSONArray
 
+@Transactional(rollbackFor = Throwable.class)
 class FundCompanyInformationResourceService {
 
     def create(FundCompanyInformation dto) {

@@ -2,11 +2,13 @@ package com.jsy.archives
 
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 import java.text.DecimalFormat
 
+@Transactional(rollbackFor = Throwable.class)
 class ContractRegisterResourceService {
 
     def create(ContractRegister dto,int start,int end,String bh,DecimalFormat decimalFormat ) {

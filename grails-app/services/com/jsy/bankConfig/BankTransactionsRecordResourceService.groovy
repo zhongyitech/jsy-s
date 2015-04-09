@@ -1,9 +1,16 @@
 package com.jsy.bankConfig
 
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class BankTransactionsRecordResourceService {
+    static final int MANAGE_TYPE_Processed=1
+    //新的记录
+    static final int MANAGE_TYPE_NEW=0
+    //弃用的记录
+    static final int MANAGE_TYPE_DEL=3
 
     def create(BankTransactionsRecord dto) {
         dto.save()
@@ -36,19 +43,15 @@ class BankTransactionsRecordResourceService {
             obj.delete()
         }
     }
-    def readAllForPage(Long pagesize,Long startposition,String queryparam){
-        JSONObject json = new JSONObject()
-//        参数：pagesize 每页数据条数
-//              startposition,查询起始位置
-//        def user = User.findAllByChinaNameLike(queryparam)
-        if(null == queryparam){
-            queryparam = ""
-        }
 
-        json.put("page", BankTransactionsRecord.findAllByAccountNameLikeOrOtherSideNameLikeOrSummaryLikeOrTransactionsCodeLike("%"+queryparam+"%", "%"+queryparam+"%", "%"+queryparam+"%","%"+queryparam+"%", [max: pagesize, offset: startposition]))
-        json.put("size", BankTransactionsRecord.findAllByAccountNameLikeOrOtherSideNameLikeOrSummaryLikeOrTransactionsCodeLike("%"+queryparam+"%", "%"+queryparam+"%", "%"+queryparam+"%","%"+queryparam+"%").size())
+    /**
+     * 处理银行流水记录,生成记账凭证单
+     */
+    def getBankOrderList(){
+        def data=BankTransactionsRecord.findAllByManaged(false)
+        if(data.size()==0) return
 
-        return  json
 
     }
+
 }

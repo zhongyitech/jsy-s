@@ -4,10 +4,12 @@ import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.RegisterContract
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.json.JSONArray
 
+@Transactional(rollbackFor = Throwable.class)
 class InvestmentArchivesResourceService {
 
     def create(InvestmentArchives dto) {

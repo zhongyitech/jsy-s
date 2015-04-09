@@ -7,10 +7,14 @@ import com.jsy.system.UploadFile
 import com.jsy.util.CompoundCalculator
 import com.jsy.util.Utils
 
+import java.text.DecimalFormat
+
 /**
  * 付款记录
  */
 class PayRecord {
+    //是否删除
+    boolean archive = false;
 
     //付款日期
     Date payDate
@@ -35,7 +39,7 @@ class PayRecord {
     BigDecimal borrow_bill=0                //借款
     BigDecimal interest_bill=0              //本金的年利
 
-    /*已付费用，用作累计统计*/
+    /*已付费用，用作累计统计,这个存在的意义主要是不需要再去查询ShouldReceiveRecord或者ReceiveDetailRecord进行统计 */
     BigDecimal totalPayBack=0              //准对这笔钱，总共还款
     BigDecimal payMainBack=0               //本金还款
     BigDecimal interest_pay=0              //已付本金的年利
@@ -43,7 +47,7 @@ class PayRecord {
     BigDecimal community_pay=0             //已付渠道费
     BigDecimal penalty_pay=0               //已付违约金
     BigDecimal borrow_pay=0                //已付借款
-    BigDecimal overDue_pay=0                //已付逾期费
+    BigDecimal overDue_pay=0               //已付逾期费
 
 
     //common
@@ -124,6 +128,7 @@ class PayRecord {
         }
     }
 
+
     /**
      * 获取逾期费
      *
@@ -159,7 +164,7 @@ class PayRecord {
      * @return
      */
     def getOverDue(Date stopDate){
-        def over_interest_pay = 0
+        BigDecimal over_interest_pay = new BigDecimal(0)
         Date nowDate = new Date()
         if(stopDate){
             nowDate = stopDate
@@ -217,6 +222,9 @@ class PayRecord {
                         over_interest_pay += CompoundCalculator.fv(totalBalance(), allinallpre, over_days)
                     }
                 }else if("dayCount".equals(project.interestType)){
+                    if(!project.daycount_per || project.daycount_per<=0){
+                        throw new Exception("项目的日复利日利率没有设置！")
+                    }
                     //查询逾期开始时间到现在之间的receive记录
                     def receiveDetailRecords = ReceiveDetailRecord.findAllByPayRecordAndDateCreatedBetween(this, startDate, nowDate)
                     if(receiveDetailRecords){
@@ -224,27 +232,30 @@ class PayRecord {
                             def over_days = Utils.dayDifferent(startDate,receiveDetailRecord.dateCreated)
                             startDate = receiveDetailRecord.dateCreated
 
-                            over_interest_pay += CompoundCalculator.rfv(receiveDetailRecord.totalBalance, allinallpre, over_days)
+                            over_interest_pay += CompoundCalculator.rfv(receiveDetailRecord.totalBalance, project.daycount_per, over_days)
                         }
                     }else{
                         def over_days = Utils.dayDifferent(startDate,nowDate)
                         startDate = nowDate
                         def balance = totalBalance()
-                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre/365, over_days) - balance)
+                        over_interest_pay += (CompoundCalculator.rfv(balance, project.daycount_per, over_days) - balance)
                     }
 
 
-                    //时间是一直都又效的
+                    //时间是一直都有效的
                     if(startDate.before(nowDate)){
                         def over_days = Utils.dayDifferent(startDate,nowDate)
                         def balance = totalBalance()
-                        over_interest_pay += (CompoundCalculator.rfv(balance, allinallpre/365, over_days) - balance)
+                        over_interest_pay += (CompoundCalculator.rfv(balance, project.daycount_per, over_days) - balance)
                     }
                 }
             }
         }
 
-        over_interest_pay
+
+        //保留2位小数点
+        over_interest_pay.setScale(2,   BigDecimal.ROUND_HALF_UP)
+
     }
 
     boolean isOverDate(Date stopDate){
@@ -285,9 +296,10 @@ class PayRecord {
      * 计算总共相差多少钱：应该付款-已经付款
      * @return
      */
-    def totalBalance(){
+    def totalBalance(Date stopDate){
         BigDecimal should_pay=0;
         BigDecimal already_pay=0;
+        boolean isOverDate = isOverDate(stopDate)
 
         should_pay+=amount;
 
@@ -299,9 +311,9 @@ class PayRecord {
             should_pay+=interest_bill;
         }
 
-        if(isOverDate()){//需要计算逾期费
-            should_pay+=getOverDue()
-            should_pay+=penalty_bill;
+        if(isOverDate){//需要计算逾期费
+            should_pay+=getOverDue(stopDate)
+            should_pay+=getPenaltyBill(stopDate);
 
         }
 
@@ -314,9 +326,10 @@ class PayRecord {
             already_pay+=community_pay
         }
 
-        if(isOverDate()){
-            already_pay+=penalty_pay
-            already_pay+=overDue_pay
+        //已经付过的违约金和逾期费
+        if(isOverDate){
+            already_pay+= penalty_pay
+            already_pay+= overDue_pay
         }
 
         return should_pay-already_pay

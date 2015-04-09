@@ -11,6 +11,7 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -52,32 +53,22 @@ class ReceiveRecordCollectionResource {
 
     @GET
     @Path('/findByPayRecord')
-    Response findByPayRecord(@QueryParam('payRecordId') Long payRecordId) {
-        JSONObject result = new JSONObject();
-        JSONArray table = new JSONArray();
-        String restStatus = "200";
-
-        try{
-
+    Response findByPayRecord(@QueryParam('payRecordId') Long payRecordId,@QueryParam('stopDate') String stopDate) {
+        MyResponse.ok {
             PayRecord payRecord = PayRecord.get(payRecordId)
-            if(!payRecord){
-                result.put("rest_status", restStatus)
-                result.put("rest_result", "no pay record found")
-                return Response.ok(result.toString()).status(500).build()
+            if(!payRecord && !payRecord.archive){
+                throw new Exception("找不到该付款记录，payRecordId："+payRecordId)
             }
 
+            SimpleDateFormat sf =new SimpleDateFormat("yyyy-MM-dd")
+            Date _stopDate = sf.parse(stopDate)
 
-            def receiveDetails = ReceiveDetailRecord.findAllByPayRecord(payRecord)
+            def receiveDetails = ReceiveDetailRecord.findAllByPayRecordAndArchive(payRecord, false)
 
-            result.put("rest_status", restStatus)
-            result.put("rest_result", receiveDetails as JSON)
-            result.put("rest_totalBalance", payRecord.totalBalance())
-            return Response.ok(result.toString()).status(200).build()
-        }catch (Exception e){
-            restStatus = "500";
-            result.put("rest_status", restStatus)
-            result.put("rest_result", "error")
-            return Response.ok(result.toString()).status(500).build()
+            def rtn = [:]
+            rtn.rest_result = receiveDetails
+            rtn.rest_totalBalance = payRecord.totalBalance(_stopDate)
+            return rtn
         }
 
     }
@@ -90,19 +81,20 @@ class ReceiveRecordCollectionResource {
         def criterib = new DetachedCriteria(ReceiveRecord).build {
             //and
             eq("fund",Fund.get(obj.get("fundid")))
-
+            eq("archive",false)
 
             //orderby
-            Object orderByObj = obj.get("orderby-prperties")
-            JSONArray array3 = (JSONArray)orderByObj;
-            if(array3.size()>0){
-                or {
-                    array3.each{property->
-                        OrderProperty p =new OrderProperty(property);
-                        order(p.key,p.value)
-                    }
-                }
-            }
+//            Object orderByObj = obj.get("orderby-prperties")
+//            JSONArray array3 = (JSONArray)orderByObj;
+//            if(array3.size()>0){
+//                or {
+//                    array3.each{property->
+//                        OrderProperty p =new OrderProperty(property);
+//                        order(p.key,p.value)
+//                    }
+//                }
+//            }
+            order("dateCreated","desc")
         }
 
         def params = [:]
@@ -140,13 +132,13 @@ class ReceiveRecordCollectionResource {
         try{
 
             PayRecord payRecord = PayRecord.get(payRecordId)
-            if(!payRecord){
+            if(!payRecord && !payRecord.archive){
                 result.put("rest_status", restStatus)
                 result.put("rest_result", "no pay record found")
                 return Response.ok(result.toString()).status(500).build()
             }
 
-            def shouldReceiveRecords = ShouldReceiveRecord.findAllByPayRecordAndAmountGreaterThan(payRecord,0)
+            def shouldReceiveRecords = ShouldReceiveRecord.findAllByPayRecordAndAmountGreaterThanAndArchive(payRecord,0,false)
 
             result.put("rest_status", restStatus)
             result.put("rest_result", shouldReceiveRecords as JSON)
@@ -181,5 +173,19 @@ class ReceiveRecordCollectionResource {
         }
 
 
+    }
+
+    @POST
+    @Path('/del')
+    Response del(@QueryParam('recvRecordId') Long recvRecordId) {
+        MyResponse.ok {
+            ReceiveRecord recvRecord = ReceiveRecord.get(recvRecordId)
+            if(recvRecord){
+                receiveRecordResourceService.delRecvRecord(recvRecord)
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }

@@ -1,8 +1,9 @@
 package com.jsy.archives
 
 import com.jsy.customerObject.Customer
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
-
+@Transactional(rollbackFor = Throwable.class)
 class CustomerArchivesResourceService {
 
     def create(CustomerArchives dto) {

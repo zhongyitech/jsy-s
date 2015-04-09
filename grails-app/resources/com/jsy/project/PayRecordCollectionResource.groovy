@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response
 @Produces(['application/xml','application/json'])
 class PayRecordCollectionResource {
 
-    def payRecordResourceService
+    PayRecordResourceService payRecordResourceService
 
 
     @POST
@@ -138,7 +138,7 @@ class PayRecordCollectionResource {
         if(!project){
             return Response.ok("no project found").status(500).build()
         }
-        def payRecords = PayRecord.findAllByProject(project)
+        def payRecords = PayRecord.findAllByProjectAndArchive(project, false)
         def rtn = []
         payRecords.each{payRecord->
             def pay_record = [:]
@@ -235,5 +235,23 @@ class PayRecordCollectionResource {
         }
     }
 
+    /**
+     * 删除不是一个可逆的过程，一旦删除，里面的累计数值不能作为参考
+     * @param payRecordId
+     * @return
+     */
+    @POST
+    @Path('/del')
+    Response del(@QueryParam('payRecordId') Long payRecordId) {
+        MyResponse.ok {
+            PayRecord payRecord = PayRecord.get(payRecordId)
+            if(payRecord){
+                payRecordResourceService.delPayRecord(payRecord)
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
 
 }

@@ -1,9 +1,11 @@
 package com.jsy.auth
 
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class MenusRoleResourceService {
     def springSecurityService
     //获取角色有权限的菜单列表
