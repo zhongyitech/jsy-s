@@ -28,7 +28,7 @@ environments {
         dataSource {
 //            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
-            dbCreate = "create-drop"
+            dbCreate = "update"
 //            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
 //            url = "jdbc:mysql://192.168.4.141:3306/test1?user=root&password=surewin&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=root&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
