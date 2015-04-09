@@ -1,10 +1,11 @@
 package com.jsy.auth
 
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
-import org.json.JSONArray
 
+@Transactional(rollbackFor = Throwable.class)
 class MenusRoleResourceService {
     def springSecurityService
     //获取角色有权限的菜单列表
@@ -12,21 +13,46 @@ class MenusRoleResourceService {
         User user=springSecurityService.getCurrentUser()
         def roles=UserRole.findAllByUser(user).collect{it.role}
         def menus=MenusRole.findAllByRoleInListAndVisible(roles,true).collect {it.menus}.toSet().sort {it.id}
-        JSONArray jsonArray=new JSONArray()
+        def array=[]
         menus.each {
             if(it.parentId==0){
                 JSONObject jsonObject =new JSONObject((it as JSON).toString());
-                JSONArray ja=new JSONArray()
+                def childArray=[]
                 menus.each {me->
                     if(me.parentId==it.id){
-                        ja.put(me.properties)
+                        childArray.push(me.properties)
                     }
                 }
-                jsonObject.put("children",ja)
-                jsonArray.put(jsonObject)
+                jsonObject.put("children",childArray)
+                array.push(jsonObject)
             }
         }
-        return jsonArray.toString()
+        return array
+    }
+
+    /**
+     * 获取系统菜单列表
+     */
+    def getMenuList(Long userRoleId){
+        def role=Role.get(userRoleId)
+        def menus=Menus.findAll()
+        def menuList=MenusRole.findAllByRoleAndVisible(role,true).collect {it.menus}.collect {it.id}
+        def array=[]
+        def mapArray=[:]
+        menus.each {
+            def parentId=it.parentId
+            def object=[id:it.id]
+            object.putAll(it.properties)
+            if(menuList.contains(it.id)) object.checked=true
+            if(parentId==0){
+                array.add(object)
+            }else {
+                if(!mapArray[parentId]) mapArray[parentId]=[]
+                mapArray[parentId].add(object)
+            }
+        }
+        array.each {it.children=mapArray[it.id]}
+        return array
     }
 
     def create(MenusRole dto) {

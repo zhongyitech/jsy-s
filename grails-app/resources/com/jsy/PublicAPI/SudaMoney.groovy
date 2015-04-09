@@ -16,7 +16,7 @@ import static com.jsy.utility.MyResponse.*
 /**
  * Created by lioa on 2015/3/26.
  */
-@Path('/api/PublicAPI')
+@Path('/api/outApi')
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class SudaMoney {
@@ -58,6 +58,15 @@ class SudaMoney {
             return o
         }
     }
+
+    @GET
+    @Path('/test')
+    Response test(){
+        ok{
+            return [a:100,b:100]
+        }
+    }
+
     /**
      * 标识某条数据已经被处理了
      * @param id

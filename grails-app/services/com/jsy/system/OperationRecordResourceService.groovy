@@ -1,9 +1,10 @@
 package com.jsy.system
 
 import com.jsy.utility.DomainHelper
+import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
-
+@Transactional(rollbackFor = Throwable.class)
 class OperationRecordResourceService {
 
     def create(OperationRecord dto) {

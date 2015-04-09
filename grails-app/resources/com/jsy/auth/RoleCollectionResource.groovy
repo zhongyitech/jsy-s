@@ -79,6 +79,10 @@ class RoleCollectionResource {
     Response update(Role dto, @QueryParam('id') int id) {
 
         ok {
+            def role=Role.get(id);
+            if(role.name==dto.name){
+                return  true;
+            }
             if(Role.findByName(dto.name)){
                 throw  new Exception("角色名称重复了!")
             }
@@ -122,26 +126,6 @@ class RoleCollectionResource {
             return ResourceRole.findAllByRole(Role.get(id))
         }
 
-    }
-
-    @GET
-    @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String username) {
-        ok {
-            def roles = Role.findAllByNameLike("%" + username + "%")
-            def jsonArray = []
-            roles.each {
-                def jso = [:]
-                jso.put("value", it.name)
-                jso.put("data", it.id)
-                jsonArray.add(jso)
-            }
-            def data = [:]
-            data.put("query", "Unit")
-            data.put("suggestions", jsonArray)
-
-            return data
-        }
     }
 
 }

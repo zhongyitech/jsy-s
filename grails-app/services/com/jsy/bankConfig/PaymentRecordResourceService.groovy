@@ -1,8 +1,10 @@
 package com.jsy.bankConfig
 
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class PaymentRecordResourceService {
 
     def create(PaymentRecord dto) {

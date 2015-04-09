@@ -1,20 +1,16 @@
 package com.jsy.fundObject
 
-import Models.MsgModel
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.json.JSONArray
 
+@Transactional(rollbackFor = Throwable.class)
 class FundCompanyInformationResourceService {
 
     def create(FundCompanyInformation dto) {
-        dto.save(failOnError: true);
-        if(dto.hasErrors()){
-            return MsgModel.getErrorMsg("create company failure");
-        }else{
-            return MsgModel.getSuccessMsg("create company success");
-        }
+        dto.save(failOnError: true)
     }
 
     def read(id) {

@@ -7,6 +7,8 @@ import com.jsy.fundObject.Fund
  * 收款记录
  */
 class ReceiveRecord {
+    //是否删除
+    boolean archive = false;
 
     //付款日期
     Date receiveDate
@@ -21,7 +23,10 @@ class ReceiveRecord {
     //银行账户
     BankAccount bankAccount
 
-    //本次付款，系统计算多余的钱
+    //本次收款用到账户余额多少
+    BigDecimal useOverRecvAmount = 0
+
+    //本次付款，系统计算多余的钱，这里可能未负数
     BigDecimal remain_charge
 
     String pdesc;
@@ -50,13 +55,15 @@ class ReceiveRecord {
                 bankName:bankAccount.bankName,              //    银行名称
                 bankOfDeposit:bankAccount.bankOfDeposit,    //    开户行
                 accountName:bankAccount.accountName,        //    户名
-                account: bankAccount.account,               //    账号
+                account: bankAccount.account+"("+bankAccount.overReceive+")",               //    账号
 
 
                 fundid:fund.id,
                 fundname:fund.fundName,
                 projectid:project.id,
                 projectname:project.name,
+
+                remain_charge:remain_charge,                //多余的钱
 
         ]
         rtn

@@ -4,9 +4,11 @@ import com.jsy.archives.InvestmentArchives
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateInvestmentArchivesService
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class DqztsqResourceService {
 
     CreateInvestmentArchivesService createInvestmentArchivesService

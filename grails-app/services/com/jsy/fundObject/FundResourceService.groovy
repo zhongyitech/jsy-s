@@ -1,9 +1,11 @@
 package com.jsy.fundObject
 
 import com.jsy.system.TypeConfig
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class FundResourceService {
 
     def seachByCriteria(String query,Map map){

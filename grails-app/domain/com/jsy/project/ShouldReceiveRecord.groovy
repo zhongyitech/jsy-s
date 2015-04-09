@@ -1,10 +1,13 @@
 package com.jsy.project
 /**
- * 一旦付款，变有收款记录
+ * 记录每个target变化的结果
+ * 一旦付款，改变应收款数额
  *
  * 该记录不能更新，否则自己手动更新对应的payRecord
  */
 class ShouldReceiveRecord {
+    //是否删除
+    boolean archive = false;
 
     int seq
     String target               // "original","firstyear","maintain","channel","overdue","penalty","borrow"

@@ -7,6 +7,9 @@ import com.jsy.auth.ResourceRole
 import com.jsy.auth.User
 import com.jsy.auth.UserRole
 import com.jsy.system.OperationRecord
+import com.jsy.utility.JsonResult
+
+import javax.ws.rs.core.Response
 
 class OperationRecordFilters {
     def springSecurityService
@@ -23,13 +26,14 @@ class OperationRecordFilters {
                 String method=request.method
                 //访问权限检测
                 OperationsAPI operationsAPI=OperationsAPI.findByMethodAndUrl(method,url)
-                if (operationsAPI){
-                    boolean b=authorityService.checkAuth(operationsAPI.resoureClass,operationsAPI.czlx)
-                    if (!b){
-                        response.sendError(402,"无操作权限！")
-                        return false
-                    }
-                }
+//                if (operationsAPI){
+//                    boolean b=authorityService.checkAuth(operationsAPI.resoureClass,operationsAPI.czlx)
+//                    if (!b){
+////                        response.sendError(402,"无此操作权限！")
+//                        return Response.ok(JsonResult.error("无此操作权限")).build()
+//                        return false
+//                    }
+//                }
                 //记录操作日志
                 new OperationRecord(czr:czr.chainName,czsj: new Date(),url:url,params: params.toString(),method: method,address: request.getRemoteAddr() ).save(failOnError: true)
             }

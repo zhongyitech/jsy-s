@@ -5,10 +5,12 @@ import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.json.JSONObject
 
+@Transactional(rollbackFor = Throwable.class)
 class PayRecordResourceService {
 
     def readAllForPage(String criteriaStr){
@@ -28,6 +30,7 @@ class PayRecordResourceService {
                     eq(p.key,Fund.get(p.value)) // TODO hard code here.
                 }
             }
+            eq("archive",false)
 
             //or
             Object orObj = obj.get("or-prperties")
@@ -48,16 +51,17 @@ class PayRecordResourceService {
             }
 
             //orderby
-            Object orderByObj = obj.get("orderby-prperties")
-            JSONArray array3 = (JSONArray)orderByObj;
-            if(array3.size()>0){
-                or {
-                    array3.each{property->
-                        OrderProperty p =new OrderProperty(property);
-                        order(p.key,p.value)
-                    }
-                }
-            }
+//            Object orderByObj = obj.get("orderby-prperties")
+//            JSONArray array3 = (JSONArray)orderByObj;
+//            if(array3.size()>0){
+//                or {
+//                    array3.each{property->
+//                        OrderProperty p =new OrderProperty(property);
+//                        order(p.key,p.value)
+//                    }
+//                }
+//            }
+            order("dateCreated","desc")
         }
 
         def params = [:]
@@ -105,5 +109,18 @@ class PayRecordResourceService {
         if (obj) {
             obj.delete()
         }
+    }
+
+    def delPayRecord(PayRecord payRecord){
+
+        def recDetailRecords = ReceiveDetailRecord.findAllByPayRecordAndArchive(payRecord, false);
+        if(recDetailRecords && recDetailRecords.size()>0){
+            throw new Exception("存在收款记录，改记录不能删除")
+        }
+
+        payRecord.archive = true
+        payRecord.save(failOnError: true)
+
+
     }
 }

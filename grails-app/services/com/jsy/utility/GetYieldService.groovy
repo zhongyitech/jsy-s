@@ -5,7 +5,7 @@ import grails.converters.JSON
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 
-@Transactional
+@Transactional(rollbackFor = Throwable.class)
 class GetYieldService {
 
     def serviceMethod() {

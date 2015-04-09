@@ -1,11 +1,17 @@
 package com.jsy.archives
 
 import com.jsy.system.ToDoTask
+import grails.transaction.Transactional
+import groovy.sql.Sql
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+import javax.sql.DataSource
+
+@Transactional(rollbackFor = Throwable.class)
 class PaymentInfoResourceService {
     def springSecurityService
+//    DataSource dataSource
 
     def create(PaymentInfo dto) {
         dto.save()
@@ -722,6 +728,9 @@ class PaymentInfoResourceService {
      * @return
      */
     def getPaymentAmount(Long investment) {
+
+//        def sql=new Sql(dataSource)
+
         def bj = 0
         def lx = 0
         PaymentInfo.findAllByArchivesIdAndIsAllowAndType(investment, true, 2)

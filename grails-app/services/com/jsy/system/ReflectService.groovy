@@ -1,10 +1,9 @@
 package com.jsy.system
 
-import com.jsy.auth.User
 import com.jsy.utility.JsonResult
 import grails.transaction.Transactional
 
-@Transactional
+@Transactional(rollbackFor = Throwable.class)
 class ReflectService {
 
     def getObject(String id, String className, String fields) {
@@ -24,6 +23,7 @@ class ReflectService {
                 if(tmpId) ids.push(tmpId)
             }
             if(ids.isEmpty()) return JsonResult.success([])
+            //less than 1000 id
             def obj= domain.withCriteria { inList('id',ids)}
             if(!obj) return JsonResult.success([])
             def result = []
@@ -41,7 +41,7 @@ class ReflectService {
     def castLong(String obj){
         try {
             return Long.parseLong(obj)
-        }catch (e){
+        }catch (Exception e){
             return null
         }
     }
@@ -52,7 +52,7 @@ class ReflectService {
      * @param fieldArray
      * @return
      */
-    def filterProp(def obj,Object[] fieldArray){
+    def filterProp(Object obj,String[] fieldArray){
         def result=[:]
         fieldArray.each {
             field ->

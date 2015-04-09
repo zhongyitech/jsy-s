@@ -1,8 +1,10 @@
 package com.jsy.system
 
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
+@Transactional(rollbackFor = Throwable.class)
 class DepartmentResourceService {
 
     def create(Department dto) {
@@ -51,5 +53,14 @@ class DepartmentResourceService {
 
         return  json
 
+    }
+
+    /**
+     * 获取所有的子级部门
+     * @param dep
+     */
+    def getChild(Department dep){
+
+        return Department.findAllByParent(dep)
     }
 }

@@ -5,7 +5,7 @@ import grails.transaction.Transactional
 import org.json.JSONArray
 import org.json.JSONObject
 
-@Transactional
+@Transactional(rollbackFor = Throwable.class)
 class AuthorityService {
     def springSecurityService
 

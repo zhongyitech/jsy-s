@@ -1,11 +1,8 @@
 package com.jsy.fundObject
 
-import Models.MsgModel
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
-import com.jsy.utility.JsonResult
-import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -34,8 +31,9 @@ class FundCompanyInformationCollectionResource {
 
     @POST
     Response create(FundCompanyInformation dto) {
-        MyResponse.ok{
-            fundCompanyInformationResourceService.create(dto)
+
+        ok {
+            return fundCompanyInformationResourceService.create(dto)
         }
     }
 
@@ -138,7 +136,7 @@ class FundCompanyInformationCollectionResource {
                     def projects = TSProject.findAllByFund(fund)
 
                     def project_banks = projects.collect { project ->
-                        project.company?.bankAccount?.collect { bank ->
+                        project.fund?.funcCompany?.bankAccount?.collect { bank ->
                             def rtn2 = [:]
                             rtn2.id = bank.id
                             rtn2.bankName = bank.bankName
@@ -147,6 +145,7 @@ class FundCompanyInformationCollectionResource {
                             rtn2.account = bank.account
                             rtn2.defaultAccount = bank.defaultAccount
                             rtn2.purposeName = bank.purposeName
+                            rtn2.overReceive = bank.overReceive
                             rtn2
 
                         }
@@ -219,7 +218,7 @@ class FundCompanyInformationCollectionResource {
     @GET
     @Path('/listForAddFund')
     Response listForAddFund() {
-        def type=TypeConfig.findByTypeAndMapValue(6, 1)
+        def type=TypeConfig.findByTypeAndMapValue(6, 2)
         ok {
             def list = []
             FundCompanyInformation.findAllByCompanyType(type).collect {

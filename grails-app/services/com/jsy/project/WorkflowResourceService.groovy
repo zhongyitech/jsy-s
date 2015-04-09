@@ -16,7 +16,6 @@ import com.jsy.fundObject.Kxzqx
 import com.jsy.fundObject.Tcfpfw
 import com.jsy.fundObject.YieldRange
 import com.jsy.system.Company
-import com.jsy.system.Department
 import com.jsy.system.TypeConfig
 import grails.converters.JSON
 import grails.transaction.Transactional
@@ -25,6 +24,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+@Transactional(rollbackFor = Throwable.class)
 class WorkflowResourceService {
     private static String TAG = "WorkflowResourceService ";
     CommissionInfoResourceService commissionInfoResourceService
@@ -33,16 +33,11 @@ class WorkflowResourceService {
         initCompany();
         initFund();
         initFund_Company_Relate();
-
-        initDepartment();
-        initRole();
-        initUser();
-        initUserRole();
-
         initInvestment();
         initCommissionData();
         createProjects()
 //        initPayRecords();
+        initRole();
         initFlowModel()
         init_flow();
     }
@@ -52,53 +47,11 @@ class WorkflowResourceService {
             createFlow(proj.id)
         }
     }
-    def initDepartment(){
-        //公司
-        FundCompanyInformation fundCompanyInformation = FundCompanyInformation.findByCompanyName("金赛银");
-
-        //财务部
-        Department department1 = Department.findByDeptName("财务部") ?:new Department(deptName:"财务部",description: "财务部",buildDate:new Date(),type:1,fundCompanyInformation:fundCompanyInformation).save(failOnError: true);
-
-        //项目部
-        Department department2 = Department.findByDeptName("项目部") ?:new Department(deptName:"项目部",description: "项目部",buildDate:new Date(),type:1,fundCompanyInformation:fundCompanyInformation).save(failOnError: true);
-
-        //法务部
-        Department department3 = Department.findByDeptName("法务部") ?:new Department(deptName:"法务部",description: "法务部",buildDate:new Date(),type:1,fundCompanyInformation:fundCompanyInformation).save(failOnError: true);
-    }
-
-    def initUser(){
-        //财务部 员工
-        Department department1 = Department.findByDeptName("财务部");
-        User user1 = User.findByUsername("cwb")?:new User(username: "cwb",password: "cwb",chainName: "财务部",department: department1).save(failOnError: true);
-
-        //项目部员工
-        Department department2 = Department.findByDeptName("项目部");
-        User user2 = User.findByUsername("xmb")?:new User(username: "xmb",password: "xmb",chainName: "项目部",department: department2).save(failOnError: true);
-
-        //法务部员工
-        Department department3 = Department.findByDeptName("法务部");
-        User user3 = User.findByUsername("fwb")?:new User(username: "fwb",password: "fwb",chainName: "法务部",department: department3).save(failOnError: true);
-    }
-
 
     def initRole = {
         Role role1 = Role.findByAuthority("FinancialIncharger") ?: new Role(authority: "FinancialIncharger", name: "财务部负责人").save(failOnError: true);
         Role role2 = Role.findByAuthority("ProjectIncharger") ?: new Role(authority: "ProjectIncharger", name: "项目部负责人").save(failOnError: true);
         Role role3 = Role.findByAuthority("MinistryIncharger") ?: new Role(authority: "MinistryIncharger", name: "法务部负责人").save(failOnError: true);
-    }
-
-    def initUserRole(){
-        Role role1 = Role.findByAuthority("FinancialIncharger");
-        User user1 = User.findByUsername("cwb");
-        UserRole userRole1 = UserRole.findAllByUser(user1)?:new UserRole(user: user1,role:role1).save(failOnError: true);
-
-        Role role2 = Role.findByAuthority("ProjectIncharger");
-        User user2 = User.findByUsername("xmb");
-        UserRole userRole2 = UserRole.findAllByUser(user2)?:new UserRole(user: user2,role:role2).save(failOnError: true);
-
-        Role role3 = Role.findByAuthority("ProjectIncharger");
-        User user3 = User.findByUsername("fwb");
-        UserRole userRole3 = UserRole.findAllByUser(user3)?:new UserRole(user: user3,role:role3).save(failOnError: true);
     }
 
     def initFlowModel() {
@@ -454,15 +407,36 @@ class WorkflowResourceService {
         //银行信息
         BankAccount bankAccount = new BankAccount();
         bankAccount.bankName = "工商银行";
-        bankAccount.bankOfDeposit = "工商银行";
-        bankAccount.accountName = "金赛银";
-        bankAccount.account = "1111111111111111";
+        bankAccount.bankOfDeposit = "某条街的工商银行";
+        bankAccount.accountName = "金赛银1";
+        bankAccount.account = "92654684613";
         bankAccount.defaultAccount = true;
         TypeConfig purpose = TypeConfig.findByTypeAndMapValue(7,1);
         bankAccount.purpose = purpose;
-        bankAccount.purpose.save(failOnError: true);
         bankAccount.save(failOnError: true);
         fundCompanyInformation.addToBankAccount(bankAccount);
+        fundCompanyInformation.save(failOnError: true);
+
+        BankAccount bankAccount2 = new BankAccount();
+        bankAccount2.bankName = "平安银行";
+        bankAccount2.bankOfDeposit = "某条街的平安银行";
+        bankAccount2.accountName = "金赛银2";
+        bankAccount2.account = "9855135485544";
+        bankAccount2.defaultAccount = false;
+        bankAccount2.purpose = purpose;
+        bankAccount2.save(failOnError: true);
+        fundCompanyInformation.addToBankAccount(bankAccount2);
+        fundCompanyInformation.save(failOnError: true);
+
+        BankAccount bankAccount3 = new BankAccount();
+        bankAccount3.bankName = "农业银行";
+        bankAccount3.bankOfDeposit = "某条街的农业银行";
+        bankAccount3.accountName = "金赛银3";
+        bankAccount3.account = "98854715324";
+        bankAccount3.defaultAccount = false;
+        bankAccount3.purpose = purpose;
+        bankAccount3.save(failOnError: true);
+        fundCompanyInformation.addToBankAccount(bankAccount3);
         fundCompanyInformation.save(failOnError: true);
 
     }

@@ -8,9 +8,16 @@ import com.jsy.fundObject.Fund
  * 该记录不能更新，否则自己手动更新对应的payRecord
  */
 class ReceiveDetailRecord {
+    //是否删除
+    boolean archive = false;
 
     String target // "original","firstyear","maintain","channel","overdue","penalty","borrow"
     BigDecimal amount
+
+    //当时付完之后本金还欠款多少
+    BigDecimal ownOriginal = 0
+    //当时付完之后各种费用总欠款多少
+    BigDecimal totalBalance = 0
 
     //common
     Date dateCreated
@@ -23,7 +30,7 @@ class ReceiveDetailRecord {
     ];
 
     static constraints = {
-
+        ownOriginal nullable: true
     }
 
 
@@ -46,7 +53,10 @@ class ReceiveDetailRecord {
         }else if("borrow".equals(target)){
             payRecord.borrow_pay+=amount
         }
+        ownOriginal = payRecord.amount - payRecord.payMainBack
+        totalBalance = payRecord.totalBalance()
         payRecord.totalPayBack += amount
+        payRecord.save(failOnError: true)
     }
 
 }

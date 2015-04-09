@@ -7,6 +7,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import javax.management.Query
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 import java.text.SimpleDateFormat
@@ -153,11 +154,11 @@ class FundCollectionResource {
      */
     @GET
     @Path('/selectList')
-    Response selectList(){
+    Response selectList(@QueryParam("exInclude") Long fundid){
         com.jsy.utility.MyResponse.ok{
             def data=[]
             //todo:最好能优化为只从数据库中返回指定字段的方法
-            Fund.list().each{
+            Fund.findAllByIdNotEqual(fundid).each{
                 data.push([id:it.id,mapName:it.fundName,])
             }
             data

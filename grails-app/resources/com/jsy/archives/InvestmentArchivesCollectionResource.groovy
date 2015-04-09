@@ -39,6 +39,7 @@ class InvestmentArchivesCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
+    PaymentInfoResourceService paymentInfoResourceService
 
     //根据档案id取附件
     @GET
@@ -298,9 +299,11 @@ class InvestmentArchivesCollectionResource {
             if (old) {
                 old.properties = dto.properties
                 old.save(failOnError: true)
+                ia.username=ia.customer.name
                 obj = old
             } else {
                 ia.customer = dto.save(failOnError: true)
+                ia.username=ia.customer.name
                 obj = ia.customer
             }
             ia.save(failOnError: true)
@@ -524,13 +527,8 @@ class InvestmentArchivesCollectionResource {
     @POST
     @Path('/IAOutput')
     Response IAOutput(Map finfo) {
-
         MyResponse.page {
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, finfo)
-//            def dc = dc.where {
-////                isNotNull('customer')
-//            };
-            def payMentInfo = new PaymentInfoResourceService()
             def data = []
             dc.list([max: finfo.pagesize, offset: finfo.startposition]).each {
                 def row = [:]
@@ -539,7 +537,6 @@ class InvestmentArchivesCollectionResource {
                 it.properties.each {
                     switch (it.key) {
                         case "customer":
-//                                row.putAt(it.key, it.value.name)
                             addKey(row, it, "name")
                             break
                         case "fund":
@@ -553,9 +550,7 @@ class InvestmentArchivesCollectionResource {
                     }
 
                 }
-
-                def pay = payMentInfo.getPaymentAmount(it.id)
-
+                def pay = paymentInfoResourceService.getPaymentAmount(it.id)
                 row.putAt("bj", pay["bj"])
                 row.putAt("lx", pay["lx"])
                 data.push(row)
@@ -648,7 +643,7 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
-    //todo:.....
+    //todo:修改为新的数据返回方式
     @GET
     @Path('/nameLike')
     Response findByNameLike(@QueryParam('params') String htbn) {
@@ -671,16 +666,32 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
-
+    /**
+     * 检测合同是否已经使用
+     * @param num
+     * @return
+     */
     @GET
     @Path('/contractNumIsUse')
     Response contractNumIsUse(@QueryParam('num') String num) {
         MyResponse.ok {
-//            return true;
-            def ia = InvestmentArchives.findByContractNum(num).collect {
+            InvestmentArchives.findByContractNum(num)
+        }
+    }
 
+    @GET
+    @Path('/contractNumCanAdd')
+    Response contractNumCanAdd(@QueryParam('num') String num) {
+        MyResponse.ok {
+            def ia = InvestmentArchives.findByContractNum(num)
+            if (ia != null) {
+                throw new Exception("合同编号已经使用了")
             }
-            return ia
+            def c = Contract.findByHtbh(num)
+            if (c == null) {
+                throw new Exception("合同编号还没有登记")
+            }
+            c.properties
         }
     }
     /**
@@ -689,18 +700,42 @@ class InvestmentArchivesCollectionResource {
      * @param qx
      * @param fxfs
      * @return
-     * @QueryParam('date') Date date,@QueryParam('fxfs') String qx,@QueryParam('fxfs') String fxfs
+     * @QueryParam ( ' d a t e ' ) Date date,@QueryParam('fxfs') String qx,@QueryParam('fxfs') String fxfs
      */
     @POST
     @Path('/getPayTimes')
     Response getPayTimes(Map arg) {
-        MyResponse.ok{
-            String str=arg.date
-            str=str.replace("T"," ")
-            str=str.replace("Z","")
+        MyResponse.ok {
+            String str = arg.date
+            str = str.replace("T", " ")
+            str = str.replace("Z", "")
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             Date startDate = sdf.parse(str);
-            return investmentArchivesResourceService.scfxsj(startDate,arg.qx,arg.fxfs.toUpperCase())
+            return investmentArchivesResourceService.scfxsj(startDate, arg.qx, arg.fxfs.toUpperCase())
+        }
+    }
+
+
+    @GET
+    @Path('/detail')
+    Response detail(@QueryParam('id') Long id) {
+        MyResponse.ok {
+            def result = [:]
+            def res = investmentArchivesResourceService.read(id)
+            result.putAll(res.properties)
+            result.ywtcs = []
+            res.ywtcs.each {
+                result.ywtcs.push(it.properties)
+            }
+            result.gltcs = []
+            res.gltcs.each {
+                result.gltcs.push(it.properties)
+            }
+            //附加付息信息
+            result.paymentInfo = PaymentInfo.findAllByArchivesId(res.id)
+            //退伙信息
+            //续投信息
+            result
         }
     }
 }

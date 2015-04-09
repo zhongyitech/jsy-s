@@ -3,11 +3,13 @@ package com.jsy.project
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
 import com.jsy.util.Utils
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -24,7 +26,7 @@ import javax.ws.rs.core.Response
 @Produces(['application/xml','application/json'])
 class PayRecordCollectionResource {
 
-    def payRecordResourceService
+    PayRecordResourceService payRecordResourceService
 
 
     @POST
@@ -91,8 +93,6 @@ class PayRecordCollectionResource {
         // get project
         org.json.JSONObject obj = JSON.parse(datastr)
 
-
-
         try{
             //数据校验
             if(obj.fundid==""||!obj.fundid){
@@ -138,7 +138,7 @@ class PayRecordCollectionResource {
         if(!project){
             return Response.ok("no project found").status(500).build()
         }
-        def payRecords = PayRecord.findAllByProject(project)
+        def payRecords = PayRecord.findAllByProjectAndArchive(project, false)
         def rtn = []
         payRecords.each{payRecord->
             def pay_record = [:]
@@ -184,4 +184,74 @@ class PayRecordCollectionResource {
     PayRecordResource getResource(@PathParam('id') Long id) {
         new PayRecordResource(payRecordResourceService: payRecordResourceService, id:id)
     }
+
+    @POST
+    @Path('/changeByDate')
+    Response changeByDate(String datastr) {
+        JSONObject result = new JSONObject();
+        JSONArray table = new JSONArray();
+        String restStatus = "200";
+
+        // get project
+        org.json.JSONObject obj = JSON.parse(datastr)
+
+
+
+        try{
+            //数据校验
+//            if(obj.has("payRecords")){
+//                result.put("rest_status", "error")
+//                result.put("rest_result", "no payRecords set!")
+//                return Response.ok(result.toString()).status(500).build()
+//            }
+
+//            if(obj.has("stopDate")){
+//                result.put("rest_status", "error")
+//                result.put("rest_result", "no stopDate set!")
+//                return Response.ok(result.toString()).status(500).build()
+//            }
+
+            //
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+            def stopDate = sf.parse(obj.stopDate)
+
+            def results = []
+            obj.payRecords.each{
+                results.push(PayRecord.get(it))
+            }
+            results = results.collect {payRecord->
+                payRecord.getShowProperties(stopDate);
+            }
+
+            result.put("rest_status", restStatus)
+            result.put("rest_result", results as JSON)
+            return Response.ok(result.toString()).status(200).build()
+        }catch (Exception e){
+            restStatus = "500";
+            e.printStackTrace()
+            result.put("rest_status", restStatus)
+            result.put("rest_result", e.getLocalizedMessage())
+            return Response.ok(result.toString()).status(500).build()
+        }
+    }
+
+    /**
+     * 删除不是一个可逆的过程，一旦删除，里面的累计数值不能作为参考
+     * @param payRecordId
+     * @return
+     */
+    @POST
+    @Path('/del')
+    Response del(@QueryParam('payRecordId') Long payRecordId) {
+        MyResponse.ok {
+            PayRecord payRecord = PayRecord.get(payRecordId)
+            if(payRecord){
+                payRecordResourceService.delPayRecord(payRecord)
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
 }

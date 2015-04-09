@@ -45,7 +45,7 @@ public class Utils {
 
         long diffDays = diff / (24 * 60 * 60 * 1000);
 
-        return diffDays;
+        return diffDays + 1; // 每个都加1天，黎姐要求
     }
 
 }
