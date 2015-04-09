@@ -494,17 +494,15 @@ class TSProjectCollectionResource {
     @GET
     @Path('/getSpecailAccess')
     Response getSpecailAccess(@QueryParam("projectId") int projectId,@QueryParam("phaseIndex") int phaseIndex){
-        MsgModel msgModel = projectResourceService.getSpecailAccess(projectId,phaseIndex);
 
-        if(!msgModel){
-            MsgModel msg = MsgModel.getErrorMsg("JAVA ERROR!");
-            return Response.ok(GsonTool.getMsgModelJson(msg)).status(500).build();
-        }
-
-        if(msgModel.isSuccess()){
-            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(200).build();
-        }else{
-            return Response.ok(GsonTool.getMsgModelJson(msgModel)).status(500).build();
+        try{
+            MsgModel msgModel = projectResourceService.getSpecailAccess(projectId,phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
         }
     }
 
@@ -518,10 +516,67 @@ class TSProjectCollectionResource {
     Response setSpecailAccess(SpecailAccess specailAccess){
         try{
             def msgModel = projectResourceService.setSpecailAccess(specailAccess);
-
-            ok JsonResult.success(msgModel)
-        }catch (Exception e){
+            ok JsonResult.success(msgModel.getResult())
+        }catch (Exception e) {
             ok JsonResult.error(e.message)
+        }
+    }
+
+    /**
+     * 获取项目模板某个节点的所有角色
+     * @param phaseIndex
+     * @return
+     */
+    @GET
+    @Path('/getProjectModelRole')
+    Response getProjectModelRole(@QueryParam("phaseIndex") int phaseIndex){
+        try{
+            MsgModel msgModel = projectResourceService.getProjectModelRole(phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
+        }
+    }
+
+    /**
+     * 删除项目节点的角色
+     * @param phaseIndex
+     * @return
+     */
+    @DELETE
+    @Path('removeProjectModelrRoles')
+    Response removeProjectModelrRoles(@QueryParam("phaseIndex") int phaseIndex){
+        try{
+            MsgModel msgModel = projectResourceService.removeProjectModelrRoles(phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
+        }
+    }
+
+    /**
+     * 添加项目节点角色
+     * @param id
+     * @param phaseIndex
+     * @return
+     */
+    @POST
+    @Path('/setProjectModelRole')
+    Response setProjectModelRole(@QueryParam("id") Long id,@QueryParam("phaseIndex") int phaseIndex){
+        try{
+            MsgModel msgModel = projectResourceService.setProjectModelRole(id,phaseIndex);
+            if(msgModel == null){
+                ok JsonResult.error("java error");
+            }
+            ok JsonResult.success(msgModel.result);
+        }catch (Exception ex){
+            ok JsonResult.error(ex.message);
         }
     }
 
