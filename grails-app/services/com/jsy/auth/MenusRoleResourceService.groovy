@@ -39,9 +39,8 @@ class MenusRoleResourceService {
         def mapArray=[:]
         menus.each {
             def parentId=it.parentId
-            def object=[id:it.id]
+            def object=[id:it.id,checked:menuList.contains(it.id)]
             object.putAll(it.properties)
-            if(menuList.contains(it.id)) object.checked=true
             if(parentId==0){
                 array.add(object)
             }else {
