@@ -39,7 +39,7 @@ class InvestmentArchivesCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
-    PaymentInfoResourceService paymentInfoResourceService
+    def paymentInfoResourceService
 
     //根据档案id取附件
     @GET
