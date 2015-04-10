@@ -42,12 +42,7 @@ class MenusRoleCollectionResource {
     @Path('/updateMenuRole')
     Response updateMenuRole(String data,@QueryParam("id")Long roleId) {
         ok {
-            def array = JSON.parse(data)
-            MenusRole.executeUpdate("delete MenusRole where role.id = :roleId", [roleId:roleId])
-            array.each {
-                it.visible=true
-                it.asType(MenusRole).save(failOnError: true)
-            }
+            menusRoleResourceService.updateMenuRole(data,roleId)
         }
     }
 

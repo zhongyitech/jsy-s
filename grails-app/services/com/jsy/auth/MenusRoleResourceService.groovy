@@ -2,6 +2,7 @@ package com.jsy.auth
 
 import grails.converters.JSON
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
@@ -52,6 +53,15 @@ class MenusRoleResourceService {
         }
         array.each {it.children=mapArray[it.id]}
         return array
+    }
+
+    def updateMenuRole(String data,Long roleId){
+        def array = JSON.parse(data)
+        MenusRole.executeUpdate("delete MenusRole where role.id = :roleId", [roleId:roleId])
+        array.each {
+            it.visible=true
+            it.asType(MenusRole).save(failOnError: true)
+        }
     }
 
     def create(MenusRole dto) {
