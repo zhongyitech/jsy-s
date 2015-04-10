@@ -20,13 +20,14 @@ import javax.ws.rs.core.Response
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class CustomerArchivesCollectionResource {
-
-    CustomerArchivesResourceService customerArchivesResourceService
+    def customerArchivesResourceService
 
     @PUT
     Response create(CustomerArchives dto) {
         ok {
-            return customerArchivesResourceService.create(dto)
+            def ca = customerArchivesResourceService.create(dto)
+            print("return:ac:" + ca)
+            ca
         }
     }
 
@@ -35,15 +36,19 @@ class CustomerArchivesCollectionResource {
     @Path('/readAllForPage')
     Response queryAll(Map arg) {
         page {
-            def result = DomainHelper.getPage(CustomerArchives, arg)
-            result
+            def list = DomainHelper.getDetachedCriteria(CustomerArchives, arg)
+            def result=[]
+            list.collect {
+                result.push(it.properties)
+            }
+            [data:result,total:list.count()]
         }
     }
 
     @GET
     @Path('/getcustomer')
-    Response getCustomer(@QueryParam('cid') Long id){
-        ok{
+    Response getCustomer(@QueryParam('cid') Long id) {
+        ok {
             CustomerArchives.get(id)
         }
     }
