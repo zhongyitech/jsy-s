@@ -1,10 +1,11 @@
 package com.jsy.auth
 
+import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 
 import javax.ws.rs.QueryParam
 
-import static com.jsy.utility.MyResponse.*;
+import static com.jsy.utility.MyResponse.*
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -41,7 +42,7 @@ class MenusRoleCollectionResource {
     @Path('/updateMenuRole')
     Response updateMenuRole(String data,@QueryParam("id")Long roleId) {
         ok {
-            print data
+            menusRoleResourceService.updateMenuRole(data,roleId)
         }
     }
 
