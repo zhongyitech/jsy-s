@@ -40,7 +40,7 @@ class InvestmentArchivesCollectionResource {
     InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
     def paymentInfoResourceService
-
+    CustomerArchivesResourceService customerArchivesResourceService
     //根据档案id取附件
     @GET
     @Path('/getFiles')
@@ -297,19 +297,20 @@ class InvestmentArchivesCollectionResource {
             def old = ia.customer
             def obj = null
             if (old) {
+                //update
                 old.properties = dto.properties
                 old.save(failOnError: true)
                 ia.username=ia.customer.name
                 obj = old
             } else {
+                //save
                 ia.customer = dto.save(failOnError: true)
                 ia.username=ia.customer.name
                 obj = ia.customer
             }
             ia.save(failOnError: true)
-
             if (sync) {
-                new CustomerArchivesResourceService().CopyCustom(obj);
+                customerArchivesResourceService.copyCustomer(obj);
             }
             return obj
         }

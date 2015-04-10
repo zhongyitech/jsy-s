@@ -68,7 +68,7 @@ class CustomerArchivesResourceService {
      * @param cus
      * @return
      */
-    def copyCustom(Customer cus) {
+    def copyCustomer(Customer cus) {
         def customerArchive = new CustomerArchives()
         customerArchive.name = cus.name
         customerArchive.callAddress = cus.callAddress

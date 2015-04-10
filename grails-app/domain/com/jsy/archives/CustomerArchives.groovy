@@ -27,7 +27,7 @@ class CustomerArchives {
     String zch='empty'
 
     //开户行
-    String khh
+    String khh=""
 
     //联系电话
     String telephone
@@ -58,9 +58,8 @@ class CustomerArchives {
         telephone  nullable: true
         postalcode  nullable: true
         zch unllable: true
+        khh unllable:true
     }
-
-
     static mapping = {
         zch column: 'zch_me'
     }

@@ -3,6 +3,7 @@ package com.jsy.system
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.DELETE
@@ -27,6 +28,7 @@ class DepartmentCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     def departmentResourceService
+    private static final log = LogFactory.getLog(this)
 
     /**
      * 创建部门信息
@@ -63,7 +65,7 @@ class DepartmentCollectionResource {
     Response readAllForPage(Map arg) {
 
         MyResponse.page {
-
+            log.info("get List")
             DomainHelper.getPage(Department, arg)
         }
     }

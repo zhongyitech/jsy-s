@@ -4,6 +4,7 @@ import com.jsy.utility.DomainHelper
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
 
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
@@ -25,23 +26,31 @@ class CustomerArchivesCollectionResource {
     @PUT
     Response create(CustomerArchives dto) {
         ok {
-            def ca = customerArchivesResourceService.create(dto)
-            print("return:ac:" + ca)
-            ca
+            dto.zch=dto.khh=""
+            customerArchivesResourceService.create(dto)
         }
     }
 
-
+    @DELETE
+    Response del(@QueryParam('id') Long id){
+        ok{
+            customerArchivesResourceService.delete(id)
+            return true
+        }
+    }
     @POST
     @Path('/readAllForPage')
     Response queryAll(Map arg) {
         page {
-            def list = DomainHelper.getDetachedCriteria(CustomerArchives, arg)
-            def result=[]
-            list.collect {
-                result.push(it.properties)
+            def dc = DomainHelper.getDetachedCriteria(CustomerArchives, arg)
+            def list = dc.list(max: arg.pagesize, offset: arg.startposition)
+            def result = []
+            list.each {
+                def r = [id: it.id]
+                r.putAll(it.properties)
+                result.push(r)
             }
-            [data:result,total:list.count()]
+            [data: result, total: dc.count()]
         }
     }
 

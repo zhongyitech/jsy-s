@@ -4,6 +4,7 @@ import com.jsy.auth.AuthorityService
 import com.jsy.auth.User
 import grails.converters.JSON
 import grails.transaction.Transactional
+import org.apache.commons.logging.LogFactory
 
 /**
  * Created by lioa on 2015/3/10.
@@ -13,6 +14,7 @@ import grails.transaction.Transactional
 class JsonResult {
     public static final String REST_STATUS_SUC = "suc"
     public static final String REST_STATUS_FAI = "err"
+    private static final log = LogFactory.getLog(this)
 
     /**
      * 封装成功的操作返回
@@ -42,7 +44,7 @@ class JsonResult {
         def map=[:]
         map.rest_result=[msg:errorMsg,result:result]
         map.rest_status=REST_STATUS_FAI
-        print(errorMsg)
+        log.error(errorMsg)
         return map as JSON
     }
 
