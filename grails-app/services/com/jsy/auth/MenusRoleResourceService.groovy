@@ -60,7 +60,7 @@ class MenusRoleResourceService {
         MenusRole.executeUpdate("delete MenusRole where role.id = :roleId", [roleId:roleId])
         array.each {
             it.visible=true
-            it.asType(MenusRole).save(failOnError: true)
+            it.asType(MenusRole.class).save(failOnError: true)
         }
     }
 
