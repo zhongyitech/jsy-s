@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat
 @Transactional(rollbackFor = Throwable.class)
 class WorkflowResourceService {
     private static String TAG = "WorkflowResourceService ";
-    CommissionInfoResourceService commissionInfoResourceService
 
     def initData = {
         initCompany();
