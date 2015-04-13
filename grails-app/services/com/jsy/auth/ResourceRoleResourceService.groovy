@@ -54,24 +54,21 @@ class ResourceRoleResourceService {
         def object = JSON.parse(data)
         def role=Role.get(roleId)
         def resource=Resource.get(resourceId)
-        def oldResourceRole=ResourceRole.findByRoleAndResource(role,resource)
-        if(oldResourceRole){
-            oldResourceRole.delete(flush: true)
-        }
-        def resourceRole=new ResourceRole(role: role,resource: resource)
-        if(object.props){
-            object.props.each {
-                Long id=it.id
-                resourceRole.addToPropertys(Property.get(id))
+        def resourceRole=ResourceRole.findByRoleAndResource(role,resource)
+        if(resourceRole){
+            resourceRole.propertys=[]
+            resourceRole.operations=[]
+            if(object.props){
+                Property.findAllByIdInList(object.props.collect{it.id}).each {
+                    Property prop->resourceRole.addToPropertys(prop)
+                }
+            }
+            if(object.ops){
+                Operation.findAllByIdInList(object.ops.collect{it.id}).each {
+                    Operation op->resourceRole.addToOperations(op)
+                }
             }
         }
-        if(object.ops){
-            object.ops.each{
-                Long id=it.id
-                resourceRole.addToOperations(Operation.get(id))
-            }
-        }
-        resourceRole.save(failOnError: true)
         return data
     }
 
