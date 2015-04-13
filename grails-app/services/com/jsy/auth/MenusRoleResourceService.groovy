@@ -62,6 +62,7 @@ class MenusRoleResourceService {
             it.visible=true
             it.asType(MenusRole.class).save(failOnError: true)
         }
+        return data
     }
 
     def create(MenusRole dto) {

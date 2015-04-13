@@ -2,7 +2,7 @@ package com.jsy.auth
 /**
  * 对应操作
  */
-class Operation {
+class Operation implements Comparable{
 
     //操作
     String cz
@@ -14,5 +14,9 @@ class Operation {
     boolean visible
 
     static constraints = {
+    }
+    @Override
+    int compareTo(Object o) {
+        return id.compareTo(o.id)
     }
 }

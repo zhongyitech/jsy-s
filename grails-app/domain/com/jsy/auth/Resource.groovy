@@ -8,7 +8,9 @@ class Resource {
     String name
     //资源对应对象名
     String objectName
-
+    SortedSet propertys
+    SortedSet operations
+    static hasMany = [operations:Operation,propertys:Property]
     static constraints = {
     }
 }

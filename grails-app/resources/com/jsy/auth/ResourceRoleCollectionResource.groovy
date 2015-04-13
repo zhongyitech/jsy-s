@@ -23,6 +23,23 @@ class ResourceRoleCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     def resourceRoleResourceService
 
+    @GET
+    @Path("/getRoleList")
+    Response getRoleList(@QueryParam("id") Long roleId) {
+        ok{
+            resourceRoleResourceService.getRoleList(roleId)
+        }
+    }
+
+    @POST
+    @Path("/updateRoleList")
+    Response updateRoleList(String data,@QueryParam("id")Long roleId,@QueryParam("resourceId")Long resourceId) {
+        ok{
+            resourceRoleResourceService.updateRoleList(data,roleId,resourceId)
+        }
+    }
+
+
     @POST
     Response create(ResourceRole dto) {
         ok{
