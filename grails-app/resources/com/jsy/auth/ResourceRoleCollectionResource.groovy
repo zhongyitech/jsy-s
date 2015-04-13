@@ -1,7 +1,5 @@
 package com.jsy.auth
 
-import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONObject
 
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
@@ -27,12 +25,16 @@ class ResourceRoleCollectionResource {
 
     @POST
     Response create(ResourceRole dto) {
-        created resourceRoleResourceService.create(dto)
+        ok{
+            resourceRoleResourceService.create(dto)
+        }
     }
 
     @GET
     Response readAll() {
-        ok resourceRoleResourceService.readAll()
+        ok{
+            resourceRoleResourceService.readAll()
+        }
     }
 
     @Path('/{id}')
