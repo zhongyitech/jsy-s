@@ -138,15 +138,26 @@ class TSProjectCollectionResource {
         MyResponse.ok {
             TSProject project=TSProject.get(projectid)
             if(!project){
-                result.put("rest_status", 500)
-                result.put("err","no.project.found")
-                return Response.ok(result.toString()).status(500).build()
+                throw new Exception("no project found")
             }
 
             def allPhaseInfos = projectResourceService.getAllFlowPhaseInfo(project,springSecurityService.getCurrentUser());
             return allPhaseInfos
         }
     }
+
+    @GET
+    @Path('/projectSettingInfo')
+    Response projectSettingInfo(@QueryParam('projectid') int projectid){
+        MyResponse.ok {
+            TSProject project=TSProject.get(projectid)
+            if(!project){
+                throw new Exception("no project found")
+            }
+            return project.getProjectSimpleInfo()
+        }
+    }
+
 
     //提交收集
     @POST
@@ -506,6 +517,39 @@ class TSProjectCollectionResource {
                 return "done"
             }else{
                 return null
+            }
+
+        }
+    }
+
+    @POST
+    @Path('/saveProjectSettings')
+    Response saveProjectSettings(String datastr){
+        MyResponse.ok {
+            org.json.JSONObject obj = JSON.parse(datastr)
+            TSProject project = TSProject.get(obj.projectid)
+            if(project){
+                def daycount_per = obj.daycount_per
+                def interestType = obj.interestType
+                def manage_per = obj.manage_per
+                def community_per = obj.community_per
+                def penalty_per = obj.penalty_per
+                def borrow_per = obj.borrow_per
+                def year1 = obj.year1
+                def year2 = obj.year2
+
+                project.daycount_per = daycount_per
+                project.interestType = interestType
+                project.manage_per = manage_per
+                project.community_per = community_per
+                project.penalty_per = penalty_per
+                project.borrow_per = borrow_per
+                project.year1 = year1
+                project.year2 = year2
+                project.save(failOnError: true)
+                return true
+            }else{
+                throw new Exception("no project found")
             }
 
         }
