@@ -68,7 +68,7 @@ class MenusRoleResourceService {
         dto.save()
     }
 
-    def read(id) {
+    def read(Long id) {
         def obj = MenusRole.get(id)
         if (!obj) {
             throw new DomainObjectNotFoundException(MenusRole.class, id)
