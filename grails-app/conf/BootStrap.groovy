@@ -396,7 +396,6 @@ class BootStrap {
             Menus menus37 = new Menus(name: 'xtsq', title: '续投申请', url: 'continuedinvestment-add.jsp', parentId: menus3.id).save(failOnError: true)
             Menus menus38 = new Menus(name: 'hbsq', title: '合并申请', url: 'special-merge.jsp', parentId: menus3.id).save(failOnError: true)
 
-            Menus menus4 = new Menus(name: 'xmgl', title: '项目管理', url: '').save(failOnError: true)
             Menus menus41 = new Menus(name: 'xjxm', title: '新建项目', url: 'new_project.jsp', parentId: menus4.id).save(failOnError: true)
             Menus menus42 = new Menus(name: 'xmlb', title: '项目列表', url: 'project_list.jsp', parentId: menus4.id).save(failOnError: true)
             Menus menus43 = new Menus(name: 'xzhkjl', title: '新增汇款记录', url: 'new_pay_record.jsp', parentId: menus4.id).save(failOnError: true)
