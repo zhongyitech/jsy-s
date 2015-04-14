@@ -55,19 +55,13 @@ class ResourceRoleResourceService {
         def role=Role.get(roleId)
         def resource=Resource.get(resourceId)
         def resourceRole=ResourceRole.findByRoleAndResource(role,resource)
+        def props=object.props?Property.findAllByIdInList(object.props.collect{it.id}):[]
+        def ops=object.ops?Operation.findAllByIdInList(object.ops.collect{it.id}):[]
         if(resourceRole){
-            resourceRole.propertys=[]
-            resourceRole.operations=[]
-            if(object.props){
-                Property.findAllByIdInList(object.props.collect{it.id}).each {
-                    Property prop->resourceRole.addToPropertys(prop)
-                }
-            }
-            if(object.ops){
-                Operation.findAllByIdInList(object.ops.collect{it.id}).each {
-                    Operation op->resourceRole.addToOperations(op)
-                }
-            }
+            resourceRole.propertys=props
+            resourceRole.operations=ops
+        }else{
+            new ResourceRole(role: role,resource: resource,propertys: props,operations: ops).save(failOnError: true)
         }
         return data
     }

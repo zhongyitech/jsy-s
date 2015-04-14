@@ -27,13 +27,13 @@ class FundCompanyInformationCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def fundCompanyInformationResourceService
+    FundCompanyInformationResourceService fundCompanyInformationResourceService
 
     @POST
     Response create(FundCompanyInformation dto) {
 
         ok {
-            return fundCompanyInformationResourceService.create(dto)
+            fundCompanyInformationResourceService.create(dto)
         }
     }
 
@@ -218,7 +218,7 @@ class FundCompanyInformationCollectionResource {
     @GET
     @Path('/listForAddFund')
     Response listForAddFund() {
-        def type=TypeConfig.findByTypeAndMapValue(6, 2)
+        def type = TypeConfig.findByTypeAndMapValue(6, 2)
         ok {
             def list = []
             FundCompanyInformation.findAllByCompanyType(type).collect {

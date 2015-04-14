@@ -14,10 +14,10 @@ class SummaryToFund {
 
     //借贷
     //在备注上写上 True=借 ，Flase =贷
-    boolean borrowAndLend
+    boolean borrow
 
     //账套
-    String fund
+    String company
 
     static constraints = {
         subjectLevel2 nullable: true

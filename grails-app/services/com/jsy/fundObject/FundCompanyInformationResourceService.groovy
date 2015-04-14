@@ -9,8 +9,12 @@ import org.json.JSONArray
 @Transactional(rollbackFor = Throwable.class)
 class FundCompanyInformationResourceService {
 
-    def create(FundCompanyInformation dto) {
-        dto.save(failOnError: true)
+    FundCompanyInformation create(FundCompanyInformation dto) {
+        def obj = dto.save(failOnError: true)
+        obj.bankAccount.each {
+            it.companyInformation = obj
+        }
+        obj
     }
 
     def read(id) {
@@ -41,6 +45,10 @@ class FundCompanyInformationResourceService {
             throw new DomainObjectNotFoundException(FundCompanyInformation.class, dto.id)
         }
         obj.properties = dto.properties
+        obj.save(failOnError: true)
+        obj.bankAccount.each {
+            it.companyInformation = obj
+        }
         obj
     }
 
@@ -57,8 +65,8 @@ class FundCompanyInformationResourceService {
      * @param queryparam
      * @return
      */
-    def readAllForPage(Long pagesize,Long startposition,String queryparam){
-        if (null == queryparam){
+    def readAllForPage(Long pagesize, Long startposition, String queryparam) {
+        if (null == queryparam) {
             queryparam = ""
         }
         JSONObject json = new JSONObject()
@@ -66,9 +74,9 @@ class FundCompanyInformationResourceService {
         def ja = new JSONArray()
         def page = FundCompanyInformation.list(max: pagesize, offset: startposition)
         page.each {
-            JSONObject jsonObject =new JSONObject((it as JSON).toString());
+            JSONObject jsonObject = new JSONObject((it as JSON).toString());
             def pars = new JSONArray()
-            it?.hhrpx?.split(",").each {fid->
+            it?.hhrpx?.split(",").each { fid ->
                 pars.put(FundCompanyInformation.get(Long.valueOf(fid)) as JSON)
             }
             jsonObject.put("partner", pars)
@@ -78,7 +86,7 @@ class FundCompanyInformationResourceService {
         json.put("page", ja)
         json.put("size", FundCompanyInformation.list().size())
 
-        return  json
+        return json
 
     }
 }

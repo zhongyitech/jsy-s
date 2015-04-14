@@ -49,35 +49,35 @@ class BankTransactionsRecordResourceService {
      * 处理银行流水记录,生成记账凭证单
      */
     def ProcessTransactionData() {
-//        def data = BankTransactionsRecord.findAllByManaged(false)
-//        if (data.size() == 0) return
         def list = BankTransactionsRecord.findAllByManagedAndSummaryIsNotNull(false)
         def entryList = []
         list.each {
-            def orderEntry = new BankOrderEntry()
-            //
-            def summary = Summary.findByRemarkLikeAndAccountName("%" + it.summary + "%", it.accountName)
-            if (summary == null) {
-                return
+            it.manageType=2
+            def summary = Summary.findByRemarkLikeAndAccountName("%" + it.summary + "%", it.account)
+            if (summary != null) {
+                def bankAccount = BankAccount.findByAccount(it.account)
+                if (bankAccount != null && bankAccount.companyInformation != null) {
+                    def subject = SummaryToFund.findBySumNameAndCompanyAndBorrow(summary.summary, bankAccount.account, it.borrowAndLend)
+                    def orderEntry = new BankOrderEntry()
+                    orderEntry.summary = summary.summary
+                    subjectFormat(subject,bankAccount)
+                    orderEntry.subjectName = subject != null ? subject.subject + "-" + (subject.subjectLevel2!=null ? subject.subjectLevel2 : "")  : ""
+                    orderEntry.company=bankAccount.companyInformation.companyName
+
+                    orderEntry.transaction = it.transactionsCode
+                    if (it.borrowAndLend) {
+                        orderEntry.borrowAmount = (it.actionAmount)
+                    } else {
+                        orderEntry.lendAmount = it.actionAmount
+                    }
+                    orderEntry.save(failOnError: true)
+                    it.manageType=1
+                    entryList.push(orderEntry)
+                }
             }
-            def bankaccount=BankAccount.findByAccount(it.account)
-            def company = FundCompanyInformation.get()
-            if (company == null) {
-                return
-            }
-            def subject = SummaryToFund.find {
-                eq("borrowAndLend", it.borrowAndLend)
-                eq("subject", formatSummary(summary))
-                eq("fund", company.companyName)
-            }
-            orderEntry.summary = summary
-            orderEntry.subjectName = subject.subject
-            orderEntry.transaction = it.transactionsCode
-            if (it.borrowAndLend) {
-                orderEntry.borrowAmount = it.actionAmount
-            } else {
-                orderEntry.lendAmount = it.actionAmount
-            }
+            it.managed=true
+            it.processedDate=new Date()
+            it.save(failOnError: true)
         }
         return entryList
     }
@@ -88,5 +88,10 @@ class BankTransactionsRecordResourceService {
      */
     def formatSummary(Summary summary) {
         return summary.summary
+    }
+    void subjectFormat(SummaryToFund stf,BankAccount baccount){
+        if(stf!=null){
+
+        }
     }
 }
