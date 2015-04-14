@@ -61,7 +61,7 @@ class BankTransactionsRecordResourceService {
                     def subject = SummaryToFund.findBySumNameAndCompanyAndBorrow(summary.summary, bankAccount.account, it.borrowAndLend)
                     def orderEntry = new BankOrderEntry()
                     orderEntry.summary = summary.summary
-                    subjectFormat(subject,bankAccount)
+                    //subjectFormat(subject,bankAccount)
                     orderEntry.subjectName = subject != null ? subject.subject + "-" + (subject.subjectLevel2!=null ? subject.subjectLevel2 : "")  : ""
                     orderEntry.company=bankAccount.companyInformation.companyName
 
@@ -93,8 +93,6 @@ class BankTransactionsRecordResourceService {
 
 
     void subjectFormat(SummaryToFund stf,BankAccount baccount){
-
-
 
         BankOrderUntil.Instance().GetFormatValue(stf.subjectLevel2,baccount)
     }
