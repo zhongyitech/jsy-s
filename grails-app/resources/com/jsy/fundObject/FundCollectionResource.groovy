@@ -1,8 +1,13 @@
 package com.jsy.fundObject
 
 import com.jsy.auth.AuthorityService
+import com.jsy.project.PayRecord
+import com.jsy.project.ReceiveDetailRecord
+import com.jsy.project.ReceiveRecord
+import com.jsy.project.ShouldReceiveRecord
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -348,5 +353,107 @@ class FundCollectionResource {
 
         return Response.ok(jsonObject.toString()).status(RESPONSE_STATUS_SUC).build();
     }
+
+    @GET
+    @Path('/getHurry')
+    Response getHurry(@QueryParam('fundid') String fundid) {
+        MyResponse.ok {
+            Fund fund = Fund.get(fundid)
+            if(fund){
+                def rtn = [:]
+                rtn.companyName=fund.funcCompany.companyName
+                rtn.fundName=fund.fundName
+                rtn.id=fund.id
+                def should_payback = new BigDecimal(0)
+                def main_payback = new BigDecimal(0)
+                def interest_payback = new BigDecimal(0)
+                def overdue_payback = new BigDecimal(0)
+                PayRecord.findAllByFundAndArchive(fund,false).each{
+                    should_payback+=it.totalBalance()
+                    main_payback+=(it.amount-it.payMainBack)
+                    interest_payback+=(it.interest_bill-it.interest_pay)
+                    overdue_payback+=(it.getOverDue()-it.overDue_pay)
+                }
+                rtn.bankAccount="无法确定"
+                rtn.should_payback=should_payback
+                rtn.main_payback=main_payback
+                rtn.interest_payback=interest_payback
+                rtn.overdue_payback=overdue_payback
+                rtn.nowDate=new Date()
+                return rtn
+            }else{
+                throw new Exception("no fund found.")
+            }
+
+        }
+    }
+
+    @GET
+    @Path('/getInteract')
+    Response getInteract(@QueryParam('fundid') String fundid) {
+        MyResponse.ok {
+            Fund fund = Fund.get(fundid)
+            if(fund){
+                def rtn = [:]
+                rtn.companyName=fund.funcCompany.companyName
+                rtn.fundName=fund.fundName
+                rtn.id=fund.id
+                rtn.nowDate=new Date()
+
+                def main_pay = new BigDecimal(0)
+                def total_receive = new BigDecimal(0)
+                def total_manage = new BigDecimal(0)
+                def total_channel = new BigDecimal(0)
+                def total_main = new BigDecimal(0)
+
+                def details = []
+                PayRecord.findAllByFundAndArchive(fund,false).each{
+                    main_pay+= it.amount
+
+                    def detail = [:]
+                    detail.payDate = it.payDate
+                    detail.amount = it.amount
+                    ReceiveDetailRecord maintain = ReceiveDetailRecord.findByPayRecordAndTargetAndArchive(it,"maintain",false);
+                    ReceiveDetailRecord channel = ReceiveDetailRecord.findByPayRecordAndTargetAndArchive(it,"channel",false);
+                    if(maintain){
+                        detail.maintain_date=maintain.dateCreated
+                        detail.maintain=it.manage_pay
+                    }
+                    if(channel){
+                        detail.channel_date=channel.dateCreated
+                        detail.channel=it.community_pay
+                    }
+                    details << detail
+                }
+
+
+                ReceiveRecord.findAllByFundAndArchive(fund,false).each{
+                    total_receive+=it.amount
+                    ReceiveDetailRecord.findAllByReceiveRecordAndArchive(it,false).each{receive->
+                        if("maintain".equals(receive.target)){
+                            total_manage+=receive.amount
+                        }else if("channel".equals(receive.target)){
+                            total_channel+=receive.amount
+                        }else if("original".equals(receive.target)){
+                            total_main+=receive.amount
+                        }
+                    }
+                }
+                rtn.main_pay=main_pay;
+                rtn.total_receive=total_receive;
+                rtn.total_manage=total_manage;
+                rtn.total_channel=total_channel;
+                rtn.total_main=total_main;
+                rtn.details=details;
+
+                return rtn
+            }else{
+                throw new Exception("no fund found.")
+            }
+
+        }
+    }
+
+
 }
 
