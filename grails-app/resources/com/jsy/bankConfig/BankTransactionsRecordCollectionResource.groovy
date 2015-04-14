@@ -33,7 +33,7 @@ class BankTransactionsRecordCollectionResource {
     static final int MANAGE_TYPE_NEW=0
     //弃用的记录
     static final int MANAGE_TYPE_DEL=3
-    def bankTransactionsRecordResourceService
+    BankTransactionsRecordResourceService bankTransactionsRecordResourceService
 
     @POST
     Response create(FundToBank dto) {
@@ -90,4 +90,14 @@ class BankTransactionsRecordCollectionResource {
     BankTransactionsRecordResource getResource(@PathParam('id') Long id) {
         new BankTransactionsRecordResource(bankTransactionsRecordResourceService: bankTransactionsRecordResourceService, id: id)
     }
+
+    @GET
+    @Path('/order')
+    Response order(){
+        ok{
+            bankTransactionsRecordResourceService.ProcessTransactionData()
+        }
+    }
+
+
 }

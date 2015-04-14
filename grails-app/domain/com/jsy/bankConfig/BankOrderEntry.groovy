@@ -13,10 +13,10 @@ class BankOrderEntry {
     String subjectName
 
     //贷方金额
-    BigDecimal lendAmount
+    BigDecimal lendAmount=0
 
     //借方金额
-    BigDecimal borrowAmount
+    BigDecimal borrowAmount=0
 
     //交易流水
     String transaction

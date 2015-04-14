@@ -1,8 +1,8 @@
 package com.jsy.bankConfig
 
-import grails.converters.JSON
-import org.json.JSONObject
+import com.jsy.utility.DomainHelper
 
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
@@ -19,43 +19,23 @@ import javax.ws.rs.POST
 import javax.ws.rs.core.Response
 
 @Path('/api/summary')
-@Consumes(['application/xml','application/json'])
-@Produces(['application/xml','application/json'])
+@Consumes(['application/xml', 'application/json'])
+@Produces(['application/xml', 'application/json'])
 class SummaryCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def summaryResourceService
+    SummaryResourceService summaryResourceService
 
-//    @POST
-//    Response create(Summary dto) {
-//        created summaryResourceService.create(dto)
-//    }
-//
-//    @GET
-//    Response readAll() {
-//        ok summaryResourceService.readAll()
-//    }
 
     @POST
     Response create(Summary dto) {
         ok {
+
+                dto.indexlocation = Summary.last() ==null ? 1: Summary.last().indexlocation + 1
             def ftb = summaryResourceService.create(dto)
             ftb
         }
-
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ftb
-//        try {
-//            ftb = summaryResourceService.create(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ftb as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
@@ -64,45 +44,61 @@ class SummaryCollectionResource {
             def ftb = summaryResourceService.readAll()
             ftb
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ftb
-//        try {
-//            ftb = summaryResourceService.readAll()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ftb as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    }
+
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(Map arg) {
+        page {
+            DomainHelper.getPage(Summary, arg)
+        }
+    }
+
+    @DELETE
+    Response del(@QueryParam('id') Long id) {
+        ok {
+            summaryResourceService.delete(id)
+        }
     }
 
     @PUT
-    Response update(Summary dto,@QueryParam('id') Long id){
+    Response update(Summary dto, @QueryParam('id') Long id) {
         ok {
             dto.id = id
             def ftb = summaryResourceService.update(dto)
             ftb
         }
-//        dto.id = id
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ftb
-//        try {
-//            ftb = summaryResourceService.update(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ftb as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
 
+    @POST
+    @Path('/up')
+    Response up(@QueryParam('id') Long id) {
+        ok {
+            summaryResourceService.upIndex(id)
+        }
+    }
+
+    @POST
+    @Path('/down')
+    Response down(@QueryParam('id') Long id) {
+        ok {
+            summaryResourceService.downIndex(id)
+        }
+    }
+
+    @GET
+    @Path('/selectList')
+    Response selectList() {
+        ok {
+            Summary.list().collect {
+                [id: it.id, mapName: it.summary]
+            }
+        }
+    }
+
     @Path('/{id}')
     SummaryResource getResource(@PathParam('id') Long id) {
-        new SummaryResource(summaryResourceService: summaryResourceService, id:id)
+        new SummaryResource(summaryResourceService: summaryResourceService, id: id)
     }
 }

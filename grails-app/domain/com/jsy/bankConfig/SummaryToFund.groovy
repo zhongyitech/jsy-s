@@ -9,6 +9,8 @@ class SummaryToFund {
 
     //科目名称
     String subject
+    //二级科目
+    String subjectLevel2
 
     //借贷
     //在备注上写上 True=借 ，Flase =贷
@@ -18,5 +20,6 @@ class SummaryToFund {
     String fund
 
     static constraints = {
+        subjectLevel2 nullable: true
     }
 }

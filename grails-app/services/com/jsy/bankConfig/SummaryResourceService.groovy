@@ -7,7 +7,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 class SummaryResourceService {
 
     def create(Summary dto) {
-        dto.save()
+        dto.save(failOnError: true)
     }
 
     def read(id) {
@@ -27,8 +27,32 @@ class SummaryResourceService {
         if (!obj) {
             throw new DomainObjectNotFoundException(Summary.class, dto.id)
         }
+        def location = obj.indexlocation
         obj.properties = dto.properties
-        obj
+        obj.indexlocation = location
+        obj.save(failOnError: true)
+    }
+
+    def upIndex(Long id) {
+        def target = Summary.get(id)
+        def upTarget = Summary.get(id + 1)
+        if (upTarget != null) {
+            def index = upTarget.indexlocation
+            upTarget.indexlocation = target
+            target.indexlocation = index
+        }
+        target
+    }
+
+    def downIndex(Long id) {
+        def target = Summary.get(id)
+        def upTarget = Summary.get(id - 1)
+        if (upTarget != null) {
+            def index = upTarget.indexlocation
+            upTarget.indexlocation = target
+            target.indexlocation = index
+        }
+        target
     }
 
     void delete(id) {
