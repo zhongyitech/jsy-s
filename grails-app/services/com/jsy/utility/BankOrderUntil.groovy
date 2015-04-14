@@ -1,12 +1,12 @@
 package com.jsy.utility
 
 /**
- * Æ¾Ö¤Éú³ÉµÄ°ïÖúÀà
+ * Æ¾Ö¤ï¿½ï¿½ï¿½ÉµÄ°ï¿½ï¿½ï¿½ï¿½ï¿½
  * Created by lishizhong on 2015/4/14.
  */
 class BankOrderUntil {
 
-    private Map<String, Closure> list = [:]
+    private Map<String, Closure<String>> list = [:]
 
     BankOrderUntil() {
         init()
@@ -17,17 +17,30 @@ class BankOrderUntil {
         return _instance
     }
 
-    public String GetFormatValue(def name, def argobj) {
-        if (list.containsKey(name)) {
-            return list.get(name).call(argobj)
+    public String GetFormatValue(String text, def argobj) {
+        print("text:" + text)
+        list.each {
+            text = text.replace(it.getKey(), it.getValue().call(argobj))
         }
+        print("text replace:" + text)
+
+        return text
     }
 
     def init() {
-        list.put("[¹«Ë¾Ãû³Æ]", {
+        list.put("[å¼€æˆ·è¡Œ]", {
             arg ->
-                print(arg)
-                return "test"
+                return arg.bank.bankOfDeposit
+        })
+        list.put("[å…¬å¸åç§°]", {
+            arg ->
+                return arg.company.companyName
+        })
+        list.put("[è´¦å·å4ä½]", {
+            arg ->
+                if (arg.bank.account.length() <= 4)
+                    return arg.bank.account
+                return arg.bank.account.substring(arg.bank.account.length() - 4)
         })
     }
 }
