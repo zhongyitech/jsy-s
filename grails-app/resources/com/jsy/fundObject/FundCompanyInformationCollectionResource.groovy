@@ -8,6 +8,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
 
 import javax.ws.rs.DELETE
+import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
@@ -225,6 +226,22 @@ class FundCompanyInformationCollectionResource {
                 list.add([id: it.id, companyName: it.companyName, companyType: it.companyType.mapName])
             }
             return list
+        }
+    }
+
+    @GET
+    @Path('/selectList')
+    Response seleectList(@QueryParam('id') @DefaultValue('0') Long depId) {
+        ok {
+            def list = FundCompanyInformation.list()
+            if (depId > 0) {
+                list = FundCompanyInformation.where {
+                    ne("id", depId)
+                }.list()
+            }
+            list.collect {
+                [mapName: it.companyName , id: it.id]
+            }
         }
     }
 }
