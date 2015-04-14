@@ -396,6 +396,7 @@ class BootStrap {
             Menus menus37 = new Menus(name: 'xtsq', title: '续投申请', url: 'continuedinvestment-add.jsp', parentId: menus3.id).save(failOnError: true)
             Menus menus38 = new Menus(name: 'hbsq', title: '合并申请', url: 'special-merge.jsp', parentId: menus3.id).save(failOnError: true)
 
+            Menus menus4 = new Menus(name: 'xmgl', title: '项目管理', url: '').save(failOnError: true)
             Menus menus41 = new Menus(name: 'xjxm', title: '新建项目', url: 'new_project.jsp', parentId: menus4.id).save(failOnError: true)
             Menus menus42 = new Menus(name: 'xmlb', title: '项目列表', url: 'project_list.jsp', parentId: menus4.id).save(failOnError: true)
             Menus menus43 = new Menus(name: 'xzhkjl', title: '新增汇款记录', url: 'new_pay_record.jsp', parentId: menus4.id).save(failOnError: true)
@@ -426,7 +427,7 @@ class BootStrap {
             Menus menus76 = new Menus(name: 'jsgl', title: '角色管理', url: 'role-list.jsp', parentId: menus7.id).save(failOnError: true)
 //            Menus menus77 = new Menus(name: 'xzjs', title: '新增角色', url: 'role-create.jsp', parentId: menus7.id).save(failOnError: true)
             Menus menus78 = new Menus(name: 'yhgl', title: '用户管理', url: 'user-list.jsp', parentId: menus7.id).save(failOnError: true)
-            Menus menus79 = new Menus(name: 'xmgl', title: '项目管理', url: 'project-model-setting.jsp', parentId: menus7.id).save(failOnError: true)
+            Menus menus79 = new Menus(name: 'xmglsetting', title: '项目管理', url: 'project-model-setting.jsp', parentId: menus7.id).save(failOnError: true)
 
             //权限关系
             new MenusRole(menus: menus1, role: managerRole, visible: true).save(failOnError: true)
