@@ -11,7 +11,9 @@ class Summary {
     String remark
 
     //摘要
-    String sum
+    String summary
+
+    Long indexlocation
 
     static constraints = {
     }

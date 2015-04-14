@@ -1,12 +1,11 @@
 package com.jsy.bankConfig
 
-import grails.converters.JSON
-import org.json.JSONObject
+import com.jsy.utility.DomainHelper
 
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
-//import static org.grails.jaxrs.response.Responses.*
 
 import static com.jsy.utility.MyResponse.*
 
@@ -27,15 +26,7 @@ class SummaryToFundCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     def summaryToFundResourceService
 
-//    @POST
-//    Response create(SummaryToFund dto) {
-//        created summaryToFundResourceService.create(dto)
-//    }
-//
-//    @GET
-//    Response readAll() {
-//        ok summaryToFundResourceService.readAll()
-//    }
+
 
     @POST
     Response create(SummaryToFund dto) {
@@ -43,18 +34,6 @@ class SummaryToFundCollectionResource {
             def ftb = summaryToFundResourceService.create(dto)
             ftb
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ftb
-//        try {
-//            ftb = summaryToFundResourceService.create(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ftb as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
@@ -63,18 +42,14 @@ class SummaryToFundCollectionResource {
             def ftb = summaryToFundResourceService.readAll()
             ftb
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ftb
-//        try {
-//            ftb = summaryToFundResourceService.readAll()
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ftb as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+    }
+
+    @POST
+    @Path('/readAllForPage')
+    Response readAllForPage(Map arg) {
+        page {
+            DomainHelper.getPage(SummaryToFund, arg)
+        }
     }
 
     @PUT
@@ -84,24 +59,18 @@ class SummaryToFundCollectionResource {
             def ftb = summaryToFundResourceService.update(dto)
             ftb
         }
-//        dto.id = id
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ftb
-//        try {
-//            ftb = summaryToFundResourceService.update(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ftb as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
 
     @Path('/{id}')
     SummaryToFundResource getResource(@PathParam('id') Long id) {
         new SummaryToFundResource(summaryToFundResourceService: summaryToFundResourceService, id: id)
+    }
+
+    @DELETE
+    Response del(@QueryParam('id') Long id) {
+        ok {
+            summaryToFundResourceService.delete(id)
+        }
     }
 }
