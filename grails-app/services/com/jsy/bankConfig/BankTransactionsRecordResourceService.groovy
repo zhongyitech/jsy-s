@@ -1,6 +1,7 @@
 package com.jsy.bankConfig
 
 import com.jsy.fundObject.FundCompanyInformation
+import com.jsy.utility.BankOrderUntil
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -89,9 +90,12 @@ class BankTransactionsRecordResourceService {
     def formatSummary(Summary summary) {
         return summary.summary
     }
-    void subjectFormat(SummaryToFund stf,BankAccount baccount){
-        if(stf!=null){
 
-        }
+
+    void subjectFormat(SummaryToFund stf,BankAccount baccount){
+
+
+
+        BankOrderUntil.Instance().GetFormatValue(stf.subjectLevel2,baccount)
     }
 }
