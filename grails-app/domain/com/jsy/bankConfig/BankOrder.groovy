@@ -7,7 +7,7 @@ class BankOrder {
     String evidenceCode
 
     //帐套(公司)
-    String fund
+    String company
 
     //凭证日期
     Date evidenceDate
@@ -29,7 +29,6 @@ class BankOrder {
 
     def beforeInsert(){
         createDate = new Date()
-
     }
     static constraints = {
         createDate nullable: true

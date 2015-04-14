@@ -21,7 +21,15 @@ class BankOrderEntry {
     //交易流水
     String transaction
 
+    //生成时间
+    Date createDate=new Date()
+
+    String company
 
     static constraints = {
+        evidenceCode nullable: true
+    }
+    def beforeInsert(){
+        createDate = new Date()
     }
 }

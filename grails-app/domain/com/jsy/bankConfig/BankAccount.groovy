@@ -1,5 +1,7 @@
 package com.jsy.bankConfig
 
+import com.jsy.archives.CustomerArchives
+import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.TypeConfig
 
 /**
@@ -21,9 +23,13 @@ class BankAccount {
      */
     String purposeName
 
+    FundCompanyInformation companyInformation
+    CustomerArchives customerArchives
 
     static constraints = {
         purposeName nullable: true
+        companyInformation nullable: true
+        customerArchives nullable: true
     }
 
 
