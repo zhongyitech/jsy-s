@@ -1,5 +1,6 @@
 package com.jsy.auth
 
+import com.jsy.fundObject.Fund
 import com.jsy.utility.DomainHelper
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -128,4 +129,21 @@ class RoleCollectionResource {
 
     }
 
+    @GET
+    @Path('/nameLike')
+    Response findByNameLike(@QueryParam('params') String username) {
+        def roles = Role.findAllByNameLikeOrAuthorityLike("%" + username + "%","%" + username + "%")
+        org.json.JSONArray jsonArray = new org.json.JSONArray()
+        roles.each {
+            JSONObject jso = new JSONObject()
+            jso.put("value", it.name)
+            jso.put("data", it.id)
+            jsonArray.put(jso)
+        }
+        JSONObject jsonObject = new JSONObject()
+        jsonObject.put("query", "Unit")
+        jsonObject.put("suggestions", jsonArray)
+
+        return Response.ok(jsonObject.toString()).status(RESPONSE_STATUS_SUC).build();
+    }
 }

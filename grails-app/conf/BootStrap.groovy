@@ -591,14 +591,11 @@ class BootStrap {
         TSWorkflowModelPhase phase6 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 6, phaseEn: "otherEA", phaseName: "步骤1.6：第三方法律机构（项目部负责发起申请，法务部，财务部配合）");
         phase6.addToPhaseParticipants(projectIncharger)
         phase6.save(failOnError: true)
-        TSWorkflowModelPhase phase8 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 8, phaseEn: "addCompany", phaseName: "步骤2：添加有限合伙企业（项目部负责发起申请，法务部，财务部配合）");
-        phase8.addToPhaseParticipants(projectIncharger)
-        phase8.save(failOnError: true)
-        TSWorkflowModelPhase phase9 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 9, phaseEn: "makeContact", phaseName: "步骤3：项目合同——选择预发行基金以及录入合同资料（项目部负责发起申请，法务部，财务部配合）");
+        TSWorkflowModelPhase phase9 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 7, phaseEn: "makeContact", phaseName: "步骤2：项目合同——选择预发行基金以及录入合同资料（项目部负责发起申请，法务部，财务部配合）");
         phase9.addToPhaseParticipants(projectIncharger)
         phase9.save(failOnError: true)
-        TSWorkflowModelPhase phase10 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 10, phaseEn: "makeContactOA", phaseName: "步骤3.1：项目合同——OA审核");
-//        phase10.addToPhaseParticipants(projectIncharger)
+        TSWorkflowModelPhase phase10 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 8, phaseEn: "makeContactOA", phaseName: "步骤2.1：项目合同——OA审核");
+        phase10.addToPhaseParticipants(projectIncharger)
         phase10.save(failOnError: true)
 
         tsWorkflow.addToModelPhases(phase1)
@@ -607,7 +604,7 @@ class BootStrap {
         tsWorkflow.addToModelPhases(phase4)
         tsWorkflow.addToModelPhases(phase5)
         tsWorkflow.addToModelPhases(phase6)
-        tsWorkflow.addToModelPhases(phase8)
+//        tsWorkflow.addToModelPhases(phase8)
         tsWorkflow.addToModelPhases(phase9)
         tsWorkflow.addToModelPhases(phase10)
         tsWorkflow.save(failOnError: true)

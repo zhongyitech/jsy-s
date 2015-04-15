@@ -7,6 +7,7 @@ import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.JsonResult
 import com.jsy.utility.MyResponse
+import com.jsy.auth.Role;
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -386,15 +387,9 @@ class TSProjectCollectionResource {
      */
     @GET
     @Path('/getProjectModelRole')
-    Response getProjectModelRole(@QueryParam("phaseIndex") int phaseIndex){
-        try{
-            MsgModel msgModel = projectResourceService.getProjectModelRole(phaseIndex);
-            if(msgModel == null){
-                ok JsonResult.error("java error");
-            }
-            ok JsonResult.success(msgModel.result);
-        }catch (Exception ex){
-            ok JsonResult.error(ex.message);
+    Response getProjectModelRole(){
+        MyResponse.ok {
+            return TSWorkflowModelPhase.list()
         }
     }
 
@@ -425,15 +420,16 @@ class TSProjectCollectionResource {
      */
     @POST
     @Path('/setProjectModelRole')
-    Response setProjectModelRole(@QueryParam("id") Long id,@QueryParam("phaseIndex") int phaseIndex){
-        try{
-            MsgModel msgModel = projectResourceService.setProjectModelRole(id,phaseIndex);
-            if(msgModel == null){
-                ok JsonResult.error("java error");
+    Response setProjectModelRole(@QueryParam("roleids") String roleids,@QueryParam("phaseIndex") int phaseIndex){
+        MyResponse.ok {
+            TSWorkflowModelPhase phase = TSWorkflowModelPhase.findByPhaseIndex(phaseIndex)
+            Set roles = new ArrayList()
+            roleids.replace("[","").replace("]","").replace("\"","").split(",").each {
+                roles << Role.get(it)
             }
-            ok JsonResult.success(msgModel.result);
-        }catch (Exception ex){
-            ok JsonResult.error(ex.message);
+            roles = roles.unique()
+            phase.setPhaseParticipants(roles)
+            phase.save(failOnError: true)
         }
     }
 
