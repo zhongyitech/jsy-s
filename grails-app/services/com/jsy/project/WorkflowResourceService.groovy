@@ -37,7 +37,6 @@ class WorkflowResourceService {
         createProjects()
 //        initPayRecords();
         initRole();
-        initFlowModel()
         init_flow();
     }
 
@@ -53,75 +52,7 @@ class WorkflowResourceService {
         Role role3 = Role.findByAuthority("MinistryIncharger") ?: new Role(authority: "MinistryIncharger", name: "法务部负责人").save(failOnError: true);
     }
 
-    def initFlowModel() {
 
-
-        def tsWorkflowModel = TSWorkflowModel.findByModelName("projectCreateFlow")
-        if (tsWorkflowModel) {
-            println "flow model exist!"
-            return;
-        }
-
-        def admin = User.findByUsername('admin')
-
-
-        TSWorkflowModel tsWorkflow = new TSWorkflowModel(modelName: "projectCreateFlow");
-        tsWorkflow.save(failOnError: true)
-
-        def financialIncharger = Role.findByAuthority("FinancialIncharger")
-        def projectIncharger = Role.findByAuthority("ProjectIncharger")
-        def ministryIncharger = Role.findByAuthority("MinistryIncharger")
-
-        TSWorkflowModelPhase phase1 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 1, phaseEn: "gatherInfo", phaseName: "步骤1.1：资料采集（项目部负责并填写）");
-        phase1.addToPhaseParticipants(projectIncharger)
-        phase1.save(failOnError: true)
-        TSWorkflowModelPhase phase2 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 2, phaseEn: "gatherOA", phaseName: "步骤1.2：资料评判——OA审核");
-//        phase2.addToPhaseParticipants(projectIncharger)
-        phase2.save(failOnError: true)
-        TSWorkflowModelPhase phase3 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 3, phaseEn: "research", phaseName: "步骤1.3：现场考察（方案确定）（项目部负责发起申请，法务部，财务部配合）");
-        phase3.addToPhaseParticipants(projectIncharger)
-        phase3.save(failOnError: true)
-        TSWorkflowModelPhase phase4 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 4, phaseEn: "researchOA", phaseName: "步骤1.4：现场考察——OA审核");
-//        phase4.addToPhaseParticipants(projectIncharger)
-        phase4.save(failOnError: true)
-        TSWorkflowModelPhase phase5 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 5, phaseEn: "meeting", phaseName: "步骤1.5：投决会（项目部负责发起申请，法务部，财务部配合）");
-        phase5.addToPhaseParticipants(projectIncharger)
-        phase5.save(failOnError: true)
-        TSWorkflowModelPhase phase6 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 6, phaseEn: "otherEA", phaseName: "步骤1.6：第三方法律机构（项目部负责发起申请，法务部，财务部配合）");
-        phase6.addToPhaseParticipants(projectIncharger)
-        phase6.save(failOnError: true)
-        TSWorkflowModelPhase phase8 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 8, phaseEn: "addCompany", phaseName: "步骤2：添加有限合伙企业（项目部负责发起申请，法务部，财务部配合）");
-        phase8.addToPhaseParticipants(projectIncharger)
-        phase8.save(failOnError: true)
-        TSWorkflowModelPhase phase9 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 9, phaseEn: "makeContact", phaseName: "步骤3：项目合同——选择预发行基金以及录入合同资料（项目部负责发起申请，法务部，财务部配合）");
-        phase9.addToPhaseParticipants(projectIncharger)
-        phase9.save(failOnError: true)
-        TSWorkflowModelPhase phase10 = new TSWorkflowModelPhase(phaseModel: tsWorkflow, phaseIndex: 10, phaseEn: "makeContactOA", phaseName: "步骤3.1：项目合同——OA审核");
-//        phase10.addToPhaseParticipants(projectIncharger)
-        phase10.save(failOnError: true)
-
-        tsWorkflow.addToModelPhases(phase1)
-        tsWorkflow.addToModelPhases(phase2)
-        tsWorkflow.addToModelPhases(phase3)
-        tsWorkflow.addToModelPhases(phase4)
-        tsWorkflow.addToModelPhases(phase5)
-        tsWorkflow.addToModelPhases(phase6)
-        tsWorkflow.addToModelPhases(phase8)
-        tsWorkflow.addToModelPhases(phase9)
-        tsWorkflow.addToModelPhases(phase10)
-        tsWorkflow.save(failOnError: true)
-
-        //
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        Date fromDate = dateFormat.parse("20150101");
-        Date toDate = dateFormat.parse("20250101");
-        String accessor = "zhangj"
-        SpecailAccess sa1 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: accessor, projectId: 1);
-        sa1.save(failOnError: true)
-        SpecailAccess sa2 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: accessor, projectId: 2, phaseEn: "gatherInfoBean");
-        sa2.save(failOnError: true)
-
-    }
 
     def initFund() {
         Fund fund = new Fund(

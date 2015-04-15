@@ -1,6 +1,7 @@
 package com.jsy.bankConfig
 
 import com.jsy.fundObject.FundCompanyInformation
+import com.jsy.utility.BankOrderUntil
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -52,7 +53,7 @@ class BankTransactionsRecordResourceService {
         def list = BankTransactionsRecord.findAllByManagedAndSummaryIsNotNull(false)
         def entryList = []
         list.each {
-            it.manageType=2
+            it.manageType = 2
             def summary = Summary.findByRemarkLikeAndAccountName("%" + it.summary + "%", it.account)
             if (summary != null) {
                 def bankAccount = BankAccount.findByAccount(it.account)
@@ -60,10 +61,9 @@ class BankTransactionsRecordResourceService {
                     def subject = SummaryToFund.findBySumNameAndCompanyAndBorrow(summary.summary, bankAccount.account, it.borrowAndLend)
                     def orderEntry = new BankOrderEntry()
                     orderEntry.summary = summary.summary
-                    subjectFormat(subject,bankAccount)
-                    orderEntry.subjectName = subject != null ? subject.subject + "-" + (subject.subjectLevel2!=null ? subject.subjectLevel2 : "")  : ""
-                    orderEntry.company=bankAccount.companyInformation.companyName
-
+                    def subject2 = subjectFormat(subject,[bank:bankAccount,company:bankAccount.companyInformation])
+                    orderEntry.subjectName = subject != null ? subject.subject + "-" + subject2 : ""
+                    orderEntry.company = bankAccount.companyInformation.companyName
                     orderEntry.transaction = it.transactionsCode
                     if (it.borrowAndLend) {
                         orderEntry.borrowAmount = (it.actionAmount)
@@ -71,12 +71,12 @@ class BankTransactionsRecordResourceService {
                         orderEntry.lendAmount = it.actionAmount
                     }
                     orderEntry.save(failOnError: true)
-                    it.manageType=1
+                    it.manageType = 1
                     entryList.push(orderEntry)
                 }
             }
-            it.managed=true
-            it.processedDate=new Date()
+            it.managed = true
+            it.processedDate = new Date()
             it.save(failOnError: true)
         }
         return entryList
@@ -89,9 +89,10 @@ class BankTransactionsRecordResourceService {
     def formatSummary(Summary summary) {
         return summary.summary
     }
-    void subjectFormat(SummaryToFund stf,BankAccount baccount){
-        if(stf!=null){
 
-        }
+    String subjectFormat(SummaryToFund stf, def arg) {
+        print("subject:" + stf.subjectLevel2)
+        if (stf.subjectLevel2 == null) return ""
+        return BankOrderUntil.Instance().GetFormatValue(stf.subjectLevel2, arg)
     }
 }

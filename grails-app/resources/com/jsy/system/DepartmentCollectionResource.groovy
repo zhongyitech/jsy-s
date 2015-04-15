@@ -66,6 +66,9 @@ class DepartmentCollectionResource {
 
         MyResponse.page {
             log.info("get List")
+            def  开户行="1214"
+            def s="${开户行}[账号后4位]"
+            print(s)
             DomainHelper.getPage(Department, arg)
         }
     }
@@ -77,17 +80,34 @@ class DepartmentCollectionResource {
      */
     @GET
     @Path('/selectList')
-    Response seleectList(@QueryParam('depId') @DefaultValue('0') Long depId) {
+    Response seleectList(@QueryParam('depId') @DefaultValue('0') Long depId,
+                         @QueryParam('pid') @DefaultValue('0') Long pid) {
         MyResponse.ok {
-            def list = Department.list()
+            def list = null
             if (depId > 0) {
                 list = Department.where {
                     ne("id", depId)
                 }.list()
             }
-            list.collect {
-                [text: it.deptName + "|" + it.fundCompanyInformation?.companyName, value: it.id]
+            if (depId > 0) {
+                list = Department.where {
+                    eq("parent", pid)
+                }.list()
             }
+            if(list==null){
+                list=Department.list()
+            }
+            list.collect {
+                [mapName: it.deptName + " | " + it.fundCompanyInformation?.companyName, id: it.id]
+            }
+        }
+    }
+
+    @GET
+    @Path('/id')
+    Response getDempartment(@QueryParam('id')  Long id) {
+        MyResponse.ok {
+           departmentResourceService.read(id)
         }
     }
 

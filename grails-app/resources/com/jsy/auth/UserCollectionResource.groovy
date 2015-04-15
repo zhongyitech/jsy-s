@@ -48,7 +48,6 @@ class UserCollectionResource {
                 }
             }
             user
-            // return user 也可以
         }
     }
 
@@ -69,39 +68,6 @@ class UserCollectionResource {
         }
     }
 
-//    //查询所有用户
-//    @GET
-//    Response readAll() {
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def ia
-//        JSONObject userAndRole = new JSONObject();
-//        ArrayList userList = new ArrayList()
-//        try {
-//            ia = userResourceService.readAll()
-//            int i = 0
-//            ia.each {
-//                userAndRole = new JSONObject(((it as JSON).toString()))
-//                def ur = UserRole.findAllByUser(it)
-//                int j = 0
-//                JSONObject roleList = new JSONObject();
-//                ur.each {
-//                    roleList.put(j, it.role)
-//                }
-//                userAndRole.put("Role", roleList)
-//                userList.add(userAndRole)
-//            }
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", userList as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
-//            print(e)
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
-//    }
 
     @GET
     @Path('/nameLike')
@@ -111,7 +77,7 @@ class UserCollectionResource {
             def jsonArray = []
             users.each {
                 def jso = [:]
-                jso.put("value", it.chainName)
+                jso.put("value", it.chainName+"("+it.username+")")
                 jso.put("data", it.id)
                 jsonArray.add(jso)
             }
@@ -291,30 +257,6 @@ class UserCollectionResource {
             return result
         }
 
-//        print("userCollectionResource.readAllForPage()")
-//        org.json.JSONObject result = new org.json.JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        int total
-//        def ia
-//        try {
-//            org.json.JSONObject json = userResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-//            total = json.get("size")
-//            print(total)
-//            ia = json.get("page")
-//            print(ia)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", ia as JSON)
-//            result.put("rest_total", total)
-//            ok JsonResult.success(result.toString())
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", ia as JSON)
-//            result.put("rest_total", total)
-//            ok JsonResult.error(e.message)
-//        }
     }
 
     /**
@@ -333,26 +275,6 @@ class UserCollectionResource {
             obj.save(failOnError: true)
             return obj
         }
-//        print("userCollectionResource.updatePassword()")
-//        org.json.JSONObject result = new org.json.JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        try {
-//            User obj = springSecurityService.getCurrentUser()
-//            obj.password = dto.password
-//            obj.save(failOnError: true)
-//
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", obj as JSON)
-//
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
-//            e.printStackTrace()
-//            print(e)
-//            result.put("rest_status", restStatus)
-//
-//            return Response.ok(result.toString()).status(500).build()
-//        }
     }
 
     @GET
