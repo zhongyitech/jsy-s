@@ -574,14 +574,11 @@ class InvestmentArchivesCollectionResource {
             List<InvestmentArchives> investmentArchives = dc
                     .list([max: arg.pagesize, offset: arg.startposition])
             def res = []
-//            res.push([x:100,y:100])//
-//            return [data: res,total: 10] //这样是对的,不知道为什么了
-            //生成需要的数据
             investmentArchives.each {
                 def row = [:]
                 row.contractNum = it.contractNum
                 row.htzt = it.htzt.mapName
-                row.customer = it.customer != null ? it.customer.name : ""
+                row.customer =it.username
                 row.rgrq = it.rgrq
                 row.tzqx = it.tzqx
                 row.tzje = it.sjtzje
@@ -611,15 +608,6 @@ class InvestmentArchivesCollectionResource {
                 row.next_tc_time = next_tc_time
                 row.next_tc_amount = next_tc_amount
 
-                //下次付息时间和金额
-//                def next_pay = it.payTimes.sort {
-//                    a, b ->
-//                        print(a.px + "," + b.px + ": " + it.id)
-//                        (a.px < b.px)
-//                }.find {
-//                    it.fxsj > today
-//                }
-
                 Date n_day
                 it.payTimes.each {
                     print(it.fxsj)
@@ -640,7 +628,6 @@ class InvestmentArchivesCollectionResource {
                 row.next_pay_amount = investmentArchivesResourceService.getPayOnceAmount(it)
                 res.add(row)
             }
-//            return [data: res, total: arg.startposition == 0 ? dc.count() : 0]  //这种写法Res 转换不成JSON对象,总结果会返回空 , 不知道什么原因
             return [data: res, total: dc.count()]
         }
     }
