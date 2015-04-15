@@ -111,7 +111,7 @@ class UserCollectionResource {
             def jsonArray = []
             users.each {
                 def jso = [:]
-                jso.put("value", it.chainName)
+                jso.put("value", it.chainName+"("+it.username+")")
                 jso.put("data", it.id)
                 jsonArray.add(jso)
             }
