@@ -338,7 +338,7 @@ class FundCollectionResource {
 
     @GET
     @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String username) {
+    Response findByNameLike(@QueryParam('params') String username,@QueryParam('extraData') String jsonData) {
         def users = Fund.findAllByFundNameLike("%" + username + "%")
         org.json.JSONArray jsonArray = new org.json.JSONArray()
         users.each {
