@@ -13,6 +13,7 @@ import com.jsy.auth.User
 import com.jsy.auth.UserRole
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.project.SpecailAccess
 import com.jsy.project.TSWorkflowModel
 import com.jsy.project.TSWorkflowModelPhase
@@ -68,16 +69,85 @@ class BootStrap {
             new TypeConfig(type: 7, mapName: "日常支出", mapValue: 2).save(failOnError: true)
             new TypeConfig(type: 7, mapName: "募集", mapValue: 3).save(failOnError: true)
             new TypeConfig(type: 7, mapName: "其它", mapValue: 4).save(failOnError: true)
-
             TypeConfig performance1 = new TypeConfig(type: 8, mapName: "管理", mapValue: 1, description: "默认职能")
             performance1.save(failOnError: true)
             TypeConfig performance2 = new TypeConfig(type: 8, mapName: "销售", mapValue: 2, description: "基金销售部门选择此职能")
             performance2.save(failOnError: true)
-//        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
-            Department department = new Department(deptName: "销售部", buildDate: new Date(), performance: performance2)
-            department.save(failOnError: true)
-            Department department2 = new Department(deptName: "行政管理部", buildDate: new Date(), performance: performance1)
+
+            //add Company
+            def defaultCompany = new FundCompanyInformation(companyName: "深圳金赛银基金管理有限公司", companyNickName: "JSY", telephone: "0755-8888888", fax: "0755-8888888"
+                    , city: '深圳市', address: '深圳市罗湖区', area: '罗湖区', corporate: "王", foundingDate: new Date(), province: "广东省", status: "正常", companyType:
+                    TypeConfig.findByTypeAndMapValue(6, 1), protocolTemplate: 0)
+                    .save(failOnError: true)
+            def ceoDeparment = new Department(deptName: "董事会", performance: performance1, fundCompanyInformation: defaultCompany, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+            new Department(deptName: "总裁办公室", performance: performance1, parent: ceoDeparment, fundCompanyInformation: defaultCompany, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "投资决策委员会", performance: performance1, parent: ceoDeparment, fundCompanyInformation: defaultCompany, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "战略发展委员会", performance: performance1, parent: ceoDeparment, fundCompanyInformation: defaultCompany, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "薪酬管理委员会", performance: performance1, parent: ceoDeparment, fundCompanyInformation: defaultCompany, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+
+            def defaultDeparment1 = new Department(deptName: "账务管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "资金管理部", parent: defaultDeparment1, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "会计核算部", parent: defaultDeparment1, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "财务结算部", parent: defaultDeparment1, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+
+
+            def defaultDeparment2 = new Department(deptName: "销售管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "财务结算部", parent: defaultDeparment2, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            Department department = new Department(deptName: "财富一部", parent: defaultDeparment2, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "财富二部", parent: defaultDeparment2, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "财富三部", parent: defaultDeparment2, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "客服部", parent: defaultDeparment2, fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+
+
+            def defaultDeparment3 = new Department(deptName: "分子公司管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            Department department2 = new Department(deptName: "行政管理部", buildDate: new Date(), performance: performance1, parent: defaultDeparment2)
             department2.save(failOnError: true)
+            new Department(deptName: "分子公司管理部", parent: defaultDeparment3, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "招商管理部", parent: defaultDeparment3, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+
+            def defaultDeparment4 = new Department(deptName: "企划管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "市场策划部", parent: defaultDeparment4, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "公共媒体部", parent: defaultDeparment4, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "品牌推广部", parent: defaultDeparment4, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "金赛银财富商学院", parent: defaultDeparment4, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+
+            def defaultDeparment5 = new Department(deptName: "项目管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "项目前期部", parent: defaultDeparment5, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "资产管理部", parent: defaultDeparment5, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "投资银行部", parent: defaultDeparment5, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "基金方案部", parent: defaultDeparment5, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+            def defaultDeparment6 = new Department(deptName: "资本管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "直投项目部", parent: defaultDeparment6, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "海外投资部", parent: defaultDeparment6, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "关联投资部", parent: defaultDeparment6, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+
+            def defaultDeparment7 = new Department(deptName: "行政管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "人力资源部", parent: defaultDeparment7, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "行政综合部", parent: defaultDeparment7, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "信息技术部", parent: defaultDeparment7, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "档案管理部", parent: defaultDeparment7, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+            def defaultDeparment8 = new Department(deptName: "风控管理中心", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "合规风控部", parent: defaultDeparment8, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "稽核审计部", parent: defaultDeparment8, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "外包服务部", parent: defaultDeparment8, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "投后管理部", parent: defaultDeparment8, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "境外律师部", parent: defaultDeparment8, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+            new Department(deptName: "金融产品发行部", parent: defaultDeparment8, fundCompanyInformation: defaultCompany, performance: performance2, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
+
+            def adminDeparment = new Department(deptName: "系统测试部", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "负责系统功能的测试和开发部门(Dev Test)", status: 0, buildDate: new Date()).save(failOnError: true)
+
+//        new TypeConfig(type:8,mapName: "其它",mapValue: 3).save(failOnError: true)
+//            Department department = new Department(deptName: "销售部", buildDate: new Date(), performance: performance2)
+//            department.save(failOnError: true)
 
 //        /* 添加角色数据  */
 //        [
@@ -93,44 +163,58 @@ class BootStrap {
                     yhzh: '8888888888',
                     username: 'admin',
                     password: 'admin',
-                    department: department,
-                    chainName: "管理员",
+                    department: adminDeparment,
+                    chainName: "管理员(Test)",
                     enabled: true).save(flush: true)
+            adminDeparment.leader = user1
+            adminDeparment.save(failOnError: true)
+
             def ordinary = User.findByUsername('ordinary') ?: new User(
                     skr: 'oswaldl',
                     khh: '平安银行',
                     yhzh: '888888888888',
-                    username: 'ordinary',
-                    password: 'ordinary',
+                    username: 'user1',
+                    password: '123',
                     department: department,
-                    chainName: "测试账号",
+                    chainName: "业务经理(Test)",
                     enabled: true).save(flush: true)
             def user2 = User.findByUsername('pengyh') ?: new User(
-                    skr: 'rela',
+                    skr: '部门经理',
                     khh: '平安银行',
-                    yhzh: '52624623',
-                    username: 'zhangj',
-                    chainName: '测试账号2',
-                    password: 'zhangj',
+                    yhzh: '123456789',
+                    username: 'user2',
+                    chainName: '部门经理(Test)',
+                    password: '123',
                     department: department,
                     enabled: true).save(flush: true)
+            department.leader = user2
+            department.save(failOnError: true)
             def user3 = User.findByUsername('liujw') ?: new User(
-                    skr: 'zbua',
+                    skr: '普通员工',
                     khh: '平安银行',
                     yhzh: '436461352352',
-                    username: 'liujw',
-                    chainName: '测试账号3',
-                    password: 'liujw',
-                    department: department,
+                    username: 'user3',
+                    chainName: '普通员工(Test)',
+                    password: '123',
+                    department: adminDeparment,
                     enabled: true).save(flush: true)
             def user4 = User.findByUsername('li') ?: new User(
-                    skr: 'kgs',
+                    skr: '财务人员',
                     khh: '平安银行',
                     yhzh: '465742632',
-                    username: 'li',
-                    chainName: '测试账号4',
-                    password: 'li',
-                    department: department,
+                    username: 'user4',
+                    chainName: '财务人员(Test)',
+                    password: '123',
+                    department: adminDeparment,
+                    enabled: true).save(flush: true)
+            def user5 = User.findByUsername('li') ?: new User(
+                    skr: '行政人员',
+                    khh: '平安银行',
+                    yhzh: '465742632',
+                    username: 'user5',
+                    chainName: '行政人员(Test)',
+                    password: '123',
+                    department: adminDeparment,
                     enabled: true).save(flush: true)
 
             //角色
@@ -202,7 +286,6 @@ class BootStrap {
             Resource kh = new Resource(name: "客户", objectName: Customer.class.getName()).save(failOnError: true)
             Resource yh = new Resource(name: "用户", objectName: User.class.getName()).save(failOnError: true)
 
-
             //Common操作权限
             Operation operation1 = new Operation(cz: 'read', name: '查询', title: '查询', visible: true).save(failOnError: true)
             Operation operation2 = new Operation(cz: 'creat', name: '创建', title: '创建', visible: true).save(failOnError: true)
@@ -226,7 +309,6 @@ class BootStrap {
             yh.addToOperations(operation2)
             yh.addToOperations(operation3)
             yh.addToOperations(operation4)
-
 
             //User资源
             ResourceRole resourceRole = new ResourceRole(role: adminRole, resource: yh).save(failOnError: true)
@@ -554,7 +636,7 @@ class BootStrap {
         }
     }
 
-    def initFlowModel= {
+    def initFlowModel = {
 
 
         def tsWorkflowModel = TSWorkflowModel.findByModelName("projectCreateFlow")
