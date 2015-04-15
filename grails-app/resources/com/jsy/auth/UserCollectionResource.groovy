@@ -13,6 +13,7 @@ import org.restlet.ext.json.JsonConverter
 
 import javax.management.Query
 import javax.ws.rs.DELETE
+import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 import static com.jsy.utility.MyResponse.*
@@ -71,24 +72,29 @@ class UserCollectionResource {
 
     @GET
     @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String username, @QueryParam('deparmentid') int id) {
+    Response findByNameLike(@QueryParam('params') String username,
+                            @QueryParam('extraData') String extraData,
+                            @QueryParam('departmentId') @DefaultValue("-1") Long departmentId) {
         ok {
-            def users = User.findAllByUsernameLikeOrChainNameLike("%" + username + "%", "%" + username + "%")
+            def users = null
+            if (departmentId > 0) {
+                users = User.findAllByDepartmentAndUsernameLikeAndChainNameLike(departmentId, "%" + username + "%", "%" + username + "%")
+            }
+            if (users == null)
+                users = User.findAllByUsernameLikeOrChainNameLike("%" + username + "%", "%" + username + "%")
             def jsonArray = []
             users.each {
                 def jso = [:]
-                jso.put("value", it.chainName+"("+it.username+")")
+                jso.put("value", it.chainName + "(" + it.username + ")" + (it.department ? " | " + it.department.deptName : ""))
                 jso.put("data", it.id)
                 jsonArray.add(jso)
             }
             def data = [:]
             data.put("query", "Unit")
             data.put("suggestions", jsonArray)
-
             return data
         }
     }
-
 
     @GET
     @Path('/username({username})')
@@ -298,7 +304,7 @@ class UserCollectionResource {
             print(name)
 
             if (name != null && name.size() > 2) {
-                return User.findAllByUsernameLikeOrChainNameLike("%" + name + "%","%" + name + "%").collect {
+                return User.findAllByUsernameLikeOrChainNameLike("%" + name + "%", "%" + name + "%").collect {
                     [mapName: it.chainName, id: it.id]
                 }
             } else {

@@ -538,7 +538,8 @@ class InvestmentArchivesCollectionResource {
                 it.properties.each {
                     switch (it.key) {
                         case "customer":
-                            addKey(row, it, "name")
+//                            addKey(row, it, "name")
+                            row.putAt(it.key,it.value==null ? null: [name:it.value.name,country:it.value.country])
                             break
                         case "fund":
                             row.putAt(it.key, it.value.fundName)

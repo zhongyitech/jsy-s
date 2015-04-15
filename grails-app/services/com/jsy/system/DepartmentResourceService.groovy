@@ -8,7 +8,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 class DepartmentResourceService {
 
     def create(Department dto) {
-        dto.save()
+        dto.save(failOnError: true)
     }
 
     def read(id) {
