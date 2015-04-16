@@ -103,8 +103,4 @@ class CommissionInfoResourceService {
         toDoTask.status=1
         return commissionInfo.save(failOnError: true)
     }
-
-
-
-
 }

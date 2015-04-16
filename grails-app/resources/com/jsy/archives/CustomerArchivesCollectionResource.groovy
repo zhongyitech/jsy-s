@@ -1,5 +1,6 @@
 package com.jsy.archives
 
+import com.jsy.auth.User
 import com.jsy.utility.DomainHelper
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -21,7 +22,7 @@ import javax.ws.rs.core.Response
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class CustomerArchivesCollectionResource {
-    def customerArchivesResourceService
+    CustomerArchivesResourceService customerArchivesResourceService
 
     @PUT
     Response create(CustomerArchives dto) {
@@ -100,7 +101,28 @@ class CustomerArchivesCollectionResource {
     @Path('/name')
     Response getCustomerByName(@QueryParam("name") String name) {
         ok {
-            CustomerArchives.findByNameLike("%" + name + "%")
+            CustomerArchives.findByNameLike("%" + name + "%")?.properties
+        }
+    }
+
+    @GET
+    @Path('/bankForUserId')
+    Response getUserByID(@QueryParam("id") Long id) {
+        ok {
+            def user = User.read(id)
+            if (user == null)
+                throw new Exception("No Found User!")
+            print(user.chainName)
+            def ca = CustomerArchives.findByNameLike(user.chainName)
+            if (ca == null || ca.bankAccount.size() == 0)
+                throw new Exception("没有银行信息")
+            def bank = ca.bankAccount.find {
+                it.defaultAccount
+            }
+            if (bank == null) {
+                bank = ca.bankAccount.first()
+            }
+            [yhzh: bank.account, skr: bank.accountName, khh: bank.bankOfDeposit]
         }
     }
 
