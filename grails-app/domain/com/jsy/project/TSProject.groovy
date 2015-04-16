@@ -2,6 +2,7 @@ package com.jsy.project
 
 import com.jsy.auth.User
 import com.jsy.fundObject.Fund
+import com.jsy.system.UploadFile
 
 /**
  * 基金项目，这里记录了项目的基本信息，以及创建项目流程的所有业务数据
@@ -106,7 +107,8 @@ class TSProject {
         makeContactOthersFiles:TSFlowFile,    //其他文件
 
         /****结算文件****/
-        endProjectFiles:TSFlowFile    //结算文件
+        endProjectFiles : UploadFile,  //结算文件
+        startProjectFiles : UploadFile  //项目文件
     ];
 
     static mappedBy = [

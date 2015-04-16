@@ -4,6 +4,7 @@ import GsonTools.GsonTool
 import Models.MsgModel
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
+import com.jsy.system.UploadFile
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.JsonResult
 import com.jsy.utility.MyResponse
@@ -548,17 +549,140 @@ class TSProjectCollectionResource {
 
     @GET
     @Path('/getProjectSimpleInfo')
-    Response getProjectSimpleInfo(@QueryParam("projectid") int projectid){
+    Response getProjectSimpleInfo(@QueryParam("id") Long id){
         MyResponse.ok {
-            TSProject project = TSProject.get(projectid)
+            TSProject project = TSProject.get(id)
             if(project){
-                return project.getProjectSimpleInfo()
+                return [
+                        director:project.director,
+                        supervisor:project.supervisor,
+                        stockStructure:project.stockStructure,
+                        debt:project.debt,
+                        assets:project.assets,
+                        pdesc:project.pdesc,
+                        endSummary:project.endSummary
+                ]
             }else{
-                return null
+                return "{}"
             }
 
         }
     }
+
+    @POST
+    @Path('/updateProjectSimpleInfo')
+    Response updateProjectSimpleInfo(TSProject projectInfo,@QueryParam("id") Long id){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project&&projectInfo){
+                    project.director=projectInfo.director
+                    project.supervisor=projectInfo.supervisor
+                    project.stockStructure=projectInfo.stockStructure
+                    project.debt=projectInfo.debt
+                    project.assets=projectInfo.assets
+                    project.pdesc=projectInfo.pdesc
+                    project.endSummary=projectInfo.endSummary
+            }
+        }
+    }
+
+    @GET
+    @Path('/getProjectStockRight')
+    Response getProjectStockRight(@QueryParam("id") Long id){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project){
+                return project.stockRights
+            }else{
+                return "{}"
+            }
+
+        }
+    }
+
+    @POST
+    @Path('/addProjectStockRight')
+    Response addProjectStockRight(StockRight stockRight,@QueryParam("id") Long id){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project&&stockRight){
+                def obj=stockRight.save(failOnError: true)
+                project.addToStockRights(obj)
+                return obj
+            }else{
+                return "{}"
+            }
+        }
+    }
+
+    @DELETE
+    @Path('/delProjectStockRight')
+    Response delProjectStockRight(@QueryParam("id") Long id,@QueryParam("stock_right_id") Long stockRightId){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project){
+                project.removeFromStockRights(StockRight.get(stockRightId))
+            }else{
+                return "{}"
+            }
+        }
+    }
+
+    @GET
+    @Path('/getProjectFiles')
+    Response getProjectFile(@QueryParam("id") Long id,@QueryParam("type") String type){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project){
+                if(type=="project"){
+                    return project.startProjectFiles
+                }else{
+                    return project.endProjectFiles
+                }
+            }else{
+                return "{}"
+            }
+
+        }
+    }
+
+    @POST
+    @Path('/addProjectFile')
+    Response addProjectFile(UploadFile uploadFile,@QueryParam("id") Long id,@QueryParam("type") String type){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project&&uploadFile){
+                def obj=uploadFile.save(failOnError: true)
+                if(type=="project"){
+                    project.addToStartProjectFiles(obj)
+                }else{
+                    project.addToEndProjectFiles(obj)
+                }
+                return obj
+            }else{
+                return "{}"
+            }
+        }
+    }
+
+    @DELETE
+    @Path('/delProjectFile')
+    Response delProjectFile(@QueryParam("id") Long id,@QueryParam("file_id") Long fileId,@QueryParam("type") String type){
+        MyResponse.ok {
+            TSProject project = TSProject.get(id)
+            if(project){
+                def file=UploadFile.get(fileId)
+                if(type=="project"){
+                    project.removeFromStartProjectFiles(file)
+                }else{
+                    project.removeFromEndProjectFiles(file)
+                }
+            }else{
+                return "{}"
+            }
+        }
+    }
+
 }
 
 
