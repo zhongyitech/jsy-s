@@ -42,5 +42,13 @@ class BankOrderUntil {
                     return arg.bank.account
                 return arg.bank.account.substring(arg.bank.account.length() - 4)
         })
+        list.put("[对方户名]", {
+            arg ->
+                return arg.record.otherSideName
+        })
+        list.put("[对方账号]", {
+            arg ->
+                return arg.record.otherSideAccount
+        })
     }
 }
