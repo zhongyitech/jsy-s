@@ -1,8 +1,10 @@
 package com.jsy.fundObject
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -244,4 +246,96 @@ class FundCompanyInformationCollectionResource {
             }
         }
     }
+
+    @GET
+    @Path('/nameLike')
+    Response findByNameLike(@QueryParam('params') String name,@QueryParam('extraData') String jsonData) {
+        def entity = []
+        def companies = FundCompanyInformation.findAllByCompanyNameLike("%" + name + "%")
+        org.json.JSONArray jsonArray = new org.json.JSONArray()
+        companies.each {
+            JSONObject jso = new JSONObject()
+            if(it.companyType.mapValue==1){
+                jso.put("value", "合伙："+it.companyName)
+            }else{
+                jso.put("value", "公司："+it.companyName)
+            }
+
+            jso.put("data", "F-"+it.id)
+            jsonArray.put(jso)
+        }
+
+        def customers = CustomerArchives.findAllByNameLike("%" + name + "%")
+        customers.each {
+            JSONObject jso = new JSONObject()
+            jso.put("value", "客户："+it.name)
+
+            jso.put("data", "C-"+it.id)
+            jsonArray.put(jso)
+        }
+
+        JSONObject jsonObject = new JSONObject()
+        jsonObject.put("query", "Unit")
+        jsonObject.put("suggestions", jsonArray)
+
+        return Response.ok(jsonObject.toString()).status(RESPONSE_STATUS_SUC).build();
+    }
+
+    @GET
+    @Path('/loadFBanks')
+    Response loadFBanks(@QueryParam('companyid') int companyid) {
+        MyResponse.ok {
+            def project_banks = FundCompanyInformation.get(companyid)?.bankAccount?.collect { bank ->
+                def rtn2 = [:]
+                rtn2.id = bank.id
+                rtn2.bankName = bank.bankName
+                rtn2.bankOfDeposit = bank.bankOfDeposit
+                rtn2.accountName = bank.accountName
+                rtn2.account = bank.account
+                rtn2.defaultAccount = bank.defaultAccount
+                rtn2.purposeName = bank.purposeName
+                rtn2.overReceive = bank.overReceive
+                rtn2
+            }
+
+            def banks = []
+            project_banks?.each {
+                if (it) {
+                    banks.addAll(it)
+                }
+            }
+
+            return banks.unique();
+        }
+    }
+
+    @GET
+    @Path('/loadCBanks')
+    Response loadCBanks(@QueryParam('customerid') int customerid) {
+        MyResponse.ok {
+
+            def project_banks = CustomerArchives.get(customerid)?.bankAccount?.collect { bank ->
+                def rtn2 = [:]
+                rtn2.id = bank.id
+                rtn2.bankName = bank.bankName
+                rtn2.bankOfDeposit = bank.bankOfDeposit
+                rtn2.accountName = bank.accountName
+                rtn2.account = bank.account
+                rtn2.defaultAccount = bank.defaultAccount
+                rtn2.purposeName = bank.purposeName
+                rtn2.overReceive = bank.overReceive
+                rtn2
+            }
+
+            def banks = []
+            project_banks?.each {
+                if (it) {
+                    banks.addAll(it)
+                }
+            }
+
+            return banks.unique();
+        }
+    }
+
 }

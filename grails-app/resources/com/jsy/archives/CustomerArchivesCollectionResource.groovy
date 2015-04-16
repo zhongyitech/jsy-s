@@ -26,18 +26,19 @@ class CustomerArchivesCollectionResource {
     @PUT
     Response create(CustomerArchives dto) {
         ok {
-            dto.zch=dto.khh=""
+            dto.zch = dto.khh = ""
             customerArchivesResourceService.create(dto)
         }
     }
 
     @DELETE
-    Response del(@QueryParam('id') Long id){
-        ok{
+    Response del(@QueryParam('id') Long id) {
+        ok {
             customerArchivesResourceService.delete(id)
             return true
         }
     }
+
     @POST
     @Path('/readAllForPage')
     Response queryAll(Map arg) {
@@ -93,5 +94,21 @@ class CustomerArchivesCollectionResource {
         jsonObject.put("suggestions", jsonArray)
 
         return Response.ok(jsonObject.toString()).build()
+    }
+
+    @GET
+    @Path('/name')
+    Response getCustomerByName(@QueryParam("name") String name) {
+        ok {
+            CustomerArchives.findByNameLike("%" + name + "%")
+        }
+    }
+
+    @GET
+    @Path('/id')
+    Response getCustomerByName(@QueryParam("id") Long id) {
+        ok {
+            customerArchivesResourceService.read(id)
+        }
     }
 }

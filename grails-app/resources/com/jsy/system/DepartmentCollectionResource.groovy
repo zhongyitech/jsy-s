@@ -1,8 +1,10 @@
 package com.jsy.system
 
+import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
+import grails.gorm.DetachedCriteria
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -38,7 +40,6 @@ class DepartmentCollectionResource {
     @PUT
     Response create(Department dto) {
         MyResponse.ok {
-
             departmentResourceService.create(dto)
         }
     }
@@ -55,6 +56,10 @@ class DepartmentCollectionResource {
             if (dto.parent == id) {
                 throw new Exception("上级部门不能是自己")
             }
+            print(dto.leader)
+            if (dto.leader && dto.leader.department && dto.leader.department.id != id) {
+                throw new Exception("负责人必须是本部门人员")
+            }
             dto.id = id
             departmentResourceService.update(dto)
         }
@@ -66,8 +71,8 @@ class DepartmentCollectionResource {
 
         MyResponse.page {
             log.info("get List")
-            def  开户行="1214"
-            def s="${开户行}[账号后4位]"
+            def 开户行 = "1214"
+            def s = "${开户行}[账号后4位]"
             print(s)
             DomainHelper.getPage(Department, arg)
         }
@@ -83,19 +88,16 @@ class DepartmentCollectionResource {
     Response seleectList(@QueryParam('depId') @DefaultValue('0') Long depId,
                          @QueryParam('pid') @DefaultValue('0') Long pid) {
         MyResponse.ok {
-            def list = null
-            if (depId > 0) {
-                list = Department.where {
-                    ne("id", depId)
-                }.list()
-            }
-            if (depId > 0) {
-                list = Department.where {
-                    eq("parent", pid)
-                }.list()
-            }
-            if(list==null){
-                list=Department.list()
+            print(depId + "," + pid)
+            def dc = Department.createCriteria()
+            def list = dc.list {
+                if (depId > 0) {
+                    ne('id', depId)
+                }
+                if (pid > 0) {
+                    def company = FundCompanyInformation.get(pid)
+                    eq('fundCompanyInformation', company)
+                }
             }
             list.collect {
                 [mapName: it.deptName + " | " + it.fundCompanyInformation?.companyName, id: it.id]
@@ -105,9 +107,9 @@ class DepartmentCollectionResource {
 
     @GET
     @Path('/id')
-    Response getDempartment(@QueryParam('id')  Long id) {
+    Response getDempartment(@QueryParam('id') Long id) {
         MyResponse.ok {
-           departmentResourceService.read(id)
+            departmentResourceService.read(id)
         }
     }
 

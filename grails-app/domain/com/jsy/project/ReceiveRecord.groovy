@@ -1,7 +1,9 @@
 package com.jsy.project
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 
 /**
  * 收款记录
@@ -21,7 +23,14 @@ class ReceiveRecord {
     String[] allPayTargets =["original","firstyear","maintain","channel","overdue","penalty","borrow"]
 
     //银行账户
-    BankAccount bankAccount
+    //From
+    FundCompanyInformation funcCompanyFrom
+    CustomerArchives customerArchivesFrom
+    BankAccount bankAccountFrom
+    //To
+    FundCompanyInformation funcCompanyTo
+    CustomerArchives customerArchivesTo
+    BankAccount bankAccountTo
 
     //本次收款用到账户余额多少
     BigDecimal useOverRecvAmount = 0
@@ -44,6 +53,11 @@ class ReceiveRecord {
 
     static constraints = {
         pdesc nullable: true
+
+        funcCompanyFrom nullable: true
+        customerArchivesFrom nullable: true
+        funcCompanyTo nullable: true
+        customerArchivesTo nullable: true
     }
 
     def getShowProperties(){
@@ -52,10 +66,15 @@ class ReceiveRecord {
                 amount:amount,
                 receiveDate:receiveDate,
 
-                bankName:bankAccount.bankName,              //    银行名称
-                bankOfDeposit:bankAccount.bankOfDeposit,    //    开户行
-                accountName:bankAccount.accountName,        //    户名
-                account: bankAccount.account+"("+bankAccount.overReceive+")",               //    账号
+                bankName:bankAccountFrom.bankName,              //    银行名称
+                bankOfDeposit:bankAccountFrom.bankOfDeposit,    //    开户行
+                accountName:bankAccountFrom.accountName,        //    户名
+                account: bankAccountFrom.account+"("+bankAccountFrom.overReceive+")",               //    账号
+
+                bankNameTo:bankAccountTo.bankName,              //    银行名称
+                bankOfDepositTo:bankAccountTo.bankOfDeposit,    //    开户行
+                accountNameTo:bankAccountTo.accountName,        //    户名
+                accountTo: bankAccountTo.account+"("+bankAccountTo.overReceive+")",               //    账号
 
 
                 fundid:fund.id,

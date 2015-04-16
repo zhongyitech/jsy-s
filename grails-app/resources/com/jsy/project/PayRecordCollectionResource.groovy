@@ -1,7 +1,9 @@
 package com.jsy.project
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.util.Utils
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
@@ -110,11 +112,51 @@ class PayRecordCollectionResource {
             //数据保存
             Fund fund = Fund.get(obj.fundid)
             TSProject project = TSProject.get(obj.project)
-            BankAccount bankAccount = BankAccount.get(obj.bankselect)
+
+            //银行信息
+            BankAccount out_bankselect = BankAccount.get(obj.out_bankselect)
+            BankAccount in_bankselect = BankAccount.get(obj.in_bankselect)
+
+            //from
+            FundCompanyInformation funcCompanyFrom
+            CustomerArchives customerArchivesFrom
+            //To
+            FundCompanyInformation funcCompanyTo
+            CustomerArchives customerArchivesTo
+            if(obj.in_company){
+                if(obj.in_company.indexOf("F-")!=-1){
+                    def id = obj.in_company.replace("F-","");
+                    funcCompanyFrom = FundCompanyInformation.get(id)
+                }else{
+                    def id = obj.in_company.replace("C-","");
+                    customerArchivesFrom = CustomerArchives.get(id)
+                }
+            }
+            if(obj.out_company){
+                if(obj.out_company.indexOf("F-")!=-1){
+                    def id = obj.out_company.replace("F-","");
+                    funcCompanyTo = FundCompanyInformation.get(id)
+                }else{
+                    def id = obj.out_company.replace("C-","");
+                    customerArchivesTo = CustomerArchives.get(id)
+                }
+            }
+
             def paydate = Date.parse("yyyy-MM-dd", obj.paydate)
 
-
-            PayRecord dto = new PayRecord(payDate:paydate,amount:obj.paytotal,payType:obj.moneyUseType,project:project,fund:fund,bankAccount:bankAccount);
+            PayRecord dto = new PayRecord(
+                    payDate:paydate,
+                    amount:obj.paytotal,
+                    payType:obj.moneyUseType,
+                    project:project,
+                    fund:fund,
+                    bankAccountFrom:in_bankselect,
+                    bankAccountTo:out_bankselect,
+                    funcCompanyFrom:funcCompanyFrom,
+                    customerArchivesFrom:customerArchivesFrom,
+                    funcCompanyTo:funcCompanyTo,
+                    customerArchivesTo:customerArchivesTo,
+            );
             payRecordResourceService.create(dto)
 
             result.put("rest_status", restStatus)

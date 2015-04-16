@@ -47,6 +47,7 @@ class CustomerArchivesResourceService {
         dto.bankAccount.each {
             it.bankName=it.bankOfDeposit
             it.purpose = TypeConfig.findByTypeAndMapValue(7, 4)
+            it.customerArchives = obj
             //it.save(failOnError: true)
         }
         obj.properties = dto.properties

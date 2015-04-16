@@ -1,8 +1,10 @@
 package com.jsy.bankConfig
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.utility.DomainHelper
+import org.grails.datastore.mapping.model.types.Custom
 
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
@@ -52,7 +54,7 @@ class BankAccountCollectionResource {
             //todo: other code
 
             //按分页要求返回数据格式 [数据,总页数]
-            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count():0]
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
         }
     }
 
@@ -80,6 +82,40 @@ class BankAccountCollectionResource {
         }
     }
 
+    @GET
+    @Path('/account')
+    Response getItemByAccount(@QueryParam('account') String account, @QueryParam('cid') Long cid) {
+        ok {
+            CustomerArchives.get(cid).bankAccount.find {
+                it.account == account
+            }
+        }
+    }
+    @GET
+    @Path('/id')
+    Response getById(@QueryParam("id") Long bid)
+    {
+        ok{
+            bankAccountResourceService.read(bid)
+        }
+    }
 
-
+    @GET
+    @Path('/bankAccounts')
+    Response getBankAccounts(@QueryParam('cid') Long cid) {
+        ok {
+            def accounts = []
+            CustomerArchives.get(cid).bankAccount.last()
+                    .each {
+                def jso = [:]
+                jso.put("value", it.bankOfDeposit + " | " + it.account)
+                jso.put("data", it.id)
+                accounts.add(jso)
+            }
+            def data = [:]
+            data.put("query", "Unit")
+            data.put("suggestions", accounts)
+            return data
+        }
+    }
 }

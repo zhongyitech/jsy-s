@@ -1,7 +1,9 @@
 package com.jsy.project
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -45,8 +47,35 @@ class ReceiveRecordResourceService {
         //基础数据转换
         Fund fund = Fund.get(obj.fundid)
         TSProject project = TSProject.get(obj.projectid)
-        BankAccount bankAccount = BankAccount.get(obj.bankid)
         def paydate = Date.parse("yyyy-MM-dd", obj.paydate)
+
+        //银行信息
+        BankAccount out_bankselect = BankAccount.get(obj.out_bankselect)
+        BankAccount in_bankselect = BankAccount.get(obj.in_bankselect)
+
+        //from
+        FundCompanyInformation funcCompanyFrom
+        CustomerArchives customerArchivesFrom
+        FundCompanyInformation funcCompanyTo
+        CustomerArchives customerArchivesTo
+        if(obj.in_company){
+            if(obj.in_company.indexOf("F-")!=-1){
+                def id = obj.in_company.replace("F-","");
+                funcCompanyFrom = FundCompanyInformation.get(id)
+            }else{
+                def id = obj.in_company.replace("C-","");
+                customerArchivesFrom = CustomerArchives.get(id)
+            }
+        }
+        if(obj.out_company){
+            if(obj.out_company.indexOf("F-")!=-1){
+                def id = obj.out_company.replace("F-","");
+                funcCompanyTo = FundCompanyInformation.get(id)
+            }else{
+                def id = obj.out_company.replace("C-","");
+                customerArchivesTo = CustomerArchives.get(id)
+            }
+        }
 
 
         def paytotal = obj.paytotal
@@ -55,7 +84,7 @@ class ReceiveRecordResourceService {
 
 
         //根据前台的计算结果，进行再次验证，check same suggest： remain_money_suggest
-        def _paytotal = new BigDecimal(obj.paytotal) + bankAccount.overReceive
+        def _paytotal = new BigDecimal(obj.paytotal) + out_bankselect.overReceive
         def receiveDetails = []
 
         if(obj.receiveDetail_struct){
@@ -66,8 +95,8 @@ class ReceiveRecordResourceService {
             receiveDetails.each {
                 tempTotal += it.amount
             }
-            if(tempTotal >= bankAccount.overReceive){//大于等于余额，那么就全用了
-                useOverRecAmount = bankAccount.overReceive
+            if(tempTotal >= out_bankselect.overReceive){//大于等于余额，那么就全用了
+                useOverRecAmount = out_bankselect.overReceive
             }else{//小过余额，肯定只是用了余额部分钱而已
                 useOverRecAmount = tempTotal
             }
@@ -79,14 +108,27 @@ class ReceiveRecordResourceService {
 
         //数据保存
         if(remain_money_suggest>0){
-            bankAccount.overReceive = remain_money_suggest
+            out_bankselect.overReceive = remain_money_suggest
         }else{
-            bankAccount.overReceive = 0
+            out_bankselect.overReceive = 0
         }
-        bankAccount.save(failOnError: true)
+        out_bankselect.save(failOnError: true)
 
-        ReceiveRecord dto = new ReceiveRecord(receiveDate:paydate,amount:paytotal,
-                project:project,fund:fund,bankAccount:bankAccount,remain_charge:remain_money_suggest,useOverRecvAmount: useOverRecAmount);
+        ReceiveRecord dto = new ReceiveRecord(
+                receiveDate:paydate,
+                amount:paytotal,
+                project:project,
+                fund:fund,
+                remain_charge:remain_money_suggest,
+                useOverRecvAmount: useOverRecAmount,
+
+                bankAccountFrom:in_bankselect,
+                bankAccountTo:out_bankselect,
+                funcCompanyFrom:funcCompanyFrom,
+                customerArchivesFrom:customerArchivesFrom,
+                funcCompanyTo:funcCompanyTo,
+                customerArchivesTo:customerArchivesTo,
+        );
         dto.save(failOnError: true)
 
         //创建receive detail

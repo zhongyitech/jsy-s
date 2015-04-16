@@ -1,8 +1,10 @@
 package com.jsy.project
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.auth.User
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.UploadFile
 import com.jsy.util.CompoundCalculator
 import com.jsy.util.Utils
@@ -27,7 +29,14 @@ class PayRecord {
 
     String pdesc;
 
-    BankAccount bankAccount
+    //From
+    FundCompanyInformation funcCompanyFrom
+    CustomerArchives customerArchivesFrom
+    BankAccount bankAccountFrom
+    //To
+    FundCompanyInformation funcCompanyTo
+    CustomerArchives customerArchivesTo
+    BankAccount bankAccountTo
 
     //是不是已经生成逾期应付记录
     boolean isGenOverShouldPay=false
@@ -76,6 +85,11 @@ class PayRecord {
         penalty_pay nullable: true
         borrow_pay nullable: true
         overDue_pay nullable: true
+
+        funcCompanyFrom nullable: true
+        customerArchivesFrom nullable: true
+        funcCompanyTo nullable: true
+        customerArchivesTo nullable: true
     }
 
     def beforeInsert() {
