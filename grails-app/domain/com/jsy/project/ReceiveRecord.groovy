@@ -1,7 +1,9 @@
 package com.jsy.project
 
+import com.jsy.archives.CustomerArchives
 import com.jsy.bankConfig.BankAccount
 import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
 
 /**
  * 收款记录
@@ -21,7 +23,13 @@ class ReceiveRecord {
     String[] allPayTargets =["original","firstyear","maintain","channel","overdue","penalty","borrow"]
 
     //银行账户
+    //From
+    FundCompanyInformation funcCompanyFrom
+    CustomerArchives customerArchivesFrom
     BankAccount bankAccountFrom
+    //To
+    FundCompanyInformation funcCompanyTo
+    CustomerArchives customerArchivesTo
     BankAccount bankAccountTo
 
     //本次收款用到账户余额多少
@@ -45,6 +53,11 @@ class ReceiveRecord {
 
     static constraints = {
         pdesc nullable: true
+
+        funcCompanyFrom nullable: true
+        customerArchivesFrom nullable: true
+        funcCompanyTo nullable: true
+        customerArchivesTo nullable: true
     }
 
     def getShowProperties(){

@@ -4,6 +4,7 @@ import com.jsy.archives.CustomerArchives
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.json.JSONArray
@@ -278,6 +279,63 @@ class FundCompanyInformationCollectionResource {
         jsonObject.put("suggestions", jsonArray)
 
         return Response.ok(jsonObject.toString()).status(RESPONSE_STATUS_SUC).build();
+    }
+
+    @GET
+    @Path('/loadFBanks')
+    Response loadFBanks(@QueryParam('companyid') int companyid) {
+        MyResponse.ok {
+            def project_banks = FundCompanyInformation.get(companyid)?.bankAccount?.collect { bank ->
+                def rtn2 = [:]
+                rtn2.id = bank.id
+                rtn2.bankName = bank.bankName
+                rtn2.bankOfDeposit = bank.bankOfDeposit
+                rtn2.accountName = bank.accountName
+                rtn2.account = bank.account
+                rtn2.defaultAccount = bank.defaultAccount
+                rtn2.purposeName = bank.purposeName
+                rtn2.overReceive = bank.overReceive
+                rtn2
+            }
+
+            def banks = []
+            project_banks?.each {
+                if (it) {
+                    banks.addAll(it)
+                }
+            }
+
+            return banks.unique();
+        }
+    }
+
+    @GET
+    @Path('/loadCBanks')
+    Response loadCBanks(@QueryParam('customerid') int customerid) {
+        MyResponse.ok {
+
+            def project_banks = CustomerArchives.get(customerid)?.bankAccount?.collect { bank ->
+                def rtn2 = [:]
+                rtn2.id = bank.id
+                rtn2.bankName = bank.bankName
+                rtn2.bankOfDeposit = bank.bankOfDeposit
+                rtn2.accountName = bank.accountName
+                rtn2.account = bank.account
+                rtn2.defaultAccount = bank.defaultAccount
+                rtn2.purposeName = bank.purposeName
+                rtn2.overReceive = bank.overReceive
+                rtn2
+            }
+
+            def banks = []
+            project_banks?.each {
+                if (it) {
+                    banks.addAll(it)
+                }
+            }
+
+            return banks.unique();
+        }
     }
 
 }
