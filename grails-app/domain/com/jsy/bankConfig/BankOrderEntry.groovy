@@ -26,10 +26,16 @@ class BankOrderEntry {
 
     String company
 
+    Date processedDate
+
+    int manageType=0
+
     static constraints = {
         evidenceCode nullable: true
+        processedDate nullable: true
     }
     def beforeInsert(){
         createDate = new Date()
+        manageType=0
     }
 }

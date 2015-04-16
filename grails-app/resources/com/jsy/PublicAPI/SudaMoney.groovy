@@ -38,24 +38,25 @@ class SudaMoney {
     Response getBankOrder() {
         ok {
 //            JSON.use("deep")
-            def order = BankOrder.findAllByManageType(NoAccept)
-            def o = [:]
-            o.number = order.evidenceCode
-            o.company = order.fund
-            o.date = order.evidenceDate
-            o.zihao = order.evidenceKey
-            o.zhenghao = order.evidenceValue
-            o.writedate = order.createDate
-            o.status = order.manageType == 0 ? false : true
-            def oe = []
-            BankOrderEntry.findAllByEvidenceCode(order.evidenceCode)
-                    .each {
-                oe.push(
-                        [summary: it.summary, subjectName: it.subjectName, lamount: it.lendAmount, bamount: it.borrowAmount, transactionNo: it.transaction]
-                )
-            }
-            o.entry=oe
-            return o
+//            def order = BankOrder.findAllByManageType(NoAccept)
+//            def o = [:]
+//            o.number = order.evidenceCode
+//            o.company = order.fund
+//            o.date = order.evidenceDate
+//            o.zihao = order.evidenceKey
+//            o.zhenghao = order.evidenceValue
+//            o.writedate = order.createDate
+//            o.status = order.manageType == 0 ? false : true
+//            def oe = []
+//            BankOrderEntry.findAllByEvidenceCode(order.evidenceCode)
+//                    .each {
+//                oe.push(
+//                        [summary: it.summary, subjectName: it.subjectName, lamount: it.lendAmount, bamount: it.borrowAmount, transactionNo: it.transaction]
+//                )
+//            }
+//            o.entry=oe
+//            return o
+            BankOrderEntry.findAllByManageType(NoAccept)
         }
     }
 
@@ -74,12 +75,14 @@ class SudaMoney {
      */
 
     @POST
-    @Path('/Accept')
+    @Path('/bankOrderAccept')
     Response accept(@QueryParam('id') Long id) {
         ok {
-            def order = BankOrder.get(id)
-            order.manageDate = new Date()
-            order.manageType = AcceptOK
+            def order=BankOrderEntry.get(id)
+            if(order==null){
+                throw  new Exception("ID 不正确")
+            }
+            order.manageType=AcceptOK
             order.save(failOnError: true)
             return true
         }
