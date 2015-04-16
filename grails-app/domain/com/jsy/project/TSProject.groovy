@@ -104,6 +104,9 @@ class TSProject {
         signers: SimpleRecord,                //签署方
         attentions: SimpleRecord,             //注意事项
         makeContactOthersFiles:TSFlowFile,    //其他文件
+
+        /****结算文件****/
+        endProjectFiles:TSFlowFile    //结算文件
     ];
 
     static mappedBy = [
