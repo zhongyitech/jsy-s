@@ -9,8 +9,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 class SpecailAccess implements Serializable{
     Date fromDate
     Date toDate
-    String accessor
-    int projectId
+    int accessor    //用户id
+    int projectId   //项目id
     int phaseIndex;
     String phaseEn
 

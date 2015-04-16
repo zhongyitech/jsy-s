@@ -451,6 +451,10 @@ class ProjectResourceService {
             lt("fromDate", now)
             gt("toDate", now)
             eq("projectId", new Long(project.id).toInteger())
+            eq("accessor", user?.id)
+            if(phase){
+                eq("phaseIndex", phase?.phaseIndex)
+            }
         }
         return results
     }

@@ -35,7 +35,9 @@ class OperationRecordFilters {
 //                    }
 //                }
                 //记录操作日志
-                new OperationRecord(czr:czr.chainName,czsj: new Date(),url:url,params: params.toString(),method: method,address: request.getRemoteAddr() ).save(failOnError: true)
+                try{
+                    new OperationRecord(czr:czr.chainName,czsj: new Date(),url:url,params: params.toString(),method: method,address: request.getRemoteAddr() ).save(failOnError: false)
+                }catch (e){}
             }
             after = { Map model ->
 

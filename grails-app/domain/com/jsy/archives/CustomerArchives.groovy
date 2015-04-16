@@ -59,6 +59,7 @@ class CustomerArchives {
         postalcode  nullable: true
         zch unllable: true
         khh unllable:true
+        credentialsAddr unllable:true
     }
     static mapping = {
         zch column: 'zch_me'

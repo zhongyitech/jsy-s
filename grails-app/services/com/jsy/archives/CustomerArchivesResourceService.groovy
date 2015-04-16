@@ -17,6 +17,10 @@ class CustomerArchivesResourceService {
             }
         }
         dto.save(failOnError: true)
+        dto.bankAccount.each {
+            it.customerArchives=dto
+        }
+        dto
     }
 
     def read(id) {

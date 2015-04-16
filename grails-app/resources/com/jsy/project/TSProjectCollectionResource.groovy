@@ -16,6 +16,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
+import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
 
@@ -353,6 +354,9 @@ class TSProjectCollectionResource {
     Response getSpecailAccess(@QueryParam("projectId") int projectId){
 
         MyResponse.ok {
+            if(!TSProject.get(projectId)){
+                throw new Exception("项目不存在！")
+            }
             return SpecailAccess.findAllByProjectId(projectId)
         }
 
@@ -365,12 +369,28 @@ class TSProjectCollectionResource {
      */
     @POST
     @Path('/setSpecailAccess')
-    Response setSpecailAccess(SpecailAccess specailAccess){
-        try{
-            def msgModel = projectResourceService.setSpecailAccess(specailAccess);
-            ok JsonResult.success(msgModel.getResult())
-        }catch (Exception e) {
-            ok JsonResult.error(e.message)
+    Response setSpecailAccess(String dataStr){
+        MyResponse.ok {
+            org.json.JSONObject obj = JSON.parse(dataStr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid)
+
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+
+            if(project){
+                SpecailAccess.findAllByProjectId(projectid)?.each{
+                    it.delete()
+                }
+                obj.phaseDatas?.each{phaseData->
+                    phaseData?.datas?.each{
+                        def fromDate = sf.parse(it.fromDate)
+                        def toDate = sf.parse(it.toDate)
+
+                        SpecailAccess specailAccess = new SpecailAccess(projectId:projectid,phaseIndex: phaseData.phaseIndex, accessor:it.accessor,fromDate:fromDate,toDate:toDate);
+                        specailAccess.save(failOnError: true)
+                    }
+                }
+            }
         }
     }
 

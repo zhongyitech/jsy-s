@@ -76,7 +76,7 @@ class Customer {
         credentialsAddr nullable: true
 //        name nullable: true
         country nullable: true
-//        credentialsType nullable: true
+        credentialsType nullable: true
 //        khh nullable: true
 //        yhzh nullable: true
         phone nullable: true
