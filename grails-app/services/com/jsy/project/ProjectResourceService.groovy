@@ -12,6 +12,7 @@ import com.jsy.auth.Role;
 import com.jsy.system.UploadFile
 import com.jsy.util.OrderProperty
 import com.jsy.util.SearchProperty
+import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONArray
@@ -880,20 +881,6 @@ class ProjectResourceService {
     }
 
 
-    /**
-     * 获取特殊访问时间信息
-     * @param projectId
-     * @param phaseIndex
-     */
-    def getSpecailAccess(int projectId, int phaseIndex){
-        List<SpecailAccess> specailAccess = SpecailAccess.findAllWhere(projectId: projectId,phaseIndex: phaseIndex);
-        if(!specailAccess){
-            throw new Exception(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
-//            return  MsgModel.getErrorMsg(TAG + "NOT FOUND SpecailAccess INSTANCE,projectId " +projectId+ "phaseIndex "+phaseIndex);
-        }
-        String json = specailAccess as JSON;
-        return MsgModel.getSuccessMsg(json);
-    }
 
     /**
      * 添加限制访问列表

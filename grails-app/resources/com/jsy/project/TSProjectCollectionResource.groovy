@@ -344,24 +344,17 @@ class TSProjectCollectionResource {
     }
 
     /**
-     * 获取工作流节点信息
      * @param projectId    项目ID
-     * @param phaseIndex   节点Index
      * @return
      */
     @GET
     @Path('/getSpecailAccess')
-    Response getSpecailAccess(@QueryParam("projectId") int projectId,@QueryParam("phaseIndex") int phaseIndex){
+    Response getSpecailAccess(@QueryParam("projectId") int projectId){
 
-        try{
-            MsgModel msgModel = projectResourceService.getSpecailAccess(projectId,phaseIndex);
-            if(msgModel == null){
-                ok JsonResult.error("java error");
-            }
-            ok JsonResult.success(msgModel.result);
-        }catch (Exception ex){
-            ok JsonResult.error(ex.message);
+        MyResponse.ok {
+            return SpecailAccess.findAllByProjectId(projectId)
         }
+
     }
 
     /**
@@ -552,6 +545,20 @@ class TSProjectCollectionResource {
     }
 
 
+
+    @GET
+    @Path('/getProjectSimpleInfo')
+    Response getProjectSimpleInfo(@QueryParam("projectid") int projectid){
+        MyResponse.ok {
+            TSProject project = TSProject.get(projectid)
+            if(project){
+                return project.getProjectSimpleInfo()
+            }else{
+                return null
+            }
+
+        }
+    }
 }
 
 
