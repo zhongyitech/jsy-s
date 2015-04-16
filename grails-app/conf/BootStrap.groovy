@@ -701,5 +701,8 @@ class BootStrap {
         SpecailAccess sa2 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: accessor, projectId: 2, phaseEn: "gatherInfoBean");
         sa2.save(failOnError: true)
 
+        //能够在历史步骤中，继续提交节点的权限，这里面的提交不影响流程前进
+        Role.findByAuthority("ProjectHistoryModifier") ?: new Role(authority: "ProjectHistoryModifier", name: "项目历史节点提交控制者").save(failOnError: true);
+
     }
 }

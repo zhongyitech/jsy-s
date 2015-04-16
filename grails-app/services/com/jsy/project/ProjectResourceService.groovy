@@ -4,6 +4,7 @@ import GsonTools.GsonTool
 import Models.MsgModel
 import Models.ProjectModelPhaseRole
 import com.jsy.auth.User
+import com.jsy.auth.UserRole
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
@@ -396,9 +397,30 @@ class ProjectResourceService {
         resultObj
     }
 
+    /**
+     * 此phase一定存在，不会对未来的phase进行判断
+     * @param phase
+     * @param project
+     * @param user
+     * @return
+     */
     def checkUserAccessable(phase, project, user){
         def isInAccessRole = checkInRole(phase.phaseParticipants,user.getAuthorities());
         def specailAccesses = checkSpecial(project,user,phase)
+
+        //如果是历史节点，需要看看他是不是ProjectHistoryModifier
+        def historyAccesses = false;
+        if(project.currentStageEn!=phase.phaseEn){
+            def projectHistoryModifier = Role.findByAuthority("ProjectHistoryModifier")
+            if(projectHistoryModifier){
+                historyAccesses = UserRole.exists(user.id, projectHistoryModifier.id)
+            }
+            if(historyAccesses){
+                return true
+            }
+        }
+
+        //在本节点角色中，特殊时限，流程未结束
         def accessable = ( isInAccessRole || (specailAccesses!=null && specailAccesses.size()>0) ) && !phase.phaseFinished
         return accessable
     }
@@ -552,10 +574,13 @@ class ProjectResourceService {
         }
 
 
-        //设置下一个阶段
-        TSWorkflow tsWorkflow = project.getProjectWorkflow()
-        tsWorkflow.moveToModelPhase(tsWorkflow.getGatherOAPhase())
-        project.save(failOnError: true)
+        //设置下一个阶段，对于当前节点则推动到下一节点，否则都是对历史操作不动
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+            tsWorkflow.moveToModelPhase(tsWorkflow.getGatherOAPhase())
+            project.save(failOnError: true)
+        }
+
     }
 
     def completeResearch(TSProject project, def obj) {
@@ -646,10 +671,13 @@ class ProjectResourceService {
         }
 
         //设置下一个阶段
-        TSWorkflow tsWorkflow = project.getProjectWorkflow()
-        def nextphase = tsWorkflow.getResearchOAPhase()
-        tsWorkflow.moveToModelPhase(nextphase)
-        project.save(failOnError: true)
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+            def nextphase = tsWorkflow.getResearchOAPhase()
+            tsWorkflow.moveToModelPhase(nextphase)
+            project.save(failOnError: true)
+        }
+
     }
 
 
@@ -693,10 +721,13 @@ class ProjectResourceService {
         }
 
         //设置下一个阶段
-        TSWorkflow tsWorkflow = project.getProjectWorkflow()
-        def nextphase = tsWorkflow.getOtherEAPhase()
-        tsWorkflow.moveToModelPhase(nextphase)
-        project.save(failOnError: true)
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+            def nextphase = tsWorkflow.getOtherEAPhase()
+            tsWorkflow.moveToModelPhase(nextphase)
+            project.save(failOnError: true)
+        }
+
     }
 
     def completeThirdpartyLow(TSProject project, def obj) {
@@ -739,10 +770,13 @@ class ProjectResourceService {
         }
 
         //设置下一个阶段
-        TSWorkflow tsWorkflow = project.getProjectWorkflow()
-        def nextphase = tsWorkflow.getMakeContactPhase()
-        tsWorkflow.moveToModelPhase(nextphase)
-        project.save(failOnError: true)
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+            def nextphase = tsWorkflow.getMakeContactPhase()
+            tsWorkflow.moveToModelPhase(nextphase)
+            project.save(failOnError: true)
+        }
+
     }
 
 //    def completeAddCompany(TSProject project, def obj) {
@@ -799,10 +833,13 @@ class ProjectResourceService {
         }
 
         //设置下一个阶段
-        TSWorkflow tsWorkflow = project.getProjectWorkflow()
-        def nextphase = tsWorkflow.makeContactOAPhase
-        tsWorkflow.moveToModelPhase(nextphase)
-        project.save(failOnError: true)
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+            def nextphase = tsWorkflow.makeContactOAPhase
+            tsWorkflow.moveToModelPhase(nextphase)
+            project.save(failOnError: true)
+        }
+
     }
 
 
