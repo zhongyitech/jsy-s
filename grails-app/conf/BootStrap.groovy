@@ -695,10 +695,9 @@ class BootStrap {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date fromDate = dateFormat.parse("20150101");
         Date toDate = dateFormat.parse("20250101");
-        String accessor = "zhangj"
-        SpecailAccess sa1 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: accessor, projectId: 1);
+        SpecailAccess sa1 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: 1, projectId: 1);
         sa1.save(failOnError: true)
-        SpecailAccess sa2 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: accessor, projectId: 2, phaseEn: "gatherInfoBean");
+        SpecailAccess sa2 = new SpecailAccess(fromDate: fromDate, toDate: toDate, accessor: 2, projectId: 2, phaseEn: "gatherInfoBean");
         sa2.save(failOnError: true)
 
         //能够在历史步骤中，继续提交节点的权限，这里面的提交不影响流程前进
