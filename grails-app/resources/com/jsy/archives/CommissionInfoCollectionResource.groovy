@@ -31,9 +31,16 @@ class CommissionInfoCollectionResource {
      */
     @POST
     @Path('/addPayment')
-    Response addPayment(CommissionInfo commissionInfo) {
+    Response addPayment(@QueryParam('comId') int comId,
+                        @QueryParam('sfyfse') boolean sfyfse,
+                        @QueryParam('fpje') BigDecimal fpje,
+                        @QueryParam('sj') BigDecimal sj,
+                        @QueryParam('fkje') BigDecimal fkje,
+                        @QueryParam('sqsh') boolean sqsh,
+                        @QueryParam('sl') double sl
+    ) {
         ok {
-            def ci= commissionInfoResourceService.toPay(commissionInfo)
+            def ci= commissionInfoResourceService.toPay(comId,sfyfse,fpje,sj,fkje,sqsh,sl)
             ci
         }
     }

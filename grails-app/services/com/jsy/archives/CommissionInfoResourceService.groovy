@@ -68,17 +68,17 @@ class CommissionInfoResourceService {
         }
     }
 
-    def toPay(CommissionInfo com)throws Exception{
-        CommissionInfo commissionInfo=CommissionInfo.get(com.comId)
+    def toPay(comId,sfyfse,fpje,sj,fkje,sqsh,sl)throws Exception{
+        CommissionInfo commissionInfo=CommissionInfo.get(comId)
         if (commissionInfo.type!=0){
             return new Exception('正在处理或已处理！')
         }
-        commissionInfo.sfyfse=com.sfyfse
-        commissionInfo.fpje=com.fpje
-        commissionInfo.sj=com.sj
-        commissionInfo.fkje=com.fkje
-        commissionInfo.sqsh=com.sqsh
-        commissionInfo.sl=com.sl
+        commissionInfo.sfyfse=sfyfse
+        commissionInfo.fpje=fpje
+        commissionInfo.sj=sj
+        commissionInfo.fkje=fkje
+        commissionInfo.sqsh=sqsh
+        commissionInfo.sl=sl
         InvestmentArchives investmentArchives=InvestmentArchives.get(commissionInfo.archivesId)
         String type="yw"
         if(commissionInfo.lx==1){type="gl"}
@@ -101,6 +101,7 @@ class CommissionInfoResourceService {
         toDoTask.clr=springSecurityService.getCurrentUser()
         toDoTask.clsj=new Date()
         toDoTask.status=1
-        return commissionInfo.save(failOnError: true)
+        commissionInfo.save(failOnError: true)
+        return true
     }
 }
