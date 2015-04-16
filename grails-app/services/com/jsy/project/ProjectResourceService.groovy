@@ -450,11 +450,12 @@ class ProjectResourceService {
         def results = c {
             lt("fromDate", now)
             gt("toDate", now)
-            eq("projectId", new Long(project.id).toInteger())
-            eq("accessor", user?.id)
             if(phase){
-                eq("phaseIndex", phase?.phaseIndex)
+                eq("phaseIndex", new Long(phase?.phaseIndex).toInteger())
             }
+            eq("projectId", new Long(project.id).toInteger())
+            eq("accessor", new Long(user?.id).toInteger())
+
         }
         return results
     }
