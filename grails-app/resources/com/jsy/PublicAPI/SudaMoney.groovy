@@ -1,8 +1,6 @@
 package com.jsy.PublicAPI
 
-import com.jsy.bankConfig.BankOrder
 import com.jsy.bankConfig.BankOrderEntry
-import grails.converters.JSON
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET

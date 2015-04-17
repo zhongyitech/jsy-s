@@ -1,9 +1,7 @@
 package com.jsy.bankConfig
 
-import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.utility.BankOrderUntil
 import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 @Transactional(rollbackFor = Throwable.class)
@@ -66,6 +64,7 @@ class BankTransactionsRecordResourceService {
                     orderEntry.subjectName = subject != null ? subject.subject + "-" + subject2 : ""
                     orderEntry.company = bankAccount.companyInformation.companyName
                     orderEntry.transaction = it.transactionsCode
+                    orderEntry.dealDate=it.dealDate
                     if (it.borrowAndLend) {
                         orderEntry.borrowAmount = (it.actionAmount)
                     } else {

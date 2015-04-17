@@ -21,6 +21,9 @@ class BankOrderEntry {
     //交易流水
     String transaction
 
+    //交易时间
+    Date dealDate
+
     //生成时间
     Date createDate=new Date()
 
