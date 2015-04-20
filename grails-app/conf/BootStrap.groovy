@@ -1,3 +1,4 @@
+import com.jsy.PublicAPI.SudaMoney
 import com.jsy.archives.CustomerArchives
 import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.AuthenticationToken
@@ -41,6 +42,8 @@ class BootStrap {
 
 //        def users = User.findAllByUsername('')
             //部门的职能
+
+            new AuthenticationToken( token: SudaMoney.ApiToken_Suda,"APIUSER").save(failOnError: true)
 
 
             new TypeConfig(type: 1, mapName: "待售", mapValue: 1).save(failOnError: true)
