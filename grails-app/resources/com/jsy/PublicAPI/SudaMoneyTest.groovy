@@ -70,6 +70,7 @@ class SudaMoneyTest {
                 throw new Exception("ID 不正确")
             }
             order.manageType = AcceptOK
+            order.processedDate=new Date()
 //            order.save(failOnError: true)
             return true
         }
