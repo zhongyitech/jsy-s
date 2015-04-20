@@ -101,7 +101,7 @@ class CustomerArchivesCollectionResource {
     @Path('/name')
     Response getCustomerByName(@QueryParam("name") String name) {
         ok {
-            CustomerArchives.findByNameLike("%" + name + "%")?.properties
+            CustomerArchives.findByNameLike(name)?.properties
         }
     }
 
