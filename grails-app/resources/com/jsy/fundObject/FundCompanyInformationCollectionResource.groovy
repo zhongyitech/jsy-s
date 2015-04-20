@@ -36,6 +36,11 @@ class FundCompanyInformationCollectionResource {
     Response create(FundCompanyInformation dto) {
 
         ok {
+            dto.bankAccount.each {
+                if(it.purpose==null){
+                    throw  new Exception("银行的用途没有选择")
+                }
+            }
             fundCompanyInformationResourceService.create(dto)
         }
     }
@@ -44,6 +49,11 @@ class FundCompanyInformationCollectionResource {
     Response update(FundCompanyInformation dto, @QueryParam('id') Long id) {
 
         ok {
+            dto.bankAccount.each {
+                if(it.purpose==null){
+                    throw  new Exception("银行的用途没有选择")
+                }
+            }
             dto.id = id;
             return fundCompanyInformationResourceService.update(dto)
         }
