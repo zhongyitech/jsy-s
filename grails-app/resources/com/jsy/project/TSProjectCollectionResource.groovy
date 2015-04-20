@@ -547,6 +547,7 @@ class TSProjectCollectionResource {
                 def borrow_per = obj.borrow_per
                 def year1 = obj.year1
                 def year2 = obj.year2
+                def fund=Fund.get(obj.fund.id)
 
                 project.daycount_per = daycount_per
                 project.interestType = interestType
@@ -556,6 +557,7 @@ class TSProjectCollectionResource {
                 project.borrow_per = borrow_per
                 project.year1 = year1
                 project.year2 = year2
+                project.fund = fund
                 project.save(failOnError: true)
                 return true
             }else{

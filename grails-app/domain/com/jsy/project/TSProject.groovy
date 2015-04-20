@@ -230,7 +230,7 @@ class TSProject {
                 projectDealer:projectDealer,
                 currentStageName:currentStageName,
                 currentStageEn:currentStageEn,
-                fundName:fundName,
+                fundName:fund?fund.fundName:"",
                 creatorName:creatorName,
                 ownerName:ownerName,
                 dateCreated:dateCreated,
