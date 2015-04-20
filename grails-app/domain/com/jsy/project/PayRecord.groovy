@@ -369,10 +369,15 @@ class PayRecord {
                 amount:amount,
                 payType:payType,
 
-                bankName:bankAccount.bankName,              //    银行名称
-                bankOfDeposit:bankAccount.bankOfDeposit,    //    开户行
-                accountName:bankAccount.accountName,        //    户名
-                account: bankAccount.account,               //    账号
+                bankName:bankAccountFrom.bankName,              //    银行名称
+                bankOfDeposit:bankAccountFrom.bankOfDeposit,    //    开户行
+                accountName:bankAccountFrom.accountName,        //    户名
+                account: bankAccountFrom.account,               //    账号
+
+                bankNameTo:bankAccountTo.bankName,              //    银行名称
+                bankOfDepositTo:bankAccountTo.bankOfDeposit,    //    开户行
+                accountNameTo:bankAccountTo.accountName,        //    户名
+                accountTo: bankAccountTo.account,               //    账号
 
                 totalPayBack:totalPayBack,
                 payMainBack:payMainBack,
