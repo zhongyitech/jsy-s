@@ -20,6 +20,11 @@ import static com.jsy.utility.MyResponse.*
 class SudaMoney {
 
     /**
+     * 接口的token码
+     */
+    public static String ApiToken_Suda="safliCijaifdslafNdsaflknadISldfknaSONm0NBsdf"
+
+    /**
      * 未处理
      */
     static final int NoAccept = 0
