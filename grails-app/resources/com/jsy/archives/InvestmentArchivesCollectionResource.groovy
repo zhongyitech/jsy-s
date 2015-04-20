@@ -300,12 +300,12 @@ class InvestmentArchivesCollectionResource {
                 //update
                 old.properties = dto.properties
                 old.save(failOnError: true)
-                ia.username=ia.customer.name
+                ia.username = ia.customer.name
                 obj = old
             } else {
                 //save
                 ia.customer = dto.save(failOnError: true)
-                ia.username=ia.customer.name
+                ia.username = ia.customer.name
                 obj = ia.customer
             }
             ia.save(failOnError: true)
@@ -337,6 +337,24 @@ class InvestmentArchivesCollectionResource {
             return investmentArchivesResourceService.read(id)
         }
     }
+
+    @GET
+    @Path('/getByIdSpecial')
+    Response getByIdSpecial(@QueryParam('id') Long id) {
+        MyResponse.ok {
+            def result = [:]
+            def iv = InvestmentArchives.get(id)
+            if (iv) {
+                result.putAt("id", iv.id)
+//                print(InvestmentArchives.class.name)
+//                result.putAt("class",InvestmentArchives.class.name)
+                result.putAll(iv.properties)
+                return iv
+            }
+            return null
+        }
+    }
+
 
     //根据名字模糊查询投资确认书列表
     @GET
@@ -417,7 +435,6 @@ class InvestmentArchivesCollectionResource {
         } else {
             return Response.ok("{'result':'error'}").status(200).build();
         }
-
     }
 
     /**
@@ -539,7 +556,7 @@ class InvestmentArchivesCollectionResource {
                     switch (it.key) {
                         case "customer":
 //                            addKey(row, it, "name")
-                            row.putAt(it.key,it.value==null ? null: [name:it.value.name,country:it.value.country])
+                            row.putAt(it.key, it.value == null ? null : [name: it.value.name, country: it.value.country])
                             break
                         case "fund":
                             row.putAt(it.key, it.value.fundName)
@@ -578,7 +595,7 @@ class InvestmentArchivesCollectionResource {
                 def row = [:]
                 row.contractNum = it.contractNum
                 row.htzt = it.htzt.mapName
-                row.customer =it.username
+                row.customer = it.username
                 row.rgrq = it.rgrq
                 row.tzqx = it.tzqx
                 row.tzje = it.sjtzje
@@ -704,6 +721,27 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
+    /**
+     * 返回指定合同编号的投资档案信息
+     * @param contractNum
+     * @return
+     */
+    @GET
+    @Path('getByContractNum')
+    Response getByContractNum(@QueryParam('contractNum') String contractNum) {
+        MyResponse.ok {
+            def result = [:]
+            def iv = InvestmentArchives.findByContractNum(contractNum)
+            if (iv) {
+                result.putAt("id", iv.id)
+//                print(InvestmentArchives.class.name)
+//                result.putAt("class",InvestmentArchives.class.name)
+                result.putAll(iv.properties)
+                return iv
+            }
+            return null
+        }
+    }
 
     @GET
     @Path('/detail')
