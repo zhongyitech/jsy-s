@@ -342,6 +342,11 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
+    /**
+     * 特殊申请操作请求投资档案信息的接口.
+     * @param id
+     * @return
+     */
     @GET
     @Path('/getByIdSpecial')
     Response getByIdSpecial(@QueryParam('id') Long id) {
@@ -349,16 +354,7 @@ class InvestmentArchivesCollectionResource {
             def result = [:]
             def iv = InvestmentArchives.get(id)
             if (iv) {
-                if (iv.customer == null) {
-                    throw new Exception("投资档案的客户信息还没有完善,不能做特殊申请操作..")
-                }
-                if (iv.dazt != 0) {
-                    throw new Exception("投资档案已经有特殊申请操作了!")
-                }
-                print(iv.status)
-                if (!INVESTMENT_STATUS.Normal.eq(iv.status)) {
-                    throw new Exception("投资档案还没有入档,不能做特殊申请操作.")
-                }
+                SpecialFlow.Create.Validation(iv)
                 result.putAt("id", iv.id)
                 result.putAll(iv.properties)
                 return iv
@@ -692,6 +688,8 @@ class InvestmentArchivesCollectionResource {
     @Path('/contractNumIsUse')
     Response contractNumIsUse(@QueryParam('num') String num) {
         MyResponse.ok {
+            print(num)
+            ContractFlow.InputFilePackage.Validation(Contract.findByHtbh(num))
             InvestmentArchives.findByContractNum(num)
         }
     }
@@ -738,7 +736,7 @@ class InvestmentArchivesCollectionResource {
     }
 
     /**
-     * 返回指定合同编号的投资档案信息
+     * 特殊申请操作请求投资档案信息接口
      * @param contractNum
      * @return
      */
@@ -749,13 +747,7 @@ class InvestmentArchivesCollectionResource {
             def result = [:]
             def iv = InvestmentArchives.findByContractNum(contractNum)
             if (iv) {
-                if (iv.customer == null) {
-                    throw new Exception("投资档案的客户信息还没有完善,不能做特殊申请操作..")
-                }
-                print(iv.status)
-                if (!INVESTMENT_STATUS.Normal.eq(iv.status)) {
-                    throw new Exception("投资档案还没有入档,不能做特殊申请操作.")
-                }
+                SpecialFlow.Create.Validation(iv)
                 result.putAt("id", iv.id)
                 result.putAll(iv.properties)
                 return iv

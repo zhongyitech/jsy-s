@@ -2,6 +2,8 @@ package com.jsy.flow
 import com.jsy.archives.Contract
 import com.jsy.archives.InvestmentArchives
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.SpecialFlow
+
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 import static com.jsy.utility.MyResponse.*
@@ -25,15 +27,9 @@ class DqztsqCollectionResource {
     @POST
     Response create(Dqztsq dto) {
         ok {
+            //检测旧档案是否能做特殊申请操作
+            SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
 
-            def ia = InvestmentArchives.findByContractNum(dto.xhtbh)
-            if (ia != null) {
-                throw new Exception("合同编号已经使用了")
-            }
-            def c = Contract.findByHtbh(dto.xhtbh)
-            if (c == null) {
-                throw new Exception("合同编号还没有登记")
-            }
             dto.sqrq = new Date()
             def dd = dqztsqResourceService.create(dto)
             InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
