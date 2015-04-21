@@ -34,9 +34,13 @@ import javax.ws.rs.core.Response
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class InvestmentArchivesCollectionResource {
+
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
+    public static final int STATUS_NEW = 0
+    public static final int STATUS_NORMAL= 1
+    public static final int STATUS_BANKUP = 2
     InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
     def paymentInfoResourceService
@@ -345,9 +349,13 @@ class InvestmentArchivesCollectionResource {
             def result = [:]
             def iv = InvestmentArchives.get(id)
             if (iv) {
+                if(iv.customer==null){
+                    throw  new Exception("投资档案的客户信息还没有完善,不能做特殊申请操作..")
+                }
+                if(iv.status!=STATUS_NORMAL){
+                    throw  new Exception("投资档案还没有入档,不能做特殊申请操作.")
+                }
                 result.putAt("id", iv.id)
-//                print(InvestmentArchives.class.name)
-//                result.putAt("class",InvestmentArchives.class.name)
                 result.putAll(iv.properties)
                 return iv
             }
@@ -733,6 +741,12 @@ class InvestmentArchivesCollectionResource {
             def result = [:]
             def iv = InvestmentArchives.findByContractNum(contractNum)
             if (iv) {
+                if(iv.customer==null){
+                    throw  new Exception("投资档案的客户信息还没有完善,不能做特殊申请操作..")
+                }
+                if(iv.status!=STATUS_NORMAL){
+                    throw  new Exception("投资档案还没有入档,不能做特殊申请操作.")
+                }
                 result.putAt("id", iv.id)
 //                print(InvestmentArchives.class.name)
 //                result.putAt("class",InvestmentArchives.class.name)

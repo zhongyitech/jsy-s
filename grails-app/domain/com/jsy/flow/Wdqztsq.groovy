@@ -18,7 +18,6 @@ class Wdqztsq {
     //新档案id
     Long newArchivesId
 
-
     //基金名称
     String fundName
     //合同编号
@@ -61,21 +60,25 @@ class Wdqztsq {
     BigDecimal gltchsje
 
     //备注
-    String bz
+    String bz=""
     //申请人
     User sqr
     //申请部门
     String sqbm
 
+    //转投本金额
+    BigDecimal ztbje = 0
+    //转投剩余收益额
+    BigDecimal ztsysye = 0
+
     //生成日期
-    Date scrq=new Date()
+    Date scrq = new Date()
     //状态
-    int status=0
+    int status = 0
 
     def beforeInsert() {
-        this.sqr=springSecurityService.getCurrentUser()
+        this.sqr = springSecurityService.getCurrentUser()
     }
-
     static constraints = {
         sqr nullable: true
         newArchivesId nullable: true
