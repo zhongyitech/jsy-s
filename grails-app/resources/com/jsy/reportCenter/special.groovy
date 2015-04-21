@@ -6,6 +6,7 @@ package com.jsy.reportCenter
 import com.jsy.bankConfig.BankOrder
 import com.jsy.bankConfig.BankOrderEntry
 import com.jsy.flow.Dqztsq
+import com.jsy.flow.DqztsqResourceService
 import grails.converters.JSON
 import groovy.sql.Sql
 
@@ -27,27 +28,19 @@ import static com.jsy.utility.MyResponse.*
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class special {
+    static Map<String, Closure> _map = new HashMap<String, Closure>()
+    static {
+        _map.put("dqzt", {
+            Long id ->
+                Dqztsq.get(id)
+        })
+    }
 
     @GET
-//    @Path('')
-    Response getReport(@QueryParam("type") String type, @QueryParam("id") @DefaultValue("0") Long id) {
+    @Path("/report")
+    Response getReport(@QueryParam("reporttype") String stype, @QueryParam("id") Long id) {
         ok {
-            if (id == 0 || type == null || type.empty()) {
-                throw new Exception("参数不正确")
-            }
-            switch (type) {
-                case "dqzt":
-                    def result = [:]
-                    def sq = Dqztsq.get(id)
-                    if(sq){
-                        result.putAll(sq.properties)
-                    }
-                    return result
-                    break
-                default:
-                    return null
-                    break
-            }
+            _map.get(stype)?.call(id)
         }
     }
 }

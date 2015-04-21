@@ -621,7 +621,6 @@ class BootStrap {
                     } else {
 
                     }
-
                 }
             }
         }
