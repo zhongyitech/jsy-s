@@ -379,7 +379,7 @@ class TSProjectCollectionResource {
 
             if(project){
                 SpecailAccess.findAllByProjectId(projectid)?.each{
-                    it.delete()
+                    it.delete(flush: true)
                 }
                 obj.phaseDatas?.each{phaseData->
                     phaseData?.datas?.each{
@@ -539,6 +539,7 @@ class TSProjectCollectionResource {
             org.json.JSONObject obj = JSON.parse(datastr)
             TSProject project = TSProject.get(obj.projectid)
             if(project){
+                def interest_per = obj.interest_per
                 def daycount_per = obj.daycount_per
                 def interestType = obj.interestType
                 def manage_per = obj.manage_per
@@ -549,6 +550,7 @@ class TSProjectCollectionResource {
                 def year2 = obj.year2
                 def fund=Fund.get(obj.fund.id)
 
+                project.interest_per = interest_per
                 project.daycount_per = daycount_per
                 project.interestType = interestType
                 project.manage_per = manage_per

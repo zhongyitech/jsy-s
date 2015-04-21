@@ -43,7 +43,7 @@ class BootStrap {
 //        def users = User.findAllByUsername('')
             //部门的职能
 
-            new AuthenticationToken( token: SudaMoney.ApiToken_Suda,"APIUSER").save(failOnError: true)
+            new AuthenticationToken( token: SudaMoney.ApiToken_Suda,username:"APIUSER").save(failOnError: true)
 
 
             new TypeConfig(type: 1, mapName: "待售", mapValue: 1).save(failOnError: true)
@@ -511,7 +511,7 @@ class BootStrap {
             Menus menus76 = new Menus(name: 'jsgl', title: '角色管理', url: 'role-list.jsp', parentId: menus7.id).save(failOnError: true)
 //            Menus menus77 = new Menus(name: 'xzjs', title: '新增角色', url: 'role-create.jsp', parentId: menus7.id).save(failOnError: true)
             Menus menus78 = new Menus(name: 'yhgl', title: '用户管理', url: 'user-list.jsp', parentId: menus7.id).save(failOnError: true)
-            Menus menus23 = new Menus(name: 'khxxxg', title: '客户信息修改', url: 'customer-list.jsp', parentId: menus2.id).save(failOnError: true)
+            Menus menus23 = new Menus(name: 'khxxxg', title: '客户(项目方)信息修改', url: 'customer-list.jsp', parentId: menus7.id).save(failOnError: true)
             Menus menus79 = new Menus(name: 'xmglsetting', title: '项目管理', url: 'project-model-setting.jsp', parentId: menus7.id).save(failOnError: true)
 
             //权限关系
