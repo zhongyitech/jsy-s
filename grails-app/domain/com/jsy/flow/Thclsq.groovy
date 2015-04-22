@@ -2,6 +2,7 @@ package com.jsy.flow
 
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * 退伙处理申请
@@ -68,9 +69,8 @@ class Thclsq {
     int status=0
 
     def beforeInsert() {
-        this.sqr=springSecurityService.getCurrentUser()
+        this.sqr=new SpringSecurityService().getCurrentUser()
     }
-
     static constraints = {
         oldArchivesId unique: true
         sqr nullable: true

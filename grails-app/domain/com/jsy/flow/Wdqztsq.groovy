@@ -3,13 +3,14 @@ package com.jsy.flow
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * 未到期转投
  */
 
 class Wdqztsq {
-    def springSecurityService
+//    def springSecurityService
 
     //客户
     Customer customer
@@ -77,7 +78,7 @@ class Wdqztsq {
     int status = 0
 
     def beforeInsert() {
-        this.sqr = springSecurityService.getCurrentUser()
+        this.sqr =new SpringSecurityService().getCurrentUser()
     }
     static constraints = {
         sqr nullable: true
