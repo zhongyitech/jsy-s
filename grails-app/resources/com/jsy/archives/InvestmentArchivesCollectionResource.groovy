@@ -261,6 +261,9 @@ class InvestmentArchivesCollectionResource {
                 dto = investmentArchivesResourceService.create(dto)
                 dto.archiveNum = CreateNumberService.getFullNumber(former, dto.id.toString())
                 dto.markNum = dto.archiveNum
+                if(dto.fund && dto.fund.fundName){
+                    dto.fundName=dto.fund.fundName
+                }
                 dto.save(failOnError: true)
                 //付息时间新增
                 List times = investmentArchivesResourceService.scfxsj(dto.rgrq, dto.tzqx, dto.fxfs)
@@ -281,6 +284,9 @@ class InvestmentArchivesCollectionResource {
                     dto.username = cus.name
                 }
                 dto.customer = cus
+                if(dto.fund && dto.fund.fundName){
+                    dto.fundName=dto.fund.fundName
+                }
                 ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
                 return ia
             }
@@ -549,6 +555,11 @@ class InvestmentArchivesCollectionResource {
         target.putAt(it.key, (it.value == null ? null : it.value[valueName]))
     }
 
+    /**
+     * 投资档案管理界面 数据接口
+     * @param finfo
+     * @return
+     */
     @POST
     @Path('/IAOutput')
     Response IAOutput(Map finfo) {
@@ -558,7 +569,6 @@ class InvestmentArchivesCollectionResource {
             dc.list([max: finfo.pagesize, offset: finfo.startposition]).each {
                 def row = [:]
                 row.putAt("id", it.id)
-
                 it.properties.each {
                     switch (it.key) {
                         case "customer":
@@ -574,7 +584,6 @@ class InvestmentArchivesCollectionResource {
                         default:
                             row.putAt(it.key, it.value)
                     }
-
                 }
                 def pay = paymentInfoResourceService.getPaymentAmount(it.id)
                 row.putAt("bj", pay["bj"])

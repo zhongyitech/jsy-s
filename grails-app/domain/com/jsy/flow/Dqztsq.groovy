@@ -4,13 +4,13 @@ import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.system.Department
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * 到期转投申请
  */
 class Dqztsq {
-    def springSecurityService
-
+//    def springSecurityService
     //客户
     Customer customer
     //旧档案id
@@ -30,15 +30,15 @@ class Dqztsq {
     //到期日期
     Date dqrq
     //认购金额
-    BigDecimal rgje
+    Double rgje
     //转投基金
     Fund ztjj
     //转投基金编号
     //String ztjjbh
     //转投金额
-    BigDecimal ztje
+    Double ztje
     //转投收益额
-    BigDecimal ztsye
+    Double ztsye
     //备注
     String bz
     //申请人
@@ -54,10 +54,8 @@ class Dqztsq {
     int status=0
 
     def beforeInsert() {
-        this.sqr=springSecurityService.getCurrentUser()
+        this.sqr=new SpringSecurityService().getCurrentUser()
     }
-
-
     static constraints = {
         sqr nullable: true
         oldArchivesId unique: true

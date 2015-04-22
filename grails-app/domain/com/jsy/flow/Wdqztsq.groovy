@@ -15,7 +15,7 @@ class Wdqztsq {
     Customer customer
     //旧档案id
     Long oldArchivesId
-    //新档案id
+//    新档案id
     Long newArchivesId
 
     //基金名称
@@ -60,7 +60,7 @@ class Wdqztsq {
     BigDecimal gltchsje
 
     //备注
-    String bz=""
+    String bz = ""
     //申请人
     User sqr
     //申请部门

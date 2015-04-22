@@ -1,12 +1,24 @@
 package com.jsy.reportCenter
 
+import com.jsy.archives.Contract
+import com.jsy.archives.InvestmentArchives
+import com.jsy.auth.Menus
+import com.jsy.auth.User
+import com.jsy.bankConfig.BankAccount
+
 /**
  * Created by lioa on 2015/4/2.
  */
 import com.jsy.bankConfig.BankOrder
 import com.jsy.bankConfig.BankOrderEntry
+import com.jsy.customerObject.Customer
 import com.jsy.flow.Dqztsq
 import com.jsy.flow.DqztsqResourceService
+import com.jsy.flow.Wdqztsq
+import com.jsy.fundObject.Fund
+import com.jsy.fundObject.FundCompanyInformation
+import com.jsy.system.Department
+import com.jsy.system.OperationRecord
 import grails.converters.JSON
 import groovy.sql.Sql
 
@@ -32,7 +44,18 @@ class special {
     static {
         _map.put("dqzt", {
             Long id ->
-                Dqztsq.get(id)
+                def sq=Dqztsq.get(id)
+                if(sq){
+                    def result=[id:sq.id]
+                    result.putAll(sq.properties)
+                    def company=InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
+                    result.putAt("oldArchivesId",InvestmentArchives.get(sq.oldArchivesId))
+                    result.putAt("newArchivesId",InvestmentArchives.get(sq.newArchivesId))
+                    result.put("company",company.properties)
+
+                    return result
+                }
+                return null
         })
     }
 
