@@ -14,6 +14,7 @@ import com.jsy.bankConfig.BankOrderEntry
 import com.jsy.customerObject.Customer
 import com.jsy.flow.Dqztsq
 import com.jsy.flow.DqztsqResourceService
+import com.jsy.flow.Thclsq
 import com.jsy.flow.Wdqztsq
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
@@ -42,17 +43,31 @@ import static com.jsy.utility.MyResponse.*
 class special {
     static Map<String, Closure> _map = new HashMap<String, Closure>()
     static {
+        //到期转投申请
         _map.put("dqzt", {
             Long id ->
-                def sq=Dqztsq.get(id)
-                if(sq){
-                    def result=[id:sq.id]
+                def sq = Dqztsq.get(id)
+                if (sq) {
+                    def result = [id: sq.id]
                     result.putAll(sq.properties)
-                    def company=InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
-                    result.putAt("oldArchivesId",InvestmentArchives.get(sq.oldArchivesId))
-                    result.putAt("newArchivesId",InvestmentArchives.get(sq.newArchivesId))
-                    result.put("company",company.properties)
-
+                    def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
+                    result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
+                    result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
+                    result.put("company", company.properties)
+                    return result
+                }
+                return null
+        })
+        //退伙申请
+        _map.put("thdgp", {
+            Long id ->
+                def sq = Thclsq.get(id)
+                if (sq) {
+                    def result = [id: sq.id]
+                    result.putAll(sq.properties)
+                    def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
+                    result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
+                    result.put("company", company.properties)
                     return result
                 }
                 return null

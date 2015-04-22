@@ -7,7 +7,7 @@ import com.jsy.customerObject.Customer
  * 退伙处理申请
  */
 class Thclsq {
-    def springSecurityService
+//    def springSecurityService
 
     //旧档案id
     Long oldArchivesId

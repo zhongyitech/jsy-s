@@ -23,14 +23,8 @@ class FilePackageResourceService {
     }
 
     def create(FilePackage dto) {
-//        if(FilePackage.findByContractNum(dto.contractNum)){
-//            throw  new Exception("此合同已经入库,请确认合同编号!")
-//        }
-//        def iv=InvestmentArchives.findByContractNum(dto.contractNum)
-//        if(iv.dazt!=0){
-//            throw  new Exception("已经有特殊申请操作了,请先完成上一次操作申请!")
-//        }
-        ContractFlow.InputFilePackage.Validation(dto.contractNum)
+        ContractFlow.InputFilePackage.ValidationNum(dto.contractNum)
+        def iv=InvestmentArchives.findByContractNum(dto.contractNum)
         dto.save(failOnError: true)
         iv.status = 1 //设置为正常状态
         iv.save(failOnError: true)
