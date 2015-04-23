@@ -14,7 +14,7 @@ enum InvestmentFlow {
     private int _setp
 
     InvestmentFlow(int setp) {
-        this._setp = _setp
+        this._setp = setp
     }
 
     /**
