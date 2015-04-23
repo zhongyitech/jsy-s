@@ -4,8 +4,8 @@ import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 
-
 /**
+ * 数据读取帮助类;数据分页和通用条件过滤
  * Created by lioa on 2015/3/19.
  */
 @Transactional(rollbackFor = Throwable.class)
