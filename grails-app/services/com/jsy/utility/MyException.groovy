@@ -5,4 +5,7 @@ package com.jsy.utility
  */
 class MyException extends Exception {
 
+    MyException(String var1) {
+        super(var1)
+    }
 }

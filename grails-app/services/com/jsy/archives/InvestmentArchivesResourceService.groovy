@@ -14,6 +14,7 @@ import org.json.JSONArray
 class InvestmentArchivesResourceService {
 
     def create(InvestmentArchives dto) {
+        InvestmentFlow.Create.Validation(dto)
         dto.save(failOnError: true)
     }
 
@@ -32,7 +33,7 @@ class InvestmentArchivesResourceService {
     def update(InvestmentArchives dto, int id) throws Exception {
         def obj = InvestmentArchives.get(id)
         //判断是否可以进行更新操作
-        InvestmentFlow.Update(obj)
+        InvestmentFlow.Update.Validation(obj)
         if(obj.status==2){
             throw new Exception("已归档，无法修改！")
         }

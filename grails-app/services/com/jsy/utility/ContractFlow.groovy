@@ -59,7 +59,10 @@ enum ContractFlow {
                     throw new MyException("没有此合同编号的投资档案.!")
                 }else{
                     if(iv.customer==null){
-                        throw new MyException("投资档案还没有填写客户信息,不能入库.!")
+                        throw new MyException("投资档案还没有填写客户信息,不能入库!")
+                    }
+                    if(iv.zjdysj==null){
+                        throw new MyException("还没有打印过确认书,请先打印确认书!")
                     }
                 }
                 if (FilePackage.findByContractNum(contract.htbh)) {
