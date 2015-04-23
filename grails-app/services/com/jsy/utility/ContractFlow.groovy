@@ -31,7 +31,7 @@ enum ContractFlow {
 
     public boolean ValidationNum(String num) {
         if (num == null || num.size() > 9)
-            return new Exception("合同编号格式不正确")
+            return new MyException("合同编号格式不正确")
         return Validation(Contract.findByHtbh(num))
     }
 
@@ -40,30 +40,30 @@ enum ContractFlow {
         //合同登记操作
             case 0:
                 if (contract != null) {
-                    throw new Exception("合同编号:" + contract.htbh + " 已经登记过了.")
+                    throw new MyException("合同编号:" + contract.htbh + " 已经登记过了.")
                 }
                 break
         //创建投资档案
             case 1:
                 if (contract == null) {
-                    throw new Exception("合同编号还没有登记")
+                    throw new MyException("合同编号还没有登记")
                 }
                 if (InvestmentArchives.findByContractNum(contract.htbh) != null) {
-                    throw new Exception("合同编号已经使用过了!")
+                    throw new MyException("合同编号已经使用过了!")
                 }
                 break
         //档案入库
             case 2:
                 def iv = InvestmentArchives.findByContractNum(contract.htbh)
                 if (iv == null) {
-                    throw new Exception("没有此合同编号的投资档案.!")
+                    throw new MyException("没有此合同编号的投资档案.!")
                 }else{
                     if(iv.customer==null){
-                        throw new Exception("投资档案还没有填写客户信息,不能入库.!")
+                        throw new MyException("投资档案还没有填写客户信息,不能入库.!")
                     }
                 }
                 if (FilePackage.findByContractNum(contract.htbh)) {
-                    throw new Exception("此合同编号:" + contract.htbh + " 的投资档案已经入库了.!")
+                    throw new MyException("此合同编号:" + contract.htbh + " 的投资档案已经入库了.!")
                 }
                 break
         }

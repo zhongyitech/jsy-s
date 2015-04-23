@@ -49,6 +49,7 @@ class FilePackageResourceService {
             throw new DomainObjectNotFoundException(FilePackage.class, dto.id)
         }
         //不能更新合同编号字段
+        //todo:添加其它的限制
         dto.contractNum = null
         obj.union(dto)
         obj

@@ -3,6 +3,7 @@ package com.jsy.archives
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.RegisterContract
+import com.jsy.utility.InvestmentFlow
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -30,6 +31,8 @@ class InvestmentArchivesResourceService {
 
     def update(InvestmentArchives dto, int id) throws Exception {
         def obj = InvestmentArchives.get(id)
+        //判断是否可以进行更新操作
+        InvestmentFlow.Update(obj)
         if(obj.status==2){
             throw new Exception("已归档，无法修改！")
         }
