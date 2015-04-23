@@ -2,6 +2,7 @@ package com.jsy.utility
 
 import com.jsy.archives.Contract
 import com.jsy.archives.FilePackage
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 
 /**
@@ -53,8 +54,13 @@ enum ContractFlow {
                 break
         //档案入库
             case 2:
-                if (contract == null || InvestmentArchives.findByContractNum(contract.htbh) == null) {
+                def iv = InvestmentArchives.findByContractNum(contract.htbh)
+                if (iv == null) {
                     throw new Exception("没有此合同编号的投资档案.!")
+                }else{
+                    if(iv.customer==null){
+                        throw new Exception("投资档案还没有填写客户信息,不能入库.!")
+                    }
                 }
                 if (FilePackage.findByContractNum(contract.htbh)) {
                     throw new Exception("此合同编号:" + contract.htbh + " 的投资档案已经入库了.!")
