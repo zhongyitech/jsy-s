@@ -5,7 +5,7 @@ package com.jsy.bankServices
  * Created by lioa on 2015/4/23.
  */
 abstract class BaseMessage implements IMessage {
-    protected byte[] head
+    HEAD head
     protected int code
     protected def _body
 
@@ -18,21 +18,16 @@ abstract class BaseMessage implements IMessage {
      * @param head
      * @return
      */
-    boolean Valid(byte[] head) {
-        if (this.head.size() != head.size())
-            return false
-        for (int i = 0; i < this.head.size(); i++) {
-            if(this.head[i]!=head[i]) return false
-        }
+    boolean Valid(head) {
+
         return true
     }
 
     void getMessageBody(def body) {
-        this._body=body
+        this._body = body
     }
 
     boolean Execute() {
-
     }
 
     String getHead() {
