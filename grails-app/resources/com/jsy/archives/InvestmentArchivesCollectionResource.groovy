@@ -44,6 +44,7 @@ class InvestmentArchivesCollectionResource {
     InvestmentArchivesResourceService investmentArchivesResourceService
     def getYieldService
     def paymentInfoResourceService
+    def springSecurityService
     CustomerArchivesResourceService customerArchivesResourceService
     //根据档案id取附件
     @GET
@@ -595,7 +596,8 @@ class InvestmentArchivesCollectionResource {
     }
 
     /**
-     * 获取投资档案信息(以合同编号 为依据的信息)
+     * 获取投资档案信息(以合同编号 为依据的信息
+     * 销售人员查询的界面)
      * @param arg
      * @return
      */
@@ -603,7 +605,13 @@ class InvestmentArchivesCollectionResource {
     @Path('/ArchivesByNO')
     Response GetHeTongStatusList(Map arg) {
         MyResponse.page {
+            def user=springSecurityService.getCurrentUser()
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, arg)
+
+            dc=dc.where {
+                eq("ywjl",user)
+            }
+
             List<InvestmentArchives> investmentArchives = dc
                     .list([max: arg.pagesize, offset: arg.startposition])
             def res = []

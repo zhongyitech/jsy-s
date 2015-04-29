@@ -22,7 +22,7 @@ class SudaMoney {
     /**
      * 接口的token码
      */
-    public static String ApiToken_Suda="safliCijaifdslafNdsaflknadISldfknaSONm0NBsdf"
+    public static String ApiToken_Suda="A21B6261F60646858F44FD79EDC84B3B"
 
     /**
      * 未处理

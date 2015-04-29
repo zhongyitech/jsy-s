@@ -21,11 +21,11 @@ class MyResponse {
         }
         //数据入库时的字段规则验证异常
         catch (ValidationException ve) {
-            def msg=""
-            def result=null
-            if(ve){
-                msg=ve.message
-                result=ve.errors
+            def msg = ""
+            def result = null
+            if (ve) {
+                msg = ve.message
+                result = ve.errors
             }
             return Response.ok(JsonResult.error(msg, result)).build()
         }
@@ -36,7 +36,7 @@ class MyResponse {
     }
 
 /**
- * 封闭成分页方式返回数据
+ * 封装有分页数据的返回结果
  * @param closure [data:,total:]
  * @return
  */
@@ -45,7 +45,7 @@ class MyResponse {
             //调用传入的代码
             Map page = closure.call()
             //封装返回结果
-            return Response.ok(JsonResult.success(page.data,page.total)).build()
+            return Response.ok(JsonResult.success(page.data, page.total)).build()
             //对代码运行的异常进行处理
         }
         //数据入库时的字段规则验证异常
