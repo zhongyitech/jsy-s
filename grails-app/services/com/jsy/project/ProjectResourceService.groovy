@@ -156,6 +156,22 @@ class ProjectResourceService {
                     businessPlanFiles << attachFile
                 }
 
+                def analyseReportFiles = []
+                project.analyseReportFile?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    analyseReportFiles << attachFile
+                }
+
+                def loanFiles = []
+                project.loanFile?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    loanFiles << attachFile
+                }
+
                 def other_attachments = []
                 project.othersFiles.each{tsfile->
                     def entity = [:]
@@ -179,11 +195,16 @@ class ProjectResourceService {
                     "financialFilesDesc":project.financialFile?.pdesc,
                     "toPublicFilesDesc":project.toPublicFile?.pdesc,
                     "businessPlanFilesDesc":project.businessPlanFile?.pdesc,
+                    "loanFilesDesc":project.loanFile?.pdesc,
+                    "analyseReportFilesDesc":project.analyseReportFile?.pdesc,
+
                     "certificateFiles_attachments": relateFiles,
                     "debtFiles_attachments": debtFiles,
                     "financialFiles_attachments": financialFiles,
                     "toPublicFiles_attachments": toPublicFiles,
                     "businessPlanFiles_attachments": businessPlanFiles,
+                    "loanFiles_attachments": loanFiles,
+                    "analyseReportFiles_attachments": analyseReportFiles,
                     "other_attachments": other_attachments,
 
                     "phase": phase,
@@ -286,7 +307,7 @@ class ProjectResourceService {
 
                 resultObj.meetingBeans = [
                         "meetingRecord":meetingRecord,
-                        "meetingDesc": meetingRecord.pdesc,
+                        "meetingDesc": project.meetingOthersFiles?.pdesc,
                         "other_attachments":other_attachments,
 
                         "phase": phase,
@@ -299,6 +320,22 @@ class ProjectResourceService {
                     attachFile.fileName = file.fileName
                     attachFile.filePath = file.filePath
                     thirdPartyFile << attachFile
+                }
+
+                def testFile = []
+                project.testFile?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    testFile << attachFile
+                }
+
+                def houseFile = []
+                project.houseFile?.relateFiles?.each{file->
+                    def attachFile = [:]
+                    attachFile.fileName = file.fileName
+                    attachFile.filePath = file.filePath
+                    houseFile << attachFile
                 }
 
                 def other_attachments = []
@@ -319,7 +356,13 @@ class ProjectResourceService {
 
                 resultObj.otherEABean = [
                         "thirdPartyFile":thirdPartyFile,
-                        "thirdPartyDesc":thirdPartyFile.pdesc,
+                        houseFile:houseFile,
+                        testFile:testFile,
+
+                        "thirdPartyDesc":project.thirdPartyFile?.pdesc,
+                        "houseFileDesc":project.houseFile?.pdesc,
+                        "testDesc":project.testFile?.pdesc,
+
                         "other_attachments":other_attachments,
 
                         "phase": phase,
@@ -406,7 +449,9 @@ class ProjectResourceService {
      * @return
      */
     def checkUserAccessable(phase, project, user){
-        def isInAccessRole = checkInRole(phase.phaseParticipants,user.getAuthorities());
+        //统一用model的phaseParticipants
+        def modelPhase = TSWorkflowModelPhase.findByPhaseIndex(phase.phaseIndex)
+        def isInAccessRole = checkInRole(modelPhase.phaseParticipants,user.getAuthorities());
         def specailAccesses = checkSpecial(project,user,phase)
 
         //如果是历史节点，需要看看他是不是ProjectHistoryModifier
@@ -546,7 +591,7 @@ class ProjectResourceService {
             }
         }
         if(obj.businessPlanFiles_attachments && obj.businessPlanFiles_attachments.size() > 0){
-            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.businessPlanFilesDesc,flowPhase:phase,project:project);
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.analyseReportFilesDesc,flowPhase:phase,project:project);
             flowFile.save(failOnError: true)
 
             obj.businessPlanFiles_attachments?.each{attachFile->
@@ -563,6 +608,46 @@ class ProjectResourceService {
                 }
             }else{
                 project.businessPlanFile = flowFile
+            }
+        }
+        if(obj.loanFiles_attachments && obj.loanFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.loanFilesDesc,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.loanFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.loanFile){
+                project.loanFile.pdesc=flowFile.pdesc
+                flowFile.relateFiles.each{it->
+                    project.loanFile.addToRelateFiles(it)
+                }
+            }else{
+                project.loanFile = flowFile
+            }
+        }
+        if(obj.analyseReportFiles_attachments && obj.analyseReportFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.analyseReportFilesDesc,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.analyseReportFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.analyseReportFile){
+                project.analyseReportFile.pdesc=flowFile.pdesc
+                flowFile.relateFiles.each{it->
+                    project.analyseReportFile.addToRelateFiles(it)
+                }
+            }else{
+                project.analyseReportFile = flowFile
             }
         }
         if(obj.other_attachments && obj.other_attachments.size() > 0){
@@ -761,6 +846,48 @@ class ProjectResourceService {
 
         }
 
+        if(obj.houseFiles_attachments && obj.houseFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.houseFilesDesc,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.houseFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.houseFile){
+                project.houseFile.pdesc=flowFile.pdesc
+                flowFile.relateFiles.each{it->
+                    project.houseFile.addToRelateFiles(it)
+                }
+            }else{
+                project.houseFile = flowFile
+            }
+        }
+
+        if(obj.testFiles_attachments && obj.testFiles_attachments.size() > 0){
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.testFilesDesc,flowPhase:phase,project:project);
+            flowFile.save(failOnError: true)
+
+            obj.testFiles_attachments?.each{attachFile->
+                UploadFile file = new UploadFile(fileName:attachFile.fileName,filePath:attachFile.filePath);
+                file.save(failOnError: true)
+                flowFile.addToRelateFiles(file)
+            }
+            flowFile.save(failOnError: true)
+
+            if(project.testFile){
+                project.testFile.pdesc=flowFile.pdesc
+                flowFile.relateFiles.each{it->
+                    project.testFile.addToRelateFiles(it)
+                }
+            }else{
+                project.testFile = flowFile
+            }
+        }
+
         if(obj.thirdpartyLow_other_attachments && obj.thirdpartyLow_other_attachments.size() > 0){
             obj.thirdpartyLow_other_attachments?.each{attachFile->
                 TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,pdesc2: attachFile.desc2,flowPhase:phase,project:project);
@@ -816,16 +943,20 @@ class ProjectResourceService {
 
             obj.signers?.each{signer->
                 if(signer.name && signer.value){
-                    SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
-                    simpleRecord.save(failOnError: true)
-                    project.addToSigners(simpleRecord);
+                    if(signer.name && signer.value){
+                        SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
+                        simpleRecord.save(failOnError: true)
+                        project.addToSigners(simpleRecord);
+                    }
                 }
             }
 
             obj.attentions?.each{attention->
-                SimpleRecord simpleRecord = new SimpleRecord(name: attention.name, value: attention.value)
-                simpleRecord.save(failOnError: true)
-                project.addToAttentions(simpleRecord);
+                if(attention.name && attention.value){
+                    SimpleRecord simpleRecord = new SimpleRecord(name: attention.name, value: attention.value)
+                    simpleRecord.save(failOnError: true)
+                    project.addToAttentions(simpleRecord);
+                }
             }
 
 

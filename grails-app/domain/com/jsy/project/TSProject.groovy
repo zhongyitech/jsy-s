@@ -48,6 +48,8 @@ class TSProject {
     TSFlowFile financialFile     //财务报表
     TSFlowFile toPublicFile      //对公批文
     TSFlowFile businessPlanFile  //商务计划书
+    TSFlowFile analyseReportFile //评估报告
+    TSFlowFile loanFile          //贷款申请书
 
     //步骤1.2 gatherOA
     String gatherOAStatus = "working"
@@ -65,6 +67,8 @@ class TSProject {
 
     //步骤1.6 otherEA
     TSFlowFile thirdPartyFile
+    TSFlowFile testFile               //审计报告/验资报告
+    TSFlowFile houseFile              //评估报告
 
 
     //步骤2   makeContact
@@ -99,7 +103,7 @@ class TSProject {
         meetingOthersFiles:TSFlowFile,  //其他文件
 
         /****步骤1.6 otherEA****/
-        thirdPartyOthersFiles:TSFlowFile,  //其他文件
+        thirdPartyOthersFiles:TSFlowFile,   //其他文件
 
         /****步骤2 签署合同****/
         signers: SimpleRecord,                //签署方
@@ -118,6 +122,8 @@ class TSProject {
             toPublicFile: "none",
             businessPlanFile: "none",
             othersFiles: "none",
+            analyseReportFile: "none",
+            loanFile: "none",
 
             lawTransfer: "none",
             projectTransfer: "none",
@@ -129,6 +135,8 @@ class TSProject {
 
             thirdPartyFile: "none",
             thirdPartyOthersFiles: "none",
+            testFile: "none",
+            houseFile: "none",
 
             makeContactOthersFiles: "none",
             attentions: "none",
@@ -149,7 +157,10 @@ class TSProject {
         financialFile nullable: true
         toPublicFile nullable: true
         businessPlanFile nullable: true
-
+        analyseReportFile nullable: true
+        loanFile nullable: true
+        testFile  nullable: true
+        houseFile  nullable: true
 
         director nullable: true
         supervisor nullable: true
@@ -231,6 +242,7 @@ class TSProject {
                 currentStageName:currentStageName,
                 currentStageEn:currentStageEn,
                 fundName:fund?fund.fundName:"",
+                fundId:fund?fund.id:"",
                 creatorName:creatorName,
                 ownerName:ownerName,
                 dateCreated:dateCreated,

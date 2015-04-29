@@ -251,7 +251,11 @@ class BootStrap {
                 manager3.save(failOnError: true)
             }
 
-
+            def projectHistoryModifier =Role.findByAuthority("ProjectHistoryModifier")
+            if (!projectHistoryModifier) {
+                projectHistoryModifier = new Role(authority: "ProjectHistoryModifier", name: "项目历史节点提交控制者").save(failOnError: true);
+                projectHistoryModifier.save(failOnError: true)
+            }
 
             new TodoConfig(mkbs: 1, mkmc: "提成查询", cljs: manager2, url: "www.baidu.com").save(failOnError: true)
             new TodoConfig(mkbs: 2, mkmc: "兑付查询", cljs: manager3, url: "www.baidu.com").save(failOnError: true)
@@ -262,6 +266,10 @@ class BootStrap {
             if (!admin.authorities.contains(adminRole)) {
                 UserRole.create admin, adminRole
             }
+            if (!admin.authorities.contains(projectHistoryModifier)) {
+                UserRole.create admin, projectHistoryModifier
+            }
+
             if (!kitty.authorities.contains(assistRole)) {
                 UserRole.create kitty, assistRole
             }

@@ -708,6 +708,15 @@ class TSProjectCollectionResource {
         }
     }
 
+    @DELETE
+    @Path('/delProjectFile2')
+    Response delProjectFile2(@QueryParam("file_id") String fileId){
+        MyResponse.ok {
+            def file=UploadFile.findByFilePath(fileId)
+            file?.delete()
+        }
+    }
+
 }
 
 
