@@ -14,7 +14,7 @@ import static com.jsy.utility.MyResponse.*
 /**
  * Created by lioa on 2015/3/26.
  */
-    @Path('/api/outApi')
+@Path('/api/outApi')
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class SudaMoney {
