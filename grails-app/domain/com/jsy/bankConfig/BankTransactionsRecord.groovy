@@ -27,10 +27,10 @@ class BankTransactionsRecord {
     String otherSideName
 
 //    发生额
-    double actionAmount
+    BigDecimal actionAmount
 
 //    余额
-    double balance
+    BigDecimal balance
 
     //借贷
     //在备注上写上 True=借 ，Flase =贷
