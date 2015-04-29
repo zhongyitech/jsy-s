@@ -31,6 +31,7 @@ class MyResponse {
         }
         catch (Exception e) {
             //todo:write log
+            e.printStackTrace()
             return Response.ok(JsonResult.error(e.message)).build()
         }
     }

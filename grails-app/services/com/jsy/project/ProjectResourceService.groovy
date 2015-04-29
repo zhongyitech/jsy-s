@@ -421,6 +421,7 @@ class ProjectResourceService {
                         "community_per":project.community_per,
                         "penalty_per":project.penalty_per,
                         "borrow_per":project.borrow_per,
+                        interest_per:project.interest_per,
                         "year1":project.year1,
                         "year2":project.year2,
                         "interestType":project.interestType,
@@ -937,6 +938,8 @@ class ProjectResourceService {
             project.penalty_per = obj.notNormal_per
             project.borrow_per = obj.borrow_per
             project.daycount_per = obj.daycount_per
+            project.interest_per = obj.interest_per
+
             project.year1 = Float.parseFloat(obj.year1)
             project.year2 = Float.parseFloat(obj.year2)
             project.interestType = obj.interestType
