@@ -160,7 +160,7 @@ class BootStrap {
 //            it.save(flush: true)
 //        }
 
-            def user1 = User.findByUsername('admin') ?: new User(
+            def admin = User.findByUsername('admin') ?: new User(
                     skr: 'oswaldl',
                     khh: '平安银行',
                     yhzh: '8888888888',
@@ -169,53 +169,44 @@ class BootStrap {
                     department: adminDeparment,
                     chainName: "管理员(Test)",
                     enabled: true).save(flush: true)
-            adminDeparment.leader = user1
+            adminDeparment.leader = admin
             adminDeparment.save(failOnError: true)
 
-            def ordinary = User.findByUsername('ordinary') ?: new User(
+            def ordinary = User.findByUsername('oswaldl') ?: new User(
                     skr: 'oswaldl',
                     khh: '平安银行',
                     yhzh: '888888888888',
-                    username: 'user1',
+                    username: 'oswaldl',
                     password: '123',
                     department: department,
                     chainName: "业务经理(Test)",
                     enabled: true).save(flush: true)
-            def user2 = User.findByUsername('pengyh') ?: new User(
-                    skr: '部门经理',
+            def kitty = User.findByUsername('kitty') ?: new User(
+                    skr: '助理人员',
                     khh: '平安银行',
                     yhzh: '123456789',
-                    username: 'user2',
-                    chainName: '部门经理(Test)',
+                    username: 'kitty',
+                    chainName: '助理人员(Test)',
                     password: '123',
                     department: department,
                     enabled: true).save(flush: true)
-            department.leader = user2
+            department.leader = kitty
             department.save(failOnError: true)
-            def user3 = User.findByUsername('liujw') ?: new User(
-                    skr: '普通员工',
+            def peter = User.findByUsername('peter') ?: new User(
+                    skr: '项目部人员',
                     khh: '平安银行',
                     yhzh: '436461352352',
-                    username: 'user3',
-                    chainName: '普通员工(Test)',
+                    username: 'peter',
+                    chainName: '项目部人员(Test)',
                     password: '123',
                     department: adminDeparment,
                     enabled: true).save(flush: true)
-            def user4 = User.findByUsername('li') ?: new User(
+            def joe = User.findByUsername('joe') ?: new User(
                     skr: '财务人员',
                     khh: '平安银行',
                     yhzh: '465742632',
-                    username: 'user4',
+                    username: 'joe',
                     chainName: '财务人员(Test)',
-                    password: '123',
-                    department: adminDeparment,
-                    enabled: true).save(flush: true)
-            def user5 = User.findByUsername('li') ?: new User(
-                    skr: '行政人员',
-                    khh: '平安银行',
-                    yhzh: '465742632',
-                    username: 'user5',
-                    chainName: '行政人员(Test)',
                     password: '123',
                     department: adminDeparment,
                     enabled: true).save(flush: true)
@@ -232,15 +223,21 @@ class BootStrap {
                 adminRole = new Role(authority: 'ROLE_ADMIN', name: 'AdminRole')
                 adminRole.save(failOnError: true)
             }
-            def managerRole = Role.findByAuthority('ROLE_MANAGER')
-            if (!managerRole) {
-                managerRole = new Role(authority: 'ROLE_MANAGER', name: '部门经理')
-                managerRole.save(failOnError: true)
+            def assistRole = Role.findByAuthority('ROLE_ASIST')
+            if (!assistRole) {
+                assistRole = new Role(authority: 'ROLE_ASIST', name: '助理人员')
+                assistRole.save(failOnError: true)
             }
-            def manager1 = Role.findByAuthority('ROLE_MANAGER1')
-            if (!manager1) {
-                manager1 = new Role(authority: 'ROLE_MANAGER1', name: '业务经理')
-                manager1.save(failOnError: true)
+            def finaRole = Role.findByAuthority('ROLE_FINA')
+            if (!finaRole) {
+                finaRole = new Role(authority: 'ROLE_FINA', name: '财务部人员')
+                finaRole.save(failOnError: true)
+            }
+
+            def projectManagerRole = Role.findByAuthority('ROLE_MANAGER')
+            if (!projectManagerRole) {
+                projectManagerRole = new Role(authority: 'ROLE_MANAGER', name: '项目部人员')
+                projectManagerRole.save(failOnError: true)
             }
 
             def manager2 = Role.findByAuthority('ROLE_MANAGER2')
@@ -254,29 +251,22 @@ class BootStrap {
                 manager3.save(failOnError: true)
             }
 
+
+
             new TodoConfig(mkbs: 1, mkmc: "提成查询", cljs: manager2, url: "www.baidu.com").save(failOnError: true)
             new TodoConfig(mkbs: 2, mkmc: "兑付查询", cljs: manager3, url: "www.baidu.com").save(failOnError: true)
 
-            if (!user3.authorities.contains(adminRole)) {
-                UserRole.create user3, adminRole
+            if (!peter.authorities.contains(adminRole)) {
+                UserRole.create peter, projectManagerRole
             }
-            if (!user1.authorities.contains(adminRole)) {
-                UserRole.create user1, adminRole
+            if (!admin.authorities.contains(adminRole)) {
+                UserRole.create admin, adminRole
             }
-            if (!user1.authorities.contains(managerRole)) {
-                UserRole.create user1, managerRole
+            if (!kitty.authorities.contains(assistRole)) {
+                UserRole.create kitty, assistRole
             }
-            if (!user2.authorities.contains(manager1)) {
-                UserRole.create user2, manager1
-            }
-            if (!user4.authorities.contains(manager1)) {
-                UserRole.create user4, manager1
-            }
-            if (!user4.authorities.contains(manager2)) {
-                UserRole.create user4, manager2
-            }
-            if (!user4.authorities.contains(manager3)) {
-                UserRole.create user4, manager3
+            if (!joe.authorities.contains(finaRole)) {
+                UserRole.create joe, finaRole
             }
             if (!ordinary.authorities.contains(userRole)) {
                 UserRole.create ordinary, userRole
@@ -515,12 +505,7 @@ class BootStrap {
             Menus menus79 = new Menus(name: 'xmglsetting', title: '项目管理', url: 'project-model-setting.jsp', parentId: menus7.id).save(failOnError: true)
 
             //权限关系
-            new MenusRole(menus: menus1, role: managerRole, visible: true).save(failOnError: true)
-            new MenusRole(menus: menus11, role: managerRole, visible: true).save(failOnError: true)
-            new MenusRole(menus: menus12, role: managerRole, visible: true).save(failOnError: true)
-            new MenusRole(menus: menus13, role: managerRole, visible: true).save(failOnError: true)
-            new MenusRole(menus: menus14, role: managerRole, visible: true).save(failOnError: true)
-            new MenusRole(menus: menus15, role: managerRole, visible: true).save(failOnError: true)
+
             //管理员为所有权限
             new MenusRole(menus: menus1, role: adminRole, visible: true).save(failOnError: true)
             new MenusRole(menus: menus11, role: adminRole, visible: true).save(failOnError: true)
@@ -577,6 +562,60 @@ class BootStrap {
 //            new MenusRole(menus: menus77, role: adminRole, visible: true).save(failOnError: true)
             new MenusRole(menus: menus78, role: adminRole, visible: true).save(failOnError: true)
             new MenusRole(menus: menus79, role: adminRole, visible: true).save(failOnError: true)
+
+            //助理的
+            new MenusRole(menus: menus1, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus11, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus12, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus13, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus14, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus15, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus2, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus21, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus22, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus24, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus25, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus26, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus27, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus28, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus29, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus20, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus3, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus31, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus32, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus33, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus34, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus35, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus36, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus37, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus38, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus5, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus51, role: assistRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus52, role: assistRole, visible: true).save(failOnError: true)
+
+
+            //项目部负责人的
+            new MenusRole(menus: menus4, role: projectManagerRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus41, role: projectManagerRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus42, role: projectManagerRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus45, role: projectManagerRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus46, role: projectManagerRole, visible: true).save(failOnError: true)
+
+            //财务的
+            new MenusRole(menus: menus4, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus43, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus44, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus45, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus6, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus61, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus62, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus63, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus64, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus65, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus66, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus67, role: finaRole, visible: true).save(failOnError: true)
+            new MenusRole(menus: menus68, role: finaRole, visible: true).save(failOnError: true)
+
 
 
             print("init meuns end")

@@ -93,6 +93,10 @@ class PayRecord {
     }
 
     def beforeInsert() {
+        if(!project.manage_per || !project.community_per || !project.borrow_per || !project.interest_per ){
+            throw new Exception("项目利率尚未设置！")
+        }
+
         manage_bill = amount * project.manage_per                       //管理费
         community_bill = amount * project.community_per                 //渠道费
         borrow_bill = amount * project.borrow_per                       //借款

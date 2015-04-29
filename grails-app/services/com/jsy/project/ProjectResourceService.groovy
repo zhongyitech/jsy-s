@@ -797,54 +797,61 @@ class ProjectResourceService {
 //    }
 
     def completeMakeContact(TSProject project, def obj) {
-        def phase = project.getProjectWorkflow().getMakeContact()
-
-        project.manage_per = obj.manage_per
-        project.community_per = obj.community_per
-        project.penalty_per = obj.notNormal_per
-        project.borrow_per = obj.borrow_per
-        project.daycount_per = obj.daycount_per
-        project.year1 = Float.parseFloat(obj.year1)
-        project.year2 = Float.parseFloat(obj.year2)
-        project.interestType = obj.interestType
-
-        obj.signers?.each{signer->
-            if(signer.name && signer.value){
-                SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
-                simpleRecord.save(failOnError: true)
-                project.addToSigners(simpleRecord);
+        MyResponse.ok {
+            //检查是否关联了基金
+            if(!project.fund){
+                throw new Exception("项目没有关联基金")
             }
-        }
 
-        obj.attentions?.each{attention->
-            SimpleRecord simpleRecord = new SimpleRecord(name: attention.name, value: attention.value)
-            simpleRecord.save(failOnError: true)
-            project.addToAttentions(simpleRecord);
-        }
+            def phase = project.getProjectWorkflow().getMakeContact()
 
-//        println obj.fund
+            project.manage_per = obj.manage_per
+            project.community_per = obj.community_per
+            project.penalty_per = obj.notNormal_per
+            project.borrow_per = obj.borrow_per
+            project.daycount_per = obj.daycount_per
+            project.year1 = Float.parseFloat(obj.year1)
+            project.year2 = Float.parseFloat(obj.year2)
+            project.interestType = obj.interestType
 
-        if(obj.other_attachments && obj.other_attachments.size() > 0){
-            obj.other_attachments?.each{attachFile->
-                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
-                attachFile.files.each{otherFile->
-                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
-                    file.save(failOnError: true)
-                    flowFile.addToRelateFiles(file)
+            obj.signers?.each{signer->
+                if(signer.name && signer.value){
+                    SimpleRecord simpleRecord = new SimpleRecord(name: signer.name, value: signer.value)
+                    simpleRecord.save(failOnError: true)
+                    project.addToSigners(simpleRecord);
                 }
-                flowFile.save(failOnError: true)
+            }
 
-                project.addToMakeContactOthersFiles(flowFile)
+            obj.attentions?.each{attention->
+                SimpleRecord simpleRecord = new SimpleRecord(name: attention.name, value: attention.value)
+                simpleRecord.save(failOnError: true)
+                project.addToAttentions(simpleRecord);
+            }
+
+
+            if(obj.other_attachments && obj.other_attachments.size() > 0){
+                obj.other_attachments?.each{attachFile->
+                    TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
+                    attachFile.files.each{otherFile->
+                        UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                        file.save(failOnError: true)
+                        flowFile.addToRelateFiles(file)
+                    }
+                    flowFile.save(failOnError: true)
+
+                    project.addToMakeContactOthersFiles(flowFile)
+                }
+            }
+
+            //设置下一个阶段
+            if(project.currentStageEn==phase.phaseEn){
+                TSWorkflow tsWorkflow = project.getProjectWorkflow()
+                def nextphase = tsWorkflow.makeContactOAPhase
+                tsWorkflow.moveToModelPhase(nextphase)
+                project.save(failOnError: true)
             }
         }
 
-        //设置下一个阶段
-        if(project.currentStageEn==phase.phaseEn){
-            TSWorkflow tsWorkflow = project.getProjectWorkflow()
-            def nextphase = tsWorkflow.makeContactOAPhase
-            tsWorkflow.moveToModelPhase(nextphase)
-            project.save(failOnError: true)
-        }
 
     }
 

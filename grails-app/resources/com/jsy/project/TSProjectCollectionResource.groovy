@@ -293,6 +293,7 @@ class TSProjectCollectionResource {
 
             //数据保存
             projectResourceService.completeMakeContact(project, obj)
+            return true
         }
     }
 
