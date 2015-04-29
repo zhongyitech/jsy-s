@@ -551,16 +551,26 @@ class TSProjectCollectionResource {
                 def year2 = obj.year2
                 def fund=Fund.get(obj.fund.id)
 
-                project.interest_per = interest_per
-                project.daycount_per = daycount_per
-                project.interestType = interestType
-                project.manage_per = manage_per
-                project.community_per = community_per
-                project.penalty_per = penalty_per
-                project.borrow_per = borrow_per
-                project.year1 = year1
-                project.year2 = year2
-                project.fund = fund
+                if(interest_per)
+                    project.interest_per = interest_per
+                if(daycount_per)
+                    project.daycount_per = daycount_per
+                if(interestType)
+                    project.interestType = interestType
+                if(manage_per)
+                    project.manage_per = manage_per
+                if(community_per)
+                    project.community_per = community_per
+                if(penalty_per)
+                    project.penalty_per = penalty_per
+                if(borrow_per)
+                    project.borrow_per = borrow_per
+                if(year1)
+                    project.year1 = year1
+                if(year2)
+                    project.year2 = year2
+                if(fund)
+                    project.fund = fund
                 project.save(failOnError: true)
                 return true
             }else{

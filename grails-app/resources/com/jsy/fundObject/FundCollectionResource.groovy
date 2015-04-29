@@ -361,7 +361,12 @@ class FundCollectionResource {
             Fund fund = Fund.get(fundid)
             if(fund){
                 def rtn = [:]
-                rtn.companyName=fund.funcCompany.companyName
+                if(fund.funcCompany?.companyName){
+                    rtn.companyName=fund.funcCompany?.companyName
+                }else{
+                    rtn.companyName="未确定"
+                }
+
                 rtn.fundName=fund.fundName
                 rtn.id=fund.id
                 def should_payback = new BigDecimal(0)
@@ -395,7 +400,11 @@ class FundCollectionResource {
             Fund fund = Fund.get(fundid)
             if(fund){
                 def rtn = [:]
-                rtn.companyName=fund.funcCompany.companyName
+                if(fund.funcCompany?.companyName){
+                    rtn.companyName=fund.funcCompany?.companyName
+                }else{
+                    rtn.companyName="未确定"
+                }
                 rtn.fundName=fund.fundName
                 rtn.id=fund.id
                 rtn.nowDate=new Date()
