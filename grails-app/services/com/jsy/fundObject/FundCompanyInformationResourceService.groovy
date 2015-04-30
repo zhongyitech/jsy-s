@@ -36,19 +36,15 @@ class FundCompanyInformationResourceService {
      */
     def update(FundCompanyInformation dto) {
         def obj = FundCompanyInformation.get(dto.id)
-        //删除公司的银行账户关联信息，再重新写入
-        obj.bankAccount.each {
-            it.delete()
-        }
-        obj.bankAccount.removeAll()
         if (!obj) {
             throw new DomainObjectNotFoundException(FundCompanyInformation.class, dto.id)
         }
         obj.properties = dto.properties
-        obj.save(failOnError: true)
         obj.bankAccount.each {
             it.companyInformation = obj
+            it.save(failOnError: true)
         }
+        obj.save(failOnError: true)
         obj
     }
 
