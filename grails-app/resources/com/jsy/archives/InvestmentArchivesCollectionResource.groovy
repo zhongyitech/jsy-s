@@ -321,7 +321,7 @@ class InvestmentArchivesCollectionResource {
             }
             ia.save(failOnError: true)
             if (sync) {
-                customerArchivesResourceService.copyCustomer(obj);
+                customerArchivesResourceService.copyCustomer(obj,ia);
             }
             return obj
         }

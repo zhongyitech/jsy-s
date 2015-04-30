@@ -1020,7 +1020,7 @@ class ProjectResourceService {
             }
 
             if(moveToModel){
-                println "move modelphase by job..."+moveToModel
+//                println "move modelphase by job..."+moveToModel
                 project.getProjectWorkflow().moveToModelPhase(moveToModel)
             }
         }
