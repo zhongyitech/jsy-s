@@ -88,7 +88,9 @@ class RegisterContractCollectionResource {
     @Path('/readReturnForPage')
     Response readReturnForPage(Finfo finfo) {
         page {
+
             def json = registerContractResourceService.readReturnForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+
             return [data: json.get("page"), total: json.get("size")]
         }
 
@@ -160,6 +162,7 @@ class RegisterContractCollectionResource {
             validBh(dto.endNum)
             def fund = dto.fund
             dto.actionType = true
+            dto.department=   dto.receiveUser.department
             int sn = Integer.parseInt(dto.startNum.substring(nameLength))
             int en = Integer.parseInt(dto.endNum.substring(nameLength))
             def jc = []
