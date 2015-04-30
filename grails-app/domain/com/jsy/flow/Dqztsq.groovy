@@ -17,8 +17,6 @@ class Dqztsq {
     Long oldArchivesId
     //新档案id
     Long newArchivesId
-
-
     //基金名称
     String fundName
     //合同编号
@@ -50,12 +48,12 @@ class Dqztsq {
 
     //生成日期
     Date scrq=new Date()
-    //状态
+    //状态 0,待审核 1,审核通过
     int status=0
 
-    def beforeInsert() {
-        this.sqr=new SpringSecurityService().getCurrentUser()
-    }
+//    def beforeInsert() {
+//        this.sqr= springSecurityService.getCurrentUser()
+//    }
     static constraints = {
         sqr nullable: true
         oldArchivesId unique: true
