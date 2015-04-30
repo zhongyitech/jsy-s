@@ -2,6 +2,7 @@ package com.jsy.project
 
 import GsonTools.GsonTool
 import Models.MsgModel
+import com.jsy.auth.User
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.system.UploadFile
@@ -273,7 +274,7 @@ class TSProjectCollectionResource {
     @POST
     @Path('/complete_makeContact')
     Response completeMakeContact(String datastr) {
-        println datastr
+//        println datastr
         MyResponse.ok {
             // get project
             org.json.JSONObject obj = JSON.parse(datastr)
@@ -722,8 +723,20 @@ class TSProjectCollectionResource {
     @Path('/delProjectFile2')
     Response delProjectFile2(@QueryParam("file_id") String fileId){
         MyResponse.ok {
+
             def file=UploadFile.findByFilePath(fileId)
-            file?.delete()
+            def adminRole = Role.findByAuthority('ROLE_ADMIN')
+            if(file.creator){
+                User current = springSecurityService.getCurrentUser()
+                if(file.creator == current){
+                    file?.delete()
+                }else if(current.authorities.contains(adminRole)){
+                    file?.delete()
+                }else{
+                    throw new Exception("未授权")
+                }
+            }
+
         }
     }
 
