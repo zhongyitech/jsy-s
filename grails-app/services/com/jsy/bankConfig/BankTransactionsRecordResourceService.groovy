@@ -76,10 +76,11 @@ class BankTransactionsRecordResourceService {
                     }
                     orderEntry.save(failOnError: true)
                     it.manageType = 1
+                    //设置成功处理的标志
+                    it.managed = true
                     entryList.push(orderEntry)
                 }
             }
-            it.managed = true
             it.processedDate = new Date()
             it.save(failOnError: true)
         }
