@@ -57,6 +57,10 @@ class BankTransactionsRecordResourceService {
                 def bankAccount = BankAccount.findByAccount(it.account)
                 if (bankAccount != null && bankAccount.companyInformation != null) {
                     def subject = SummaryToFund.findBySumNameAndCompanyAndBorrow(summary.summary, bankAccount.account, it.borrowAndLend)
+                    if(subject==null){
+                        print(summary.summary +","+bankAccount.account+","+it.borrowAndLend)
+                        return
+                    }
                     def orderEntry = new BankOrderEntry()
                     def arg=[bank:bankAccount,company:bankAccount.companyInformation,record:it]
                     orderEntry.summary = summaryFormat(summary.summary,arg)
