@@ -16,7 +16,6 @@ class WdqztsqResourceService {
         investmentArchives.dazt = 1
         investmentArchives.status = 2
         investmentArchives.save(failOnError: true)
-
         return dto
     }
 
