@@ -12,6 +12,11 @@ class WdqztsqResourceService {
 
     def create(Wdqztsq dto) {
         dto.save(failOnError: true)
+        InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
+        investmentArchives.dazt = 1
+        investmentArchives.status = 2
+        investmentArchives.save(failOnError: true)
+
         return dto
     }
 

@@ -3,6 +3,7 @@ package com.jsy.flow
 import com.jsy.archives.InvestmentArchives
 import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.SpecialFlow
 import grails.converters.JSON
 import org.json.JSONObject
 
@@ -27,38 +28,27 @@ class WdqztsqCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def wdqztsqResourceService
+    WdqztsqResourceService wdqztsqResourceService
+    def springSecurityService
 
     @POST
     Response create(Wdqztsq dto) {
         ok {
-            def wd =  wdqztsqResourceService.create(dto)
+            SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
+
+            dto.sqr = springSecurityService.getCurrentUser()
+            dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
+            def wd = wdqztsqResourceService.create(dto)
+
+
             wd
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def wd
-//        try {
-//            wd =  wdqztsqResourceService.create(dto)
-//            InvestmentArchives investmentArchives=InvestmentArchives.get(dto.oldArchivesId)
-//            investmentArchives.dazt=2
-//            investmentArchives.status=2
-//            investmentArchives.save(failOnError: true)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", wd as JSON)
-//
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-
     }
 
     @GET
     Response getById(@QueryParam('id') Long id) {
         ok {
-            def wd =  Wdqztsq.findById(id)
+            def wd = Wdqztsq.findById(id)
             wd
         }
 //        JSONObject result = new JSONObject();
@@ -75,11 +65,12 @@ class WdqztsqCollectionResource {
 //
 //        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
+
     @PUT
-    Response update(Wdqztsq dto,@QueryParam('id') Long id){
+    Response update(Wdqztsq dto, @QueryParam('id') Long id) {
         ok {
             dto.id = id
-            def  wd =  wdqztsqResourceService.update(dto)
+            def wd = wdqztsqResourceService.update(dto)
             wd
         }
 //        JSONObject result = new JSONObject();
@@ -111,7 +102,7 @@ class WdqztsqCollectionResource {
             //todo: other code
 
             //按分页要求返回数据格式 [数据,总页数]
-            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count():0]
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
         }
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;

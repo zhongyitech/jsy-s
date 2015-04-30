@@ -1,8 +1,11 @@
 package com.jsy.flow
+
 import com.jsy.archives.Contract
 import com.jsy.archives.InvestmentArchives
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.SpecialFlow
+import grails.gorm.DetachedCriteria
+import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
@@ -23,6 +26,7 @@ class DqztsqCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     def dqztsqResourceService
+    def springSecurityService
 
     @POST
     Response create(Dqztsq dto) {
@@ -31,6 +35,8 @@ class DqztsqCollectionResource {
             SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
 
             dto.sqrq = new Date()
+            dto.sqr = springSecurityService.getCurrentUser()
+            dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             def dd = dqztsqResourceService.create(dto)
             InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
             investmentArchives.dazt = 1
@@ -80,6 +86,61 @@ class DqztsqCollectionResource {
 
             //按分页要求返回数据格式 [数据,总页数]
             return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
+        }
+    }
+
+    /**
+     * 获取所有的特殊申请数据(包括其它类型)
+     * @param arg
+     * @return
+     */
+    @POST
+    @Path('/getAll')
+    Response getSpeicalAll(Map arg) {
+        page {
+            def sType = arg.sType
+            DetachedCriteria dc = null
+            def data = []
+            switch (sType) {
+            //1.委托付款申请
+                case "Wtfksq":
+                    dc = DomainHelper.getDetachedCriteria(Wtfksq, arg)
+                    break
+            //2.到期转投申请
+                case "Dqztsq":
+                    dc = DomainHelper.getDetachedCriteria(Dqztsq, arg)
+                    data = dc.list([max: arg.pagesize, offset: arg.startposition]).collect {
+                        def row = [id: it.id]
+                        row.putAll(it.properties)
+                        row.put("sType", "到期转投")
+                        row.put("customer", [name: it.customer.name])
+                        row.put("sqr", [chainName: it.sqr.chainName])
+//                        row.put("department", it.sqr.department ? it.sqr.department.deptName : "")
+                        return row
+                    }
+                    break
+            //3.未到期转换申请
+                case "Wdqztsq":
+                    dc = DomainHelper.getDetachedCriteria(Wdqztsq, arg)
+                    break
+            //4.基金续投
+                case "Jjxtsq":
+                    dc = DomainHelper.getDetachedCriteria(Jjxtsq, arg)
+                    break
+            //5.退伙
+                case "Thclsq":
+                    dc = DomainHelper.getDetachedCriteria(Thclsq, arg)
+                    break
+                case "UnionSpecial":
+
+                    break
+                default:
+
+                    break
+            }
+            if (dc != null) {
+                return [data: data, total: dc.count()]
+            }
         }
     }
 }

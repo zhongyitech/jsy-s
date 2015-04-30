@@ -77,9 +77,9 @@ class Wdqztsq {
     //状态
     int status = 0
 
-    def beforeInsert() {
-        this.sqr =new SpringSecurityService().getCurrentUser()
-    }
+//    def beforeInsert() {
+//        this.sqr =new SpringSecurityService().getCurrentUser()
+//    }
     static constraints = {
         sqr nullable: true
         newArchivesId nullable: true

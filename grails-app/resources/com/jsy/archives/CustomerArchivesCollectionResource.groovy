@@ -115,7 +115,7 @@ class CustomerArchivesCollectionResource {
             print(user.chainName)
             def ca = CustomerArchives.findByNameLike(user.chainName)
             if (ca == null || ca.bankAccount.size() == 0)
-                throw new Exception("没有银行信息")
+                throw new Exception("此业务经理没有关联银行信息,请在客户信息中添加同名的人员信息")
             def bank = ca.bankAccount.find {
                 it.defaultAccount
             }

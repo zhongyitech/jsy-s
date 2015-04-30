@@ -5,7 +5,7 @@ import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 
 /**
- * Í¶×Êµµ°¸Á÷³Ì¹¦ÄÜ¼ì²â
+ * æŠ•èµ„æ¡£æ¡ˆæµç¨‹åŠŸèƒ½æ£€æµ‹
  * Created by lioa on 2015/4/23.
  */
 enum InvestmentFlow {
@@ -18,27 +18,27 @@ enum InvestmentFlow {
     }
 
     /**
-     * ¼ì²âÍ¶×Êµµ°¸ÊÇ·ñÄÜ½øĞĞĞ©²Ù×÷
-     * @param ia Í¶×Êµµ°¸
-     * @return Å×³ö¾ßÌåµÄÒì³£´íÎó
+     * æ£€æµ‹æŠ•èµ„æ¡£æ¡ˆæ˜¯å¦èƒ½è¿›è¡Œäº›æ“ä½œ
+     * @param ia æŠ•èµ„æ¡£æ¡ˆ
+     * @return æŠ›å‡ºå…·ä½“çš„å¼‚å¸¸é”™è¯¯
      */
     public boolean Validation(InvestmentArchives ia) {
         if(ia==null){
-            throw new MyException("Í¶×Êµµ°¸Îª¿Õ,¼ì²â²ÎÊıÖµ¡£")
+            throw new MyException("æŠ•èµ„æ¡£æ¡ˆä¸ºç©º,æ£€æµ‹å‚æ•°å€¼ã€‚")
         }
         switch (_setp){
             //create
             case 0:
-                //ºÏÍ¬±àºÅÊÇ·ñÒÑ¾­Ê¹ÓÃ¹ıÁË
+                //åˆåŒç¼–å·æ˜¯å¦å·²ç»ä½¿ç”¨è¿‡äº†
                 ContractFlow.CreateInvestment.ValidationNum(ia.contractNum)
                 break
             //update
             case 1:
                 if(INVESTMENT_STATUS.BackUp.eq(ia.status)){
-                    throw new MyException('Í¶×Êµµ°¸×´Ì¬ÊÇ\"´æµµ\"×´²»ÄÜ½øĞĞĞŞ¸Ä.')
+                    throw new MyException('æŠ•èµ„æ¡£æ¡ˆçŠ¶æ€æ˜¯\"å­˜æ¡£\"çŠ¶ä¸èƒ½è¿›è¡Œä¿®æ”¹.')
                 }
                 if(FilePackage.findByContractNum(ia.contractNum)){
-                    throw new MyException("Í¶×Êµµ°¸ÒÑ¾­Èë¿â£¬²»ÄÜĞŞ¸Ä £¡")
+                    throw new MyException("æŠ•èµ„æ¡£æ¡ˆå·²ç»å…¥åº“ï¼Œä¸èƒ½ä¿®æ”¹ ï¼")
                 }
                 break
             //deleted
