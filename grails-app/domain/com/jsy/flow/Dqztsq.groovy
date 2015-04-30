@@ -3,8 +3,6 @@ package com.jsy.flow
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
-import com.jsy.system.Department
-import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * 到期转投申请
