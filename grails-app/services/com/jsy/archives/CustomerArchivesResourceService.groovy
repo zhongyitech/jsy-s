@@ -73,7 +73,7 @@ class CustomerArchivesResourceService {
      * @param cus
      * @return
      */
-    def copyCustomer(Customer cus) {
+    def copyCustomer(Customer cus,InvestmentArchives ia) {
         def customerArchive = new CustomerArchives()
         customerArchive.name = cus.name
         customerArchive.callAddress = cus.callAddress
@@ -95,6 +95,9 @@ class CustomerArchivesResourceService {
         bank.purpose = TypeConfig.findByTypeAndMapValue(7, 4)
         customerArchive.bankAccount = [bank]
         customerArchive.save(failOnError: true)
+
+        ia.customerArchive=customerArchive
+        ia.save(failOnError: true)
         return cus
     }
 }
