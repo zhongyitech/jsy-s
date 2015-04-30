@@ -570,8 +570,11 @@ class TSProjectCollectionResource {
                     project.year1 = year1
                 if(year2)
                     project.year2 = year2
-                if(fund)
+                if(fund){
                     project.fund = fund
+                    fund.project = project
+                    fund.save(failOnError: true)
+                }
                 project.save(failOnError: true)
                 return true
             }else{
