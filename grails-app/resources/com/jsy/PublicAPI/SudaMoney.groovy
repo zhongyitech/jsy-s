@@ -40,25 +40,6 @@ class SudaMoney {
     @Path('/bankOrder')
     Response getBankOrder() {
         ok {
-//            JSON.use("deep")
-//            def order = BankOrder.findAllByManageType(NoAccept)
-//            def o = [:]
-//            o.number = order.evidenceCode
-//            o.company = order.fund
-//            o.date = order.evidenceDate
-//            o.zihao = order.evidenceKey
-//            o.zhenghao = order.evidenceValue
-//            o.writedate = order.createDate
-//            o.status = order.manageType == 0 ? false : true
-//            def oe = []
-//            BankOrderEntry.findAllByEvidenceCode(order.evidenceCode)
-//                    .each {
-//                oe.push(
-//                        [summary: it.summary, subjectName: it.subjectName, lamount: it.lendAmount, bamount: it.borrowAmount, transactionNo: it.transaction]
-//                )
-//            }
-//            o.entry=oe
-//            return o
             BankOrderEntry.findAllByManageType(NoAccept)
         }
     }

@@ -1,7 +1,7 @@
 package com.jsy.bankServices
 
 /**
- * ÏûÏ¢(±¨ÎÄ)µÄ»ù´¡Àà
+ * æ¶ˆæ¯(æŠ¥æ–‡)çš„åŸºç¡€ç±»
  * Created by lioa on 2015/4/23.
  */
 abstract class BaseMessage implements IMessage {
@@ -14,7 +14,7 @@ abstract class BaseMessage implements IMessage {
     }
 
     /**
-     * ±È½Ï±¨ÎÄÍ·ÊÇ·ñÏàÍ¬
+     * æ¯”è¾ƒæŠ¥æ–‡å¤´æ˜¯å¦ç›¸åŒ
      * @param head
      * @return
      */

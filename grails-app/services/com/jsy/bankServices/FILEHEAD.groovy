@@ -1,19 +1,66 @@
 package com.jsy.bankServices
 
+import grails.plugin.asyncmail.Validator
+
+import java.nio.charset.Charset
+
 /**
- * ¸½¼ş±¨ÎÄÍ· 227Î»
+ * é™„ä»¶æŠ¥æ–‡å¤´ 227ä½
  * Created by lioa on 2015/5/4.
  */
 class FILEHEAD {
-    public final int PACKET_LENGTH = 227
-    public final String CHART_SET = "GBK"
+    public static final int PACKET_LENGTH = 277
+    public static final String CHART_SET = "GBK"
     static final Map packConfig = [
-            fileName       : [s: 0, l: 6, dest: "ÎÄ¼şÃû³Æ"],
-            charset        : [s: 240, l: 2, data: ["01": "GBK", "02": "UTF8", "03": "unicode", "04": "iso-8859-1"], dest: "±¨ÎÄ±àÂë"],
-            downType       : [s: 242, l: 1, data: ["0": "default", "1": "fileSystem", "2": "FTP", "3": "HTTP"], dest: "»ñÈ¡ÎÄ¼ş·½Ê½"],
-            isToken        : [s: 243, l: 1, data: ["0": "²»Ç©Ãû", "1": "Ç©Ãû"], dest: "ÊÇ·ñ¶ÔÎÄ¼şÇ©Ãû"],
-            tokenType      : [s: 244, l: 1, dest: "Ç©ÃûÊı¾İÃû¸ñÊ½", data: ["1": "no", "2": "PKCS7"]],
-            tokenLength    : [s: 257, l: 12, dest: "Ç©ÃûÄÚÈİ³¤¶È"],
-            fileDataLength : [s: 267, l: 10, dest: "ÎÄ¼şÄÚÈİ³¤¶È"],
+            fileName      : [s: 0, l: 6, dest: "æ–‡ä»¶åç§°"],
+            charset       : [s: 240, l: 2, data: ["01": "GBK", "02": "UTF8", "03": "unicode", "04": "iso-8859-1"], dest: "æŠ¥æ–‡ç¼–ç "],
+            downType      : [s: 242, l: 1, data: ["0": "default", "1": "fileSystem", "2": "FTP", "3": "HTTP"], dest: "è·å–æ–‡ä»¶æ–¹å¼"],
+            isToken       : [s: 243, l: 1, data: ["0": "ä¸ç­¾å", "1": "ç­¾å"], dest: "æ˜¯å¦å¯¹æ–‡ä»¶ç­¾å"],
+            tokenType     : [s: 244, l: 1, dest: "ç­¾åæ•°æ®åæ ¼å¼", data: ["1": "no", "2": "PKCS7"]],
+            tokenLength   : [s: 257, l: 12, dest: "ç­¾åå†…å®¹é•¿åº¦"],
+            fileDataLength: [s: 267, l: 10, dest: "æ–‡ä»¶å†…å®¹é•¿åº¦"],
     ]
+
+    private String _value = ""
+
+    FILEHEAD(String _value) {
+        this._value = _value
+    }
+
+    FILEHEAD(byte[] bytes) {
+        if (bytes == null || bytes.length < PACKET_LENGTH) {
+            throw new Exception("æŠ¥æ–‡æ•°æ®ä¸èƒ½ä¸ºç©ºæˆ–é•¿åº¦å¿…é¡»æ˜¯:" + PACKET_LENGTH + "ä¸ªå­—èŠ‚.")
+        }
+        Charset charset = Charset.forName(CHART_SET)
+        def headBytes = Arrays.copyOfRange(bytes, 0, PACKET_LENGTH)
+        this._value = new String(headBytes, charset)
+    }
+
+    public Long getFileDataLength() {
+        return Long.parseLong(GetConfig(getPackConfig().fileDataLength))
+    }
+
+    public String getCharset() { return GetConfig(getPackConfig().charset) }
+
+    public String GetConfig(Map map) {
+        def result = _value.substring(map.s, map.s + map.l)
+        if (map.data) {
+            println(map.dest + ":" + map.data[result] + " (" + result + ")")
+            return map.data[result]
+        } else {
+            println(map.dest + ":" + result)
+        }
+        return result
+    }
+
+    static FILEHEAD CreateFILEHEAD(byte[] value) {
+        if (value.length >= PACKET_LENGTH) {
+            return new FILEHEAD(value)
+        }
+        throw new Exception("é™„ä»¶æŠ¥æ–‡å¤´æ ¼å¼ä¸æ­£ç¡®")
+    }
+
+    public byte[] getHeadBytes(Charset charset) {
+        return _value.getBytes(charset)
+    }
 }

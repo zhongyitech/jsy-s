@@ -8,13 +8,13 @@ interface IMessage {
     boolean  Valid(byte[] head)
     void getMessageBody(def body)
     /**
-     * Ö´ĞĞ´ËÏûÏ¢(±¨ÎÄ°ó¶¨µÄ´¦ÀíÊÂ¼ş)
-     * @return ²Ù×÷½á¹û
+     * æ‰§è¡Œæ­¤æ¶ˆæ¯(æŠ¥æ–‡ç»‘å®šçš„å¤„ç†äº‹ä»¶)
+     * @return æ“ä½œç»“æœ
      */
     boolean Execute()
     /**
-     * ½«ÏûÏ¢(±¨ÎÄ)·¢ËÍ¸ø·şÎñÆ÷
-     * @return ·µ»Ø²Ù×÷½á¹û
+     * å°†æ¶ˆæ¯(æŠ¥æ–‡)å‘é€ç»™æœåŠ¡å™¨
+     * @return è¿”å›æ“ä½œç»“æœ
      */
     boolean SendToServer()
     String getHead()

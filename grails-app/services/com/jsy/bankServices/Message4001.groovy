@@ -1,7 +1,7 @@
 package com.jsy.bankServices
 
 /**
- * Óà¶î²éÑ¯±¨ÎÄ
+ * ä½™é¢æŸ¥è¯¢æŠ¥æ–‡
  * Created by lioa on 2015/4/23.
  */
 class Message4001 {
