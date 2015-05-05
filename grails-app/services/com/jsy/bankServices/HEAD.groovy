@@ -1,6 +1,7 @@
 package com.jsy.bankServices
 
 import grails.plugin.springsecurity.InterceptedUrl
+import org.h2.message.Trace
 
 import java.nio.charset.Charset
 
@@ -22,6 +23,7 @@ class HEAD {
     public static final Map packConfig = [
             charset               : [s: 6, l: 2, data: ["01": "GBK", "02": "UTF8", "03": "unicode", "04": "iso-8859-1"], dest: "报文编码"],
             ptype                 : [s: 0, l: 6, dest: "报文类别和目标系统编码"],
+            incCode               : [s: 10, l: 20, dest: "企业银企直连标准代码"],
             dataLength            : [s: 30, l: 10, dest: "数据长度"],
             number                : [s: 40, l: 6, dest: "交易码"],
             serverType            : [s: 51, l: 2, dest: "服务类型", data: ["01": "request", "02": "response"]],
@@ -146,10 +148,68 @@ class HEAD {
     }
 
     public static void main(String[] args) {
+
         def xml = "A0010101010010207990000123100000000004944004  12345012010081115421620100811153400      999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001<?xml version=\"1.0\" encoding=\"GB2312\"?><Result><ThirdVoucher>20100811153416</ThirdVoucher><CcyCode>RMB</CcyCode><OutAcctNo>11000097408701</OutAcctNo><OutAcctName>ebt</OutAcctName><OutAcctAddr/><InAcctBankNode/><InAcctRecCode/><InAcctNo>11000098571501</InAcctNo><InAcctName>EBANK</InAcctName><InAcctBankName>anything</InAcctBankName><TranAmount>000.01</TranAmount><AmountCode/><UseEx/><UnionFlag>1</UnionFlag><SysFlag>2</SysFlag><AddrFlag>1</AddrFlag><RealFlag>2</RealFlag><MainAcctNo/></Result>123.txt                                                                                                                                                                                                                                         0200011111111111100000000000000000004ABCD"
-        def packet = new BankPacket(xml.getBytes(Charset.forName("GBK")))
-        println(packet.head.getReturnCode())
-        packet.toBytes()
-        print(packet.toXmlString())
+//        def packet = new BankPacket(xml.getBytes(Charset.forName("GBK")))
+//        println(packet.head.getReturnCode())
+//        packet.toBytes()
+
+
+        def request = new BankPacket("A001010101001010799000023420000000000055S001       0120100809171028    2010080981026055                                                                                                          00000                       0<?xml version=\"1.0\" encoding=\"GBK\"?><Result></Result>".getBytes("GBK"))
+        request.head.SetConfig(HEAD.getPackConfig().incCode, "00203030000000037000")
+        def head = request.head.getHeadBytes()
+
+        Socket s = new Socket("testebank.sdb.com.cn", 462);
+        s.setSendBufferSize(4096);
+        s.setTcpNoDelay(true);
+        s.setSoTimeout(5000);
+        s.setKeepAlive(true);
+        OutputStream out = s.getOutputStream();
+        InputStream din = s.getInputStream();
+//准备报文src
+        out.write("A0010102010090103000000004100000000001104001       0120100809171028    2010080981026055                                                                                                          00000                       0<?xml version=\"1.0\" encoding=\"UTF-8\"?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode></Result>".getBytes("UTF-8"));
+        out.flush();
+        int lengthHeadLen = 222;
+        int lengthHeadType = 0;
+        int lengthBodyLenStartposi = 30;
+        int lengthBodyLen = 10;
+        int contentLength = 0;
+
+        byte[] lenHeadBuf = new byte[lengthHeadLen]
+        System.arraycopy(head, 0, lenHeadBuf, 0, head.length);
+
+        int off = 6;
+        while (off < lengthHeadLen) {
+            off = off + din.read(lenHeadBuf, off, lengthHeadLen - off);
+            if (off < 0) {
+//                errMsg = "ERROR:while reading 222 head.";
+//                return errMsg.getBytes();
+                throw new EMPException("Socket was closed! while reading!");
+            }
+        }
+//        byteout.write(lenHeadBuf);
+        //获取报文头中的长度字段
+        if (lengthHeadType == 0) {
+            try {
+                contentLength = Integer.parseInt(new String(lenHeadBuf,
+                        lengthBodyLenStartposi, lengthBodyLen).trim());
+            } catch (Exception e) {
+                Trace.logError(Trace.COMPONENT_TCPIP,
+                        "获取报文头中的长度字段失败--->lenHeadBuf=" + new String(lenHeadBuf));
+                throw new EMPException("获取报文头中的长度字段失败!");
+            }
+        }
+        //read msg content.
+        byte[] contentBuf = new byte[contentLength];
+        off = 0;
+        while (off < contentLength) {
+            off = off + din.read(contentBuf, off, contentLength - off);
+            if (off < 0) {
+//                errMsg = "ERROR:while reading length-[" + contentLength + "] body.";
+//                return errMsg.getBytes();
+                throw new EMPException("Socket was closed! while reading!");
+            }
+        }
+        def pack = new BankPacket(contentBuf)
     }
 }

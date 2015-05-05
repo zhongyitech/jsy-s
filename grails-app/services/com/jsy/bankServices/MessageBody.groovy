@@ -15,7 +15,7 @@ class MessageBody {
         return new MessageBody(xml)
     }
 
-    MessageBody(String _xml) {
+    MessageBody(String  _xml) {
         this._xml = _xml
     }
 
@@ -30,6 +30,5 @@ class MessageBody {
     public  byte [] getMessageBytes(Charset charset){
         return  _xml.getBytes(charset)
     }
-
 
 }

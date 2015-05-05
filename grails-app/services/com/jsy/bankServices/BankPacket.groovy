@@ -10,6 +10,7 @@ import java.nio.charset.Charset
  * Created by lioa on 2015/5/4.
  */
 public class BankPacket {
+    byte[] _value
     /**
      * 报文头
      */
@@ -29,10 +30,10 @@ public class BankPacket {
      * @param xml 报文的内容
      */
     BankPacket(byte[] xml) {
+        this._value=xml
         this.head = HEAD.CreateHead(xml)
         def dataLength = this.head.getFileDataLength()
         byte[] data = Arrays.copyOfRange(xml, this.head.PACKET_LENGTH, this.head.PACKET_LENGTH + dataLength.toInteger())
-//        byte[] data = xml[this.head.PACKET_LENGTH - 1,this.head.PACKET_LENGTH -1+ dataLength]
         this.messageBody = MessageBody.createMessage(new String(data,this.head.getCharset()))
         int fileHeadStartIndex = HEAD.PACKET_LENGTH + dataLength
         if (xml.length > fileHeadStartIndex + FILEHEAD.PACKET_LENGTH) {
@@ -46,6 +47,7 @@ public class BankPacket {
     }
 
     BankPacket(String xml) {
+        BankPacket(xml.getBytes("GBK"))
     }
 
     public byte[] toBytes(Charset character = null) {
@@ -55,9 +57,9 @@ public class BankPacket {
 
         def messageBtyes = this.messageBody.getMessageBytes(character)
         def dataLength=messageBtyes.length
-        this.head.SetConfig(HEAD.getPackConfig().dataLength,"00")
-        result.addAll(this.head.getHeadBytes())
-        result.addAll(this.messageBody.getMessageBytes())
+        this.head.SetConfig(HEAD.getPackConfig().dataLength,dataLength)
+        result.addAll(this.head.getHeadBytes(character))
+        result.addAll(this.messageBody.getMessageBytes(character))
         if (this.filehead != null) {
             result.addAll(this.filehead.getHeadBytes(character))
         }
