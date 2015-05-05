@@ -1,9 +1,6 @@
 package com.jsy.bankServices
 
-import grails.plugin.springsecurity.InterceptedUrl
 import org.h2.message.Trace
-
-import java.nio.charset.Charset
 
 /**
  * 通讯报文头 222字节
@@ -15,7 +12,7 @@ class HEAD {
      * 报文数据的长度
      */
     public static final int PACKET_LENGTH = 222
-    public static final String CHART_SET = "GBK"
+    public static String CHART_SET = "GBK"
     //空值填充值
     public static final byte CHART_NULL = 0x20
     public static final byte OZER = 0x00
@@ -37,14 +34,14 @@ class HEAD {
     /**
      * 报文数据 以字符串方式存储
      */
-    private String _value
+    private byte[] _refValue
 
     /**
      * 返回内部数据报文的数据,经过解码的数据
      * @return
      */
     public String getPacketValue() {
-        return _value
+        return new String(Arrays.copyOfRange(_refValue, 0, PACKET_LENGTH), CHART_SET)
     }
 
     public static Map getPackConfig() {
@@ -55,10 +52,11 @@ class HEAD {
      * @param _value 字符串格式的报文头数据
      */
     HEAD(String _value) {
-        if (_value == null || _value.getBytes(CHART_SET).length != PACKET_LENGTH) {
+        def temp = _value.getBytes(CHART_SET)
+        if (_value == null || temp.length < PACKET_LENGTH) {
             throw new Exception("报文数据不能为空或长度必须是:" + PACKET_LENGTH + "个字节.")
         }
-        this._value = _value
+        this._refValue = temp
     }
     /**
      * 创建一个报文头
@@ -68,19 +66,17 @@ class HEAD {
         if (_value == null || _value.length < PACKET_LENGTH) {
             throw new Exception("报文数据不能为空或长度必须是:" + PACKET_LENGTH + "个字节.")
         }
-        Charset charset = Charset.forName(CHART_SET)
-        def headBytes = Arrays.copyOfRange(_value, 0, PACKET_LENGTH)
-        this._value = new String(headBytes, charset)
+//        Charset charset = Charset.forName(CHART_SET)
+//        def headBytes = Arrays.copyOfRange(_refValue, 0, PACKET_LENGTH)
+        this._refValue = _value
+        this.CHART_SET = GetConfig("charset")
     }
     /**
      * 获取报文的字节格式数据
      * @return 报文头的字节数据
      */
-    public byte[] getHeadBytes(Charset charset = null) {
-        if (charset == null) {
-            charset = Charset.forName(CHART_SET)
-        }
-        def result = _value.getBytes(charset)
+    public byte[] getHeadBytes() {
+        def result = Arrays.copyOfRange(_refValue, 0, PACKET_LENGTH)
         //对空字符串进行替换
         result.each {
             if (it.byteValue() == OZER)
@@ -90,16 +86,16 @@ class HEAD {
     }
 
     //数据内容的长度
-    public Long getFileDataLength() { return Long.parseLong(GetConfig(getPackConfig().dataLength)) }
+    public Long getFileDataLength() { return Long.parseLong(GetConfig("dataLength")) }
 
     //返回码
-    public String getReturnCode() { return GetConfig(getPackConfig().returnCode) }
+    public String getReturnCode() { return GetConfig("returnCode") }
 
-    public String getReturnDescription() { return GetConfig(getPackConfig().returnDescription) }
+    public String getReturnDescription() { return GetConfig("returnDescription") }
 
-    public String getNumber() { return GetConfig(getPackConfig().number) }
+    public String getNumber() { return GetConfig("number") }
 
-    public Charset getCharset() { return Charset.forName(GetConfig(getPackConfig().charset)) }
+    public static String getCharset() { return (CHART_SET) }
 
     //通用的方法
     static CreateHead(byte[] head) {
@@ -114,8 +110,10 @@ class HEAD {
      * @param map 参数的名称
      * @return 参数的值
      */
-    public String GetConfig(Map map) {
-        def result = _value.substring(map.s, map.s + map.l)
+    public String GetConfig(String mapName) {
+        def map = getPackConfig()[mapName]
+        def result = new String(Arrays.copyOfRange(_refValue, map.s, map.s + map.l), getCharset())
+        //_refValue.substring(map.s, map.s + map.l)
         if (map.data) {
             println(map.dest + ":" + map.data[result] + " (" + result + ")")
             return map.data[result]
@@ -130,7 +128,8 @@ class HEAD {
      * @param location 参数的名称
      * @param value
      */
-    public <T> void SetConfig(Map location, T value) {
+    public <T> void SetConfig(String mapName, T value) {
+        def location = getPackConfig()[mapName]
         String newValue = ""
         //数字前补0
         if (value.class.name == Integer.class.name) {
@@ -138,13 +137,14 @@ class HEAD {
         }
         //字符后补空格
         if (value.class.name == String.class.name) {
-            if ((value as String).length() > location.l) {
-                throw new Exception("要设置的值不符合规则,长度应该为:" + location.l)
+            def val = value as String
+            while (val.length() == location.l) {
+                val += " "
             }
-            newValue = value as String
+            newValue = val
         }
-        def old = GetConfig(location)
-        _value = _value.replace(old, newValue)
+        def src = newValue.getBytes(getCharset())
+        System.arraycopy(src, 0, _refValue, location.s, src.length)
     }
 
     public static void main(String[] args) {
@@ -154,9 +154,9 @@ class HEAD {
 //        println(packet.head.getReturnCode())
 //        packet.toBytes()
 
-
-        def request = new BankPacket("A001010101001010799000023420000000000055S001       0120100809171028    2010080981026055                                                                                                          00000                       0<?xml version=\"1.0\" encoding=\"GBK\"?><Result></Result>".getBytes("GBK"))
-        request.head.SetConfig(HEAD.getPackConfig().incCode, "00203030000000037000")
+        def request = new BankPacket(xml.getBytes("GBK"))
+        println(request.head._refValue)
+        request.head.SetConfig("incCode", "00203030000000037000")
         def head = request.head.getHeadBytes()
 
         Socket s = new Socket("testebank.sdb.com.cn", 462);

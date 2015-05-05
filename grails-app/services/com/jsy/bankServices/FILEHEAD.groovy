@@ -1,6 +1,5 @@
 package com.jsy.bankServices
 
-import grails.plugin.asyncmail.Validator
 
 import java.nio.charset.Charset
 
@@ -10,7 +9,7 @@ import java.nio.charset.Charset
  */
 class FILEHEAD {
     public static final int PACKET_LENGTH = 277
-    public static final String CHART_SET = "GBK"
+    public static String CHART_SET = "GBK"
     static final Map packConfig = [
             fileName      : [s: 0, l: 6, dest: "文件名称"],
             charset       : [s: 240, l: 2, data: ["01": "GBK", "02": "UTF8", "03": "unicode", "04": "iso-8859-1"], dest: "报文编码"],
@@ -21,29 +20,38 @@ class FILEHEAD {
             fileDataLength: [s: 267, l: 10, dest: "文件内容长度"],
     ]
 
-    private String _value = ""
+    //数据的引用
+    private byte[] _refValue
+    private int _startIndex
 
-    FILEHEAD(String _value) {
-        this._value = _value
-    }
-
-    FILEHEAD(byte[] bytes) {
-        if (bytes == null || bytes.length < PACKET_LENGTH) {
+    FILEHEAD(byte[] bytes, HEAD head) {
+        _startIndex = head.PACKET_LENGTH + head.getFileDataLength()
+        if (bytes == null || bytes.length < _startIndex+PACKET_LENGTH) {
             throw new Exception("报文数据不能为空或长度必须是:" + PACKET_LENGTH + "个字节.")
         }
-        Charset charset = Charset.forName(CHART_SET)
-        def headBytes = Arrays.copyOfRange(bytes, 0, PACKET_LENGTH)
-        this._value = new String(headBytes, charset)
+        this._refValue = bytes
+    }
+
+    FILEHEAD(String value) {
+        _startIndex =0
+        def bytes=value.getBytes(CHART_SET)
+        if (bytes == null || bytes.length < _startIndex) {
+            throw new Exception("报文数据不能为空或长度必须是:" + PACKET_LENGTH + "个字节.")
+        }
+        this._refValue = bytes
+        CHART_SET=GetConfig("charset")
     }
 
     public Long getFileDataLength() {
-        return Long.parseLong(GetConfig(getPackConfig().fileDataLength))
+        return Long.parseLong(GetConfig("fileDataLength"))
     }
 
-    public String getCharset() { return GetConfig(getPackConfig().charset) }
+    public String getCharset() { return CHART_SET }
 
-    public String GetConfig(Map map) {
-        def result = _value.substring(map.s, map.s + map.l)
+    public String GetConfig(String mapName) {
+        def map = getPackConfig()[mapName]
+        def result = new String(Arrays.copyOfRange(_refValue, _startIndex + map.s,_startIndex+ map.s + map.l), getCharset())
+        //_refValue.substring(map.s, map.s + map.l)
         if (map.data) {
             println(map.dest + ":" + map.data[result] + " (" + result + ")")
             return map.data[result]
@@ -53,14 +61,11 @@ class FILEHEAD {
         return result
     }
 
-    static FILEHEAD CreateFILEHEAD(byte[] value) {
-        if (value.length >= PACKET_LENGTH) {
-            return new FILEHEAD(value)
-        }
-        throw new Exception("附件报文头格式不正确")
+    static FILEHEAD CreateFILEHEAD(byte[] refValue, HEAD head) {
+        return new FILEHEAD(refValue, head)
     }
 
-    public byte[] getHeadBytes(Charset charset) {
-        return _value.getBytes(charset)
+    public byte[] getHeadBytes() {
+        return Arrays.copyOfRange(_refValue, _startIndex, PACKET_LENGTH)
     }
 }
