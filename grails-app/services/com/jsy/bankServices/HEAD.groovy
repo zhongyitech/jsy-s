@@ -93,7 +93,7 @@ class HEAD {
 
     public String getReturnDescription() { return GetConfig("returnDescription") }
 
-    public String getNumber() { return GetConfig("number") }
+    public String getNumber() { return GetConfig("number").trim() }
 
     public static String getCharset() { return (CHART_SET) }
 
@@ -159,7 +159,8 @@ class HEAD {
 //        def packet = new BankPacket(xml.getBytes(Charset.forName("GBK")))
 //        println(packet.head.getReturnCode())
 //        packet.toBytes()
-        println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
+//        println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
+        new BankProxyService().TransatcionRecords([adf:"affasd"])
 
 //        def pack = new BankPacket(contentBuf)
     }

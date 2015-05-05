@@ -109,9 +109,97 @@ public class BankPacket {
     //发送报文加并处理回复
     public def SendPacket(Closure<BankPacket> closure) {
 
-        def result = new BankPacket("A0010101010010107990000999900000000003994001       02201008091710282010080981026055    000000:交易受理成功                                                                                       00000                       0<?xml version=\"1.0\" encoding=\"GBK\" ?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode><CcyType></CcyType><AccountName>優比速包裹運送（  Ｖ｜  ）有 分公司</AccountName><Balance>130802332974.55</Balance><TotalAmount>130802332974.55</TotalAmount><AccountType></AccountType><AccountStatus></AccountStatus><BankName></BankName><LastBalance></LastBalance><HoldBalance></HoldBalance></Result>"
-                .getBytes("GBK"))
-       return closure.call(result)
+        if (this.head.getNumber() == "4001") {
+            def result = new BankPacket("A0010101010010107990000999900000000003994001       02201008091710282010080981026055    000000:交易受理成功                                                                                       00000                       0<?xml version=\"1.0\" encoding=\"GBK\" ?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode><CcyType></CcyType><AccountName>優比速包裹運送（  Ｖ｜  ）有 分公司</AccountName><Balance>130802332974.55</Balance><TotalAmount>130802332974.55</TotalAmount><AccountType></AccountType><AccountStatus></AccountStatus><BankName></BankName><LastBalance></LastBalance><HoldBalance></HoldBalance></Result>"
+                    .getBytes("GBK"))
+            return closure.call(result)
+        }
+        if (this.head.getNumber() == "4013") {
+            def result = new BankPacket("A0010101010010107990000999900000000003994001       02201008091710282010080981026055    000000:交易受理成功                                                                                       00000                       0<?xml version=\"1.0\" encoding=\"GBK\" ?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode><CcyType></CcyType><AccountName>優比速包裹運送（  Ｖ｜  ）有 分公司</AccountName><Balance>130802332974.55</Balance><TotalAmount>130802332974.55</TotalAmount><AccountType></AccountType><AccountStatus></AccountStatus><BankName></BankName><LastBalance></LastBalance><HoldBalance></HoldBalance></Result>"
+                    .getBytes("GBK"))
+            result.messageBody=new MessageBody("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
+                    "<Result>" +
+                    "<AcctNo></AcctNo>" +
+                    "<CcyCode></CcyCode>" +
+                    "<EndFlag></EndFlag>" +
+                    "<Reserve></Reserve>" +
+                    "<PageRecCount></PageRecCount>" +
+                    "<list>" +
+                    "<AcctDate></AcctDate>" +
+                    "<TxTime></TxTime>" +
+                    "<HostTrace></HostTrace>" +
+                    "<OutNode></OutNode>" +
+                    "<OutBankNo></OutBankNo>" +
+                    "<OutBankName></OutBankName>" +
+                    "<OutAcctNo></OutAcctNo>" +
+                    "<OutAcctName></OutAcctName>" +
+                    "<CcyCode></CcyCode>" +
+                    "<TranAmount></TranAmount>" +
+                    "<InNode></InNode>" +
+                    "<InBankNo></InBankNo>" +
+                    "<InBankName></InBankName>" +
+                    "<InAcctNo></InAcctNo>" +
+                    "<InAcctName></InAcctName>" +
+                    "<DcFlag></DcFlag>" +
+                    "<AbstractStr></AbstractStr>" +
+                    "<VoucherNo></VoucherNo>" +
+                    "<TranFee></TranFee>" +
+                    "<PostFee></PostFee>" +
+                    "<AcctBalance></AcctBalance>" +
+                    "<Purpose ></Purpose>" +
+                    "</list>" +
+                    "<list>" +
+                    "<AcctDate></AcctDate>" +
+                    "<TxTime></TxTime>" +
+                    "<HostTrace></HostTrace>" +
+                    "<OutNode></OutNode>" +
+                    "<OutBankNo></OutBankNo>" +
+                    "<OutBankName></OutBankName>" +
+                    "<OutAcctNo></OutAcctNo>" +
+                    "<OutAcctName></OutAcctName>" +
+                    "<CcyCode></CcyCode>" +
+                    "<TranAmount></TranAmount>" +
+                    "<InNode></InNode>" +
+                    "<InBankNo></InBankNo>" +
+                    "<InBankName></InBankName>" +
+                    "<InAcctNo></InAcctNo>" +
+                    "<InAcctName></InAcctName>" +
+                    "<DcFlag></DcFlag>" +
+                    "<AbstractStr></AbstractStr>" +
+                    "<VoucherNo></VoucherNo>" +
+                    "<TranFee></TranFee>" +
+                    "<PostFee></PostFee>" +
+                    "<AcctBalance></AcctBalance>" +
+                    "<Purpose ></Purpose>" +
+                    "</list>" +
+                    "<list>" +
+                    "<AcctDate></AcctDate>" +
+                    "<TxTime></TxTime>" +
+                    "<HostTrace></HostTrace>" +
+                    "<OutNode></OutNode>" +
+                    "<OutBankNo></OutBankNo>" +
+                    "<OutBankName></OutBankName>" +
+                    "<OutAcctNo></OutAcctNo>" +
+                    "<OutAcctName></OutAcctName>" +
+                    "<CcyCode></CcyCode>" +
+                    "<TranAmount></TranAmount>" +
+                    "<InNode></InNode>" +
+                    "<InBankNo></InBankNo>" +
+                    "<InBankName></InBankName>" +
+                    "<InAcctNo></InAcctNo>" +
+                    "<InAcctName></InAcctName>" +
+                    "<DcFlag></DcFlag>" +
+                    "<AbstractStr></AbstractStr>" +
+                    "<VoucherNo></VoucherNo>" +
+                    "<TranFee></TranFee>" +
+                    "<PostFee></PostFee>" +
+                    "<AcctBalance></AcctBalance>" +
+                    "<Purpose ></Purpose>" +
+                    "</list>" +
+                    "</Result>")
+            return closure.call(result)
+        }
+        return null
 
         //test
         Socket s = new Socket("testebank.sdb.com.cn", 462);

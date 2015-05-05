@@ -1,7 +1,9 @@
 package com.jsy.bankServices
 
+import grails.converters.XML
+
 /**
- * ÒøĞĞÒµÎñ´úÀí·şÎñÀà
+ * é“¶è¡Œä¸šåŠ¡ä»£ç†æœåŠ¡ç±»
  * Created by lioa on 2015/4/23.
  */
 class BankProxyService {
@@ -21,5 +23,39 @@ class BankProxyService {
             })
         }
         data
+    }
+
+    def TransatcionRecords(Map arg) {
+        def sb = new StringBuilder()
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
+        sb.append("<Result>")
+        sb.append("<AcctNo>" + arg.AcctNo + "</AcctNo>")
+        sb.append("<CcyCode>" + arg.CcyCode + "</CcyCode>")
+        sb.append("<BeginDate>" + arg.BeginDate + "</BeginDate>")
+        sb.append("<EndDate>" + arg.EndDate + "</EndDate>")
+        sb.append("<PageNo>" + arg.PageNo + "</PageNo>")
+        sb.append("<Reserve>" + arg.Reserve + "</Reserve>")
+        sb.append("</Result>")
+        BankPacket.CreateRequest("4013", new MessageBody(sb.toString()), null).SendPacket {
+            BankPacket pack ->
+                def xmlp = new XmlParser().parseText(pack.messageBody.getResult())
+                def result = [:]
+                xmlp.children().each {
+                    if (it.value().size() == 0) {
+                        result.put(it.name(), it.value()[0])
+                    }
+                }
+                def list = []
+                xmlp.getByName("list").each {
+                    def obj=[:]
+                    it.value().each{
+                        obj.put(it.name(), it.value()[0])
+                    }
+                    list.add(obj)
+                }
+                result.put("list",list)
+                print(result)
+                result
+        }
     }
 }
