@@ -1,5 +1,6 @@
 package com.jsy.bankConfig
 
+import com.jsy.bankServices.BankProxyService
 import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
 import grails.converters.JSON
@@ -34,6 +35,7 @@ class BankTransactionsRecordCollectionResource {
     //弃用的记录
     static final int MANAGE_TYPE_DEL=3
     BankTransactionsRecordResourceService bankTransactionsRecordResourceService
+    BankProxyService bankProxyService
 
     @POST
     Response create(FundToBank dto) {
@@ -99,5 +101,15 @@ class BankTransactionsRecordCollectionResource {
         }
     }
 
-
+    @POST
+    @Path('/daf')
+    Response GetAccouts(Map arg){
+        page {
+            def result=[]
+            arg.each {
+             result.add( bankProxyService.QueryBalance(it))
+            }
+            result
+        }
+    }
 }

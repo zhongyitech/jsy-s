@@ -147,69 +147,20 @@ class HEAD {
         System.arraycopy(src, 0, _refValue, location.s, src.length)
     }
 
+    //返回一个标准请求头
+    static HEAD GetDefaultRequestHead() {
+        return HEAD.CreateHead("A001010101001010799000023420000000000055S001       0120100809171028    2010080981026055                                                                                                          00000                       0")
+    }
+
+
     public static void main(String[] args) {
 
-        def xml = "A0010101010010207990000123100000000004944004  12345012010081115421620100811153400      999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001<?xml version=\"1.0\" encoding=\"GB2312\"?><Result><ThirdVoucher>20100811153416</ThirdVoucher><CcyCode>RMB</CcyCode><OutAcctNo>11000097408701</OutAcctNo><OutAcctName>ebt</OutAcctName><OutAcctAddr/><InAcctBankNode/><InAcctRecCode/><InAcctNo>11000098571501</InAcctNo><InAcctName>EBANK</InAcctName><InAcctBankName>anything</InAcctBankName><TranAmount>000.01</TranAmount><AmountCode/><UseEx/><UnionFlag>1</UnionFlag><SysFlag>2</SysFlag><AddrFlag>1</AddrFlag><RealFlag>2</RealFlag><MainAcctNo/></Result>123.txt                                                                                                                                                                                                                                         0200011111111111100000000000000000004ABCD"
+//        def xml = "A0010101010010207990000123100000000004944004  12345012010081115421620100811153400      999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001<?xml version=\"1.0\" encoding=\"GB2312\"?><Result><ThirdVoucher>20100811153416</ThirdVoucher><CcyCode>RMB</CcyCode><OutAcctNo>11000097408701</OutAcctNo><OutAcctName>ebt</OutAcctName><OutAcctAddr/><InAcctBankNode/><InAcctRecCode/><InAcctNo>11000098571501</InAcctNo><InAcctName>EBANK</InAcctName><InAcctBankName>anything</InAcctBankName><TranAmount>000.01</TranAmount><AmountCode/><UseEx/><UnionFlag>1</UnionFlag><SysFlag>2</SysFlag><AddrFlag>1</AddrFlag><RealFlag>2</RealFlag><MainAcctNo/></Result>123.txt                                                                                                                                                                                                                                         0200011111111111100000000000000000004ABCD"
 //        def packet = new BankPacket(xml.getBytes(Charset.forName("GBK")))
 //        println(packet.head.getReturnCode())
 //        packet.toBytes()
+        println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
 
-        def request = new BankPacket(xml.getBytes("GBK"))
-        println(request.head._refValue)
-        request.head.SetConfig("incCode", "00203030000000037000")
-        def head = request.head.getHeadBytes()
-
-        Socket s = new Socket("testebank.sdb.com.cn", 462);
-        s.setSendBufferSize(4096);
-        s.setTcpNoDelay(true);
-        s.setSoTimeout(5000);
-        s.setKeepAlive(true);
-        OutputStream out = s.getOutputStream();
-        InputStream din = s.getInputStream();
-//准备报文src
-        out.write("A0010102010090103000000004100000000001104001       0120100809171028    2010080981026055                                                                                                          00000                       0<?xml version=\"1.0\" encoding=\"UTF-8\"?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode></Result>".getBytes("UTF-8"));
-        out.flush();
-        int lengthHeadLen = 222;
-        int lengthHeadType = 0;
-        int lengthBodyLenStartposi = 30;
-        int lengthBodyLen = 10;
-        int contentLength = 0;
-
-        byte[] lenHeadBuf = new byte[lengthHeadLen]
-        System.arraycopy(head, 0, lenHeadBuf, 0, head.length);
-
-        int off = 6;
-        while (off < lengthHeadLen) {
-            off = off + din.read(lenHeadBuf, off, lengthHeadLen - off);
-            if (off < 0) {
-//                errMsg = "ERROR:while reading 222 head.";
-//                return errMsg.getBytes();
-                throw new EMPException("Socket was closed! while reading!");
-            }
-        }
-//        byteout.write(lenHeadBuf);
-        //获取报文头中的长度字段
-        if (lengthHeadType == 0) {
-            try {
-                contentLength = Integer.parseInt(new String(lenHeadBuf,
-                        lengthBodyLenStartposi, lengthBodyLen).trim());
-            } catch (Exception e) {
-                Trace.logError(Trace.COMPONENT_TCPIP,
-                        "获取报文头中的长度字段失败--->lenHeadBuf=" + new String(lenHeadBuf));
-                throw new EMPException("获取报文头中的长度字段失败!");
-            }
-        }
-        //read msg content.
-        byte[] contentBuf = new byte[contentLength];
-        off = 0;
-        while (off < contentLength) {
-            off = off + din.read(contentBuf, off, contentLength - off);
-            if (off < 0) {
-//                errMsg = "ERROR:while reading length-[" + contentLength + "] body.";
-//                return errMsg.getBytes();
-                throw new EMPException("Socket was closed! while reading!");
-            }
-        }
-        def pack = new BankPacket(contentBuf)
+//        def pack = new BankPacket(contentBuf)
     }
 }

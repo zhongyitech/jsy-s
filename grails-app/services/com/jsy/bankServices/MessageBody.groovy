@@ -20,7 +20,7 @@ class MessageBody {
     }
 
     public def getResult() {
-
+        return _xml
     }
 
     public def getPage() {
@@ -30,5 +30,4 @@ class MessageBody {
     public  byte [] getMessageBytes(Charset charset){
         return  _xml.getBytes(charset)
     }
-
 }
