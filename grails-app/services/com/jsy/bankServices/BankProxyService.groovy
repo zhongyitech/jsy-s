@@ -7,6 +7,7 @@ import grails.converters.XML
  * Created by lioa on 2015/4/23.
  */
 class BankProxyService {
+
     static Map ErrorCode = [
             "000000": [value: 0, "dest": "正常"]
     ]
@@ -94,4 +95,10 @@ class BankProxyService {
             throw e
         }
     }
+
+
+    def  TransferSingle(){
+
+    }
+
 }
