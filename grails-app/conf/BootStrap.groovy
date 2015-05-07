@@ -474,7 +474,7 @@ class BootStrap {
             Menus menus61 = new Menus(name: 'fkdcx', title: '付款单查询', url: 'bankingpaymentorder.jsp', parentId: menus6.id).save(failOnError: true)
             Menus menus62 = new Menus(name: 'jzpzscsz', title: '记账凭证生成设置', url: 'bankordersetting.jsp', parentId: menus6.id).save(failOnError: true)
             Menus menus63 = new Menus(name: 'jzpzcx', title: '记账凭证查询', url: 'bankorder.jsp', parentId: menus6.id).save(failOnError: true)
-            Menus menus64 = new Menus(name: 'yhxxcx', title: '银行信息查询', url: 'bankingTransportation.jsp', parentId: menus6.id).save(failOnError: true)
+            Menus menus64 = new Menus(name: 'yhxxcx', title: '账户余额查询', url: 'bankAccounts.jsp', parentId: menus6.id).save(failOnError: true)
             Menus menus65 = new Menus(name: 'jyxxcx', title: '交易信息查询', url: 'bankingTransportation.jsp', parentId: menus6.id).save(failOnError: true)
             Menus menus66 = new Menus(name: 'tkcx', title: '退款查询', url: 'bankingTransportation.jsp', parentId: menus6.id).save(failOnError: true)
             Menus menus67 = new Menus(name: 'dzhdgl', title: '电子回单管理', url: 'bankingTransportation.jsp', parentId: menus6.id).save(failOnError: true)
