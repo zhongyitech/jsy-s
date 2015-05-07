@@ -147,7 +147,10 @@ class HEAD {
         System.arraycopy(src, 0, _refValue, location.s, src.length)
     }
 
-    //返回一个标准请求头
+    /**
+     * 获取一个标准请求头
+     * @return
+     */
     static HEAD GetDefaultRequestHead() {
         return HEAD.CreateHead("A001010101001010799000023420000000000055S001       0120100809171028    2010080981026055                                                                                                          00000                       0")
     }
@@ -159,8 +162,8 @@ class HEAD {
 //        def packet = new BankPacket(xml.getBytes(Charset.forName("GBK")))
 //        println(packet.head.getReturnCode())
 //        packet.toBytes()
-//        println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
-        new BankProxyService().TransatcionRecords([adf:"affasd"])
+        new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"])
+        new BankProxyService().TransatcionRecords([adf: "affasd"])
 
 //        def pack = new BankPacket(contentBuf)
     }

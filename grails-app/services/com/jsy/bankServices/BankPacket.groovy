@@ -1,5 +1,7 @@
 package com.jsy.bankServices
 
+import org.codehaus.groovy.grails.commons.GrailsArrayUtils
+
 import java.nio.charset.Charset
 
 /**
@@ -10,6 +12,7 @@ import java.nio.charset.Charset
  * Created by lioa on 2015/5/4.
  */
 public class BankPacket {
+    static  final String  BANK_INC_COMPANY_CODE="00901079800000018000"
     /**
      * 报文内容
      */
@@ -41,7 +44,6 @@ public class BankPacket {
         this.messageBody = MessageBody.createMessage(new String(data, this.head.getCharset()))
         int fileHeadStartIndex = HEAD.PACKET_LENGTH + dataLength
         if (xml.length > fileHeadStartIndex + FILEHEAD.PACKET_LENGTH) {
-//            byte[] fileHeadBytes = Arrays.copyOfRange(xml, fileHeadStartIndex, fileHeadStartIndex + FILEHEAD.PACKET_LENGTH)
             this.filehead = FILEHEAD.CreateFILEHEAD(xml, head)
             int fileDataLength = this.filehead.getFileDataLength()
             //获取附件文件内容的编码格式
@@ -59,7 +61,7 @@ public class BankPacket {
     }
 
     BankPacket(String xml) {
-        BankPacket(xml.getBytes("GBK"))
+        BankPacket(xml.getBytes(HEAD.CHART_SET))
     }
 
     /**
@@ -90,169 +92,77 @@ public class BankPacket {
         return result
     }
 
+    /**
+     * 获取整个报文的字符表示数据
+     * @param character
+     * @return
+     */
     public String toXmlString(Charset character = null) {
-        return new String(_value, character == null ? Charset.forName(HEAD.CHART_SET) : character)
+        return new String(_value, character == null ? Charset.forName(head.getCharset()) : character)
     }
 
     //工具方法
     static BankPacket CreateRequest(String transactionNumder, MessageBody body, MessageBody fileBody) {
-
         HEAD head = HEAD.GetDefaultRequestHead()
         //设置企业代码
-        head.SetConfig("incCode", "00901079800000018000")
+        head.SetConfig("incCode", BANK_INC_COMPANY_CODE)
         //设置交易代码
         head.SetConfig("number", transactionNumder)
-
         return new BankPacket(head, body, null, fileBody)
     }
 
-    //发送报文加并处理回复
+    /**
+     * 发送请求报文，成功之后调用委托方法,
+     * @param closure 接收之后调用的方法
+     * @return
+     */
     public def SendPacket(Closure<BankPacket> closure) {
-
-        if (this.head.getNumber() == "4001") {
-            def result = new BankPacket("A0010101010010107990000999900000000003994001       02201008091710282010080981026055    000000:交易受理成功                                                                                       00000                       0<?xml version=\"1.0\" encoding=\"GBK\" ?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode><CcyType></CcyType><AccountName>優比速包裹運送（  Ｖ｜  ）有 分公司</AccountName><Balance>130802332974.55</Balance><TotalAmount>130802332974.55</TotalAmount><AccountType></AccountType><AccountStatus></AccountStatus><BankName></BankName><LastBalance></LastBalance><HoldBalance></HoldBalance></Result>"
-                    .getBytes("GBK"))
-            return closure.call(result)
-        }
-        if (this.head.getNumber() == "4013") {
-            def result = new BankPacket("A0010101010010107990000999900000000003994001       02201008091710282010080981026055    000000:交易受理成功                                                                                       00000                       0<?xml version=\"1.0\" encoding=\"GBK\" ?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode><CcyType></CcyType><AccountName>優比速包裹運送（  Ｖ｜  ）有 分公司</AccountName><Balance>130802332974.55</Balance><TotalAmount>130802332974.55</TotalAmount><AccountType></AccountType><AccountStatus></AccountStatus><BankName></BankName><LastBalance></LastBalance><HoldBalance></HoldBalance></Result>"
-                    .getBytes("GBK"))
-            result.messageBody=new MessageBody("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
-                    "<Result>" +
-                    "<AcctNo></AcctNo>" +
-                    "<CcyCode></CcyCode>" +
-                    "<EndFlag></EndFlag>" +
-                    "<Reserve></Reserve>" +
-                    "<PageRecCount></PageRecCount>" +
-                    "<list>" +
-                    "<AcctDate></AcctDate>" +
-                    "<TxTime></TxTime>" +
-                    "<HostTrace></HostTrace>" +
-                    "<OutNode></OutNode>" +
-                    "<OutBankNo></OutBankNo>" +
-                    "<OutBankName></OutBankName>" +
-                    "<OutAcctNo></OutAcctNo>" +
-                    "<OutAcctName></OutAcctName>" +
-                    "<CcyCode></CcyCode>" +
-                    "<TranAmount></TranAmount>" +
-                    "<InNode></InNode>" +
-                    "<InBankNo></InBankNo>" +
-                    "<InBankName></InBankName>" +
-                    "<InAcctNo></InAcctNo>" +
-                    "<InAcctName></InAcctName>" +
-                    "<DcFlag></DcFlag>" +
-                    "<AbstractStr></AbstractStr>" +
-                    "<VoucherNo></VoucherNo>" +
-                    "<TranFee></TranFee>" +
-                    "<PostFee></PostFee>" +
-                    "<AcctBalance></AcctBalance>" +
-                    "<Purpose ></Purpose>" +
-                    "</list>" +
-                    "<list>" +
-                    "<AcctDate></AcctDate>" +
-                    "<TxTime></TxTime>" +
-                    "<HostTrace></HostTrace>" +
-                    "<OutNode></OutNode>" +
-                    "<OutBankNo></OutBankNo>" +
-                    "<OutBankName></OutBankName>" +
-                    "<OutAcctNo></OutAcctNo>" +
-                    "<OutAcctName></OutAcctName>" +
-                    "<CcyCode></CcyCode>" +
-                    "<TranAmount></TranAmount>" +
-                    "<InNode></InNode>" +
-                    "<InBankNo></InBankNo>" +
-                    "<InBankName></InBankName>" +
-                    "<InAcctNo></InAcctNo>" +
-                    "<InAcctName></InAcctName>" +
-                    "<DcFlag></DcFlag>" +
-                    "<AbstractStr></AbstractStr>" +
-                    "<VoucherNo></VoucherNo>" +
-                    "<TranFee></TranFee>" +
-                    "<PostFee></PostFee>" +
-                    "<AcctBalance></AcctBalance>" +
-                    "<Purpose ></Purpose>" +
-                    "</list>" +
-                    "<list>" +
-                    "<AcctDate></AcctDate>" +
-                    "<TxTime></TxTime>" +
-                    "<HostTrace></HostTrace>" +
-                    "<OutNode></OutNode>" +
-                    "<OutBankNo></OutBankNo>" +
-                    "<OutBankName></OutBankName>" +
-                    "<OutAcctNo></OutAcctNo>" +
-                    "<OutAcctName></OutAcctName>" +
-                    "<CcyCode></CcyCode>" +
-                    "<TranAmount></TranAmount>" +
-                    "<InNode></InNode>" +
-                    "<InBankNo></InBankNo>" +
-                    "<InBankName></InBankName>" +
-                    "<InAcctNo></InAcctNo>" +
-                    "<InAcctName></InAcctName>" +
-                    "<DcFlag></DcFlag>" +
-                    "<AbstractStr></AbstractStr>" +
-                    "<VoucherNo></VoucherNo>" +
-                    "<TranFee></TranFee>" +
-                    "<PostFee></PostFee>" +
-                    "<AcctBalance></AcctBalance>" +
-                    "<Purpose ></Purpose>" +
-                    "</list>" +
-                    "</Result>")
-            return closure.call(result)
-        }
-        return null
-
-        //test
-        Socket s = new Socket("testebank.sdb.com.cn", 462);
-        s.setSendBufferSize(4096);
-        s.setTcpNoDelay(true);
-        s.setSoTimeout(5000);
-        s.setKeepAlive(true);
-        OutputStream out = s.getOutputStream();
-        InputStream din = s.getInputStream();
-
-        //准备报文src
-        out.write("A0010102010090103000000004100000000001104001       0120100809171028    2010080981026055                                                                                                          00000                       0<?xml version=\"1.0\" encoding=\"UTF-8\"?><Result><Account>11002873390701</Account><CcyCode>RMB</CcyCode></Result>".getBytes("UTF-8"));
+        Socket socket = getSocket();
+        OutputStream out = socket.getOutputStream();
+        InputStream din = socket.getInputStream();
+        out.write(this.toBytes())
         out.flush();
         int lengthHeadLen = 222;
         int lengthHeadType = 0;
-        int lengthBodyLenStartposi = 30;
+        int lengthBodyLenStartPosition = 30;
         int lengthBodyLen = 10;
         int contentLength = 0;
-
         byte[] lenHeadBuf = new byte[lengthHeadLen]
-        System.arraycopy(head, 0, lenHeadBuf, 0, head.length);
-        int off = 6;
+        def heads = this.head.getHeadBytes()
+        System.arraycopy(heads, 0, lenHeadBuf, 0, heads.length);  //todo:不明白这一句的用意?(返回报文的头和请求报文的头是一样的?)
+        int off = 6; //todo:为什么要设置成 6 ?
+        off = 0   //todo:确认之后要删除掉
         while (off < lengthHeadLen) {
             off = off + din.read(lenHeadBuf, off, lengthHeadLen - off);
-            if (off < 0) {
-//                errMsg = "ERROR:while reading 222 head.";
-//                return errMsg.getBytes();
-                throw new EMPException("Socket was closed! while reading!");
-            }
+            if (off < 0) throw new EMPException("Socket was closed! while reading!");
         }
-//        byteout.write(lenHeadBuf);
-        //获取报文头中的长度字段
         if (lengthHeadType == 0) {
             try {
-                contentLength = Integer.parseInt(new String(lenHeadBuf,
-                        lengthBodyLenStartposi, lengthBodyLen).trim());
+                contentLength = Integer.parseInt(new String(lenHeadBuf, lengthBodyLenStartPosition, lengthBodyLen).trim());
             } catch (Exception e) {
-//                Trace.logError(Trace.COMPONENT_TCPIP,
-//                        "获取报文头中的长度字段失败--->lenHeadBuf=" + new String(lenHeadBuf));
                 throw new EMPException("获取报文头中的长度字段失败!");
             }
         }
-        //read msg content.
         byte[] contentBuf = new byte[contentLength];
         off = 0;
         while (off < contentLength) {
             off = off + din.read(contentBuf, off, contentLength - off);
-            if (off < 0) {
-//                errMsg = "ERROR:while reading length-[" + contentLength + "] body.";
-//                return errMsg.getBytes();
-                throw new EMPException("Socket was closed! while reading!");
-            }
+            if (off < 0) throw new EMPException("Socket was closed! while reading!");
         }
-        closure.call(new BankPacket(contentBuf))
+        socket.close()
+        closure.call(new BankPacket(GrailsArrayUtils.addAll(lenHeadBuf, contentBuf)))
+    }
+    /**
+     * 返回一个配置好的Socket
+     * @return
+     */
+    static Socket getSocket() {
+        //TODO:从配置文件中读取前置机配置
+        def socket = new Socket("127.0.0.1", 8885);
+        socket.setSendBufferSize(4096);
+        socket.setTcpNoDelay(true);
+        socket.setSoTimeout(5000);
+        socket.setKeepAlive(true);
+        return socket
     }
 }
