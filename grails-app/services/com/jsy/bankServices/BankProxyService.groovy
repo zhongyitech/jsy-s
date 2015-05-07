@@ -93,6 +93,7 @@ class BankProxyService {
             throw e
         }
     }
+    //<?xml version="1.0" encoding="UTF-8" ?><Result><OrigThirdVoucher></OrigThirdVoucher><FrontLogNo></FrontLogNo><CcyCode></CcyCode><OutAcctBankName></OutAcctBankName><OutAcctNo></OutAcctNo><InAcctBankName></InAcctBankName><InAcctNo></InAcctNo><InAcctName></InAcctName><TranAmount></TranAmount><UnionFlag></UnionFlag><Yhcljg></Yhcljg><Fee></Fee></Result>
 
     def TransferSingleQuery(def OrigThirdLogNo,String OrigThirdVoucher,String OrigFrontLogNo) {
         def stringBuilder=new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
@@ -102,9 +103,14 @@ class BankProxyService {
         stringBuilder.append("<OrigFrontLogNo></OrigFrontLogNo>")
         stringBuilder.append("</Result>")
         def msg =new MessageBody(stringBuilder.toString())
+        def result=[:]
         BankPacket.CreateRequest("4005",msg,null).SendPacket {BankPacket pack->
-
+            def resultXml = new XmlParser().parseText(pack.messageBody.getResult())
+            resultXml.children() .each {
+                result.put(it.name(), it.value()[0])
+            }
             pack
         }
+        return result
     }
 }

@@ -159,5 +159,6 @@ class HEAD {
         println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
 //        new BankProxyService().TransatcionRecords([adf: "affasd"])
         println(new BankProxyService().CheckServerStatus())
+        println(new BankProxyService().TransferSingleQuery("safa","dsaf","dsafa"))
     }
 }
