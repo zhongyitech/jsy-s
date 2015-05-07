@@ -12,7 +12,7 @@ import java.nio.charset.Charset
  * Created by lioa on 2015/5/4.
  */
 public class BankPacket {
-    static  final String  BANK_INC_COMPANY_CODE="00901079800000018000"
+    static final String BANK_INC_COMPANY_CODE = "00901079800000018000"
     /**
      * 报文内容
      */
@@ -66,7 +66,7 @@ public class BankPacket {
 
     /**
      * 根据设置生成报文数据(用于请示发送)
-     * @param character
+     * @param character 字符格式
      * @return
      */
     public byte[] toBytes(Charset character = null) {
@@ -80,14 +80,13 @@ public class BankPacket {
         //添加报文头
         result.addAll(this.head.getHeadBytes())
         //添加报文体
-        result.addAll(this.messageBody.getMessageBytes(character))
+        result.addAll(messageBytes)
         //添加附件文件头
-        if (this.filehead != null) {
+        if (this.filehead != null && this.fileMessageBody !=null) {
+            def fMsgBytes = this.fileMessageBody.getMessageBytes(Charset.forName(this.filehead.getCharset()))
+            this.filehead.SetConfig("dataLength", fMsgBytes.length)
             result.addAll(this.filehead.getHeadBytes())
-            //添加附件报文本
-            if (this.fileMessageBody) {
-                result.addAll(this.fileMessageBody.getMessageBytes(character))
-            }
+            result.addAll(fMsgBytes)
         }
         return result
     }
@@ -101,13 +100,20 @@ public class BankPacket {
         return new String(_value, character == null ? Charset.forName(head.getCharset()) : character)
     }
 
-    //工具方法
-    static BankPacket CreateRequest(String transactionNumder, MessageBody body, MessageBody fileBody) {
+    /**
+     * 创建一个请上行报文
+     * @param transactionNumber 交易代码
+     * @param body 报文体
+     * @param fileBody 附近件报文体
+     * @return
+     */
+    static BankPacket CreateRequest(String transactionNumber, MessageBody body, MessageBody fileBody) {
         HEAD head = HEAD.GetDefaultRequestHead()
         //设置企业代码
         head.SetConfig("incCode", BANK_INC_COMPANY_CODE)
         //设置交易代码
-        head.SetConfig("number", transactionNumder)
+        head.SetConfig("number", transactionNumber)
+        //TODO:附近件报文谷底的生成规则未确定
         return new BankPacket(head, body, null, fileBody)
     }
 

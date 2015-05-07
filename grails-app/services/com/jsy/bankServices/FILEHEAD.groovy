@@ -68,4 +68,27 @@ class FILEHEAD {
     public byte[] getHeadBytes() {
         return Arrays.copyOfRange(_refValue, _startIndex, PACKET_LENGTH)
     }
+    /**
+     * 设置报文头的参数
+     * @param location 参数的名称
+     * @param value
+     */
+    public <T> void SetConfig(String mapName, T value) {
+        def location = getPackConfig()[mapName]
+        String newValue = ""
+        //数字前补0
+        if (value.class.name == Integer.class.name) {
+            newValue = String.format("%0" + location.l + "d", value).replace(" ", "0");
+        }
+        //字符后补空格
+        if (value.class.name == String.class.name) {
+            def val = value as String
+            while (val.length() == location.l) {
+                val += " "
+            }
+            newValue = val
+        }
+        def src = newValue.getBytes(getCharset())
+        System.arraycopy(src, 0, _refValue, location.s, src.length)
+    }
 }

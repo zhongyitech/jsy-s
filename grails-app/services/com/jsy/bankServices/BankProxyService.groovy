@@ -7,6 +7,9 @@ import grails.converters.XML
  * Created by lioa on 2015/4/23.
  */
 class BankProxyService {
+    static Map ErrorCode = [
+            "000000": [value: 0, "dest": "正常"]
+    ]
 
     /**
      * 查询账户余额查询
@@ -15,15 +18,16 @@ class BankProxyService {
      */
     public def QueryBalance(Map accounts) {
         MessageBody msg = new MessageBody("")
+        def result = [:]
         BankPacket.CreateRequest("4001", msg, null).SendPacket {
             BankPacket pack ->
-                def result = [:]
                 new XmlParser().parseText(pack.messageBody.getResult()).children().each {
                     result.put(it.name(), it.value()[0])
                 }
-                print(result)
-                result
+                pack
         }
+        print(result)
+        result
     }
 
     /**
@@ -62,6 +66,32 @@ class BankProxyService {
                 result.put("list", list)
                 print(result)
                 result
+        }
+    }
+
+    /**
+     *  系统状态探测
+     * @return 服务状态是否可用
+     */
+    boolean CheckServerStatus() {
+        try {
+            MessageBody msg = new MessageBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Result></Result>")
+            boolean status = false
+            BankPacket.CreateRequest("S001", msg, null).SendPacket { BankPacket pack ->
+                def resultXml = new XmlParser().parseText(pack.messageBody.getResult())
+                def desc = resultXml.get("Desc")[0].value()[0]
+                if (ErrorCode.containsKey(desc)) {
+                    status = (ErrorCode[desc].value == 0)
+                }
+                pack
+            }
+            return status
+        }
+        catch (EMPException mEx) {
+            throw mEx
+        }
+        catch (Exception e) {
+            throw e
         }
     }
 }

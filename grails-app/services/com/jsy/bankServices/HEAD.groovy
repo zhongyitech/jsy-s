@@ -155,16 +155,9 @@ class HEAD {
         return HEAD.CreateHead("A001010101001010799000023420000000000055S001       0120100809171028    2010080981026055                                                                                                          00000                       0")
     }
 
-
     public static void main(String[] args) {
-
-//        def xml = "A0010101010010207990000123100000000004944004  12345012010081115421620100811153400      999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001<?xml version=\"1.0\" encoding=\"GB2312\"?><Result><ThirdVoucher>20100811153416</ThirdVoucher><CcyCode>RMB</CcyCode><OutAcctNo>11000097408701</OutAcctNo><OutAcctName>ebt</OutAcctName><OutAcctAddr/><InAcctBankNode/><InAcctRecCode/><InAcctNo>11000098571501</InAcctNo><InAcctName>EBANK</InAcctName><InAcctBankName>anything</InAcctBankName><TranAmount>000.01</TranAmount><AmountCode/><UseEx/><UnionFlag>1</UnionFlag><SysFlag>2</SysFlag><AddrFlag>1</AddrFlag><RealFlag>2</RealFlag><MainAcctNo/></Result>123.txt                                                                                                                                                                                                                                         0200011111111111100000000000000000004ABCD"
-//        def packet = new BankPacket(xml.getBytes(Charset.forName("GBK")))
-//        println(packet.head.getReturnCode())
-//        packet.toBytes()
-        new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"])
-        new BankProxyService().TransatcionRecords([adf: "affasd"])
-
-//        def pack = new BankPacket(contentBuf)
+        println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
+//        new BankProxyService().TransatcionRecords([adf: "affasd"])
+        println(new BankProxyService().CheckServerStatus())
     }
 }
