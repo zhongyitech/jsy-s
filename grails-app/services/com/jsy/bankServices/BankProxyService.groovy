@@ -8,9 +8,7 @@ import grails.converters.XML
  */
 class BankProxyService {
 
-    static Map ErrorCode = [
-            "000000": [value: 0, "dest": "正常"]
-    ]
+
 
     /**
      * 查询账户余额查询
@@ -80,9 +78,9 @@ class BankProxyService {
             boolean status = false
             BankPacket.CreateRequest("S001", msg, null).SendPacket { BankPacket pack ->
                 def resultXml = new XmlParser().parseText(pack.messageBody.getResult())
-                def desc = resultXml.get("Desc")[0].value()[0]
-                if (ErrorCode.containsKey(desc)) {
-                    status = (ErrorCode[desc].value == 0)
+                def desc = resultXml.get("Desc")[0].value()[0].toString().trim()
+                if (BankPacket.RETURN_CODE.containsKey(desc)) {
+                    status = (BankPacket.RETURN_CODE[desc].value == 0)
                 }
                 pack
             }
@@ -96,9 +94,17 @@ class BankProxyService {
         }
     }
 
+    def TransferSingleQuery(def OrigThirdLogNo,String OrigThirdVoucher,String OrigFrontLogNo) {
+        def stringBuilder=new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        stringBuilder.append("<Result>")
+        stringBuilder.append("<OrigThirdLogNo></OrigThirdLogNo>")
+        stringBuilder.append("<OrigThirdVoucher></OrigThirdVoucher>")
+        stringBuilder.append("<OrigFrontLogNo></OrigFrontLogNo>")
+        stringBuilder.append("</Result>")
+        def msg =new MessageBody(stringBuilder.toString())
+        BankPacket.CreateRequest("4005",msg,null).SendPacket {BankPacket pack->
 
-    def  TransferSingle(){
-
+            pack
+        }
     }
-
 }

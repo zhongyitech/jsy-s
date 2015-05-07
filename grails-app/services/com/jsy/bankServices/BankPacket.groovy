@@ -2,6 +2,7 @@ package com.jsy.bankServices
 
 import org.codehaus.groovy.grails.commons.GrailsArrayUtils
 
+import javax.validation.Validation
 import java.nio.charset.Charset
 
 /**
@@ -13,6 +14,15 @@ import java.nio.charset.Charset
  */
 public class BankPacket {
     static final String BANK_INC_COMPANY_CODE = "00901079800000018000"
+    static final String SUCCESS_CODE = "000000"
+    public static Map RETURN_CODE = [
+            "000000": [value: 0, "dest": "正常"],
+            "GW3002": [value: 1, "dest": "银行内部系统通讯超时"],
+            "EBLN00": [value: 2, "dest": "默认错误码"],
+            "YQ9999": [value: 3, "dest": "银企平台程序故障"],
+            "AFE004": [value: 4, "dest": "未知"],
+            "E00008": [value: 5, "dest": "未知"],
+    ]
     /**
      * 报文内容
      */
@@ -82,7 +92,7 @@ public class BankPacket {
         //添加报文体
         result.addAll(messageBytes)
         //添加附件文件头
-        if (this.filehead != null && this.fileMessageBody !=null) {
+        if (this.filehead != null && this.fileMessageBody != null) {
             def fMsgBytes = this.fileMessageBody.getMessageBytes(Charset.forName(this.filehead.getCharset()))
             this.filehead.SetConfig("dataLength", fMsgBytes.length)
             result.addAll(this.filehead.getHeadBytes())
@@ -130,21 +140,19 @@ public class BankPacket {
         out.flush();
         int lengthHeadLen = 222;
         int lengthHeadType = 0;
-        int lengthBodyLenStartPosition = 30;
-        int lengthBodyLen = 10;
         int contentLength = 0;
-        byte[] lenHeadBuf = new byte[lengthHeadLen]
-        def heads = this.head.getHeadBytes()
-        System.arraycopy(heads, 0, lenHeadBuf, 0, heads.length);  //todo:不明白这一句的用意?(返回报文的头和请求报文的头是一样的?)
         int off = 6; //todo:为什么要设置成 6 ?
         off = 0   //todo:确认之后要删除掉
         while (off < lengthHeadLen) {
-            off = off + din.read(lenHeadBuf, off, lengthHeadLen - off);
+            off = off + din.read(head._refValue, off, lengthHeadLen - off);
             if (off < 0) throw new EMPException("Socket was closed! while reading!");
         }
+        def recode = head.GetConfig("returnCode")
+        //验证返回码状态
+        ValidationCode(recode)
         if (lengthHeadType == 0) {
             try {
-                contentLength = Integer.parseInt(new String(lenHeadBuf, lengthBodyLenStartPosition, lengthBodyLen).trim());
+                contentLength = head.getFileDataLength()
             } catch (Exception e) {
                 throw new EMPException("获取报文头中的长度字段失败!");
             }
@@ -153,10 +161,23 @@ public class BankPacket {
         off = 0;
         while (off < contentLength) {
             off = off + din.read(contentBuf, off, contentLength - off);
-            if (off < 0) throw new EMPException("Socket was closed! while reading!");
+            if (off < 0) throw new EMPException("读取报文体数据出错,数据长度不够!")
         }
         socket.close()
-        closure.call(new BankPacket(GrailsArrayUtils.addAll(lenHeadBuf, contentBuf)))
+        def data = GrailsArrayUtils.addAll(head.getHeadBytes(), contentBuf)
+        closure.call(new BankPacket(data))
+    }
+
+    /**
+     * 验证返回码状态,并根据返回码抛出异常信息
+     * @param code
+     */
+    void ValidationCode(String code) {
+        if (RETURN_CODE.containsKey(code)) {
+            def scode = RETURN_CODE.get(code)
+            if (code != SUCCESS_CODE && scode != null)
+                throw new EMPException(code + ":" + scode.dest)
+        }
     }
     /**
      * 返回一个配置好的Socket
