@@ -27,15 +27,22 @@ class BankOrderEntry {
     //生成时间
     Date createDate=new Date()
 
+    //账套(公司名称)
     String company
 
+    //消息处理时间
     Date processedDate
 
+    //处理情况
     int manageType=0
+
+    //备注
+    String bz=""
 
     static constraints = {
         evidenceCode nullable: true
         processedDate nullable: true
+        bz nullable: true
     }
     def beforeInsert(){
         createDate = new Date()

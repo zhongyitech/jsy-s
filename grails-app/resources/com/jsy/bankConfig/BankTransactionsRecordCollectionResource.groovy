@@ -1,15 +1,11 @@
 package com.jsy.bankConfig
 
 import com.jsy.bankServices.BankProxyService
-import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
-import grails.converters.JSON
-import org.json.JSONObject
 
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
 
-//import static org.grails.jaxrs.response.Responses.*
 
 import static com.jsy.utility.MyResponse.*
 
@@ -29,11 +25,11 @@ class BankTransactionsRecordCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     //记录已经处理过了
-    static final int MANAGE_TYPE_Processed=1
+    static final int MANAGE_TYPE_Processed = 1
     //新的记录
-    static final int MANAGE_TYPE_NEW=0
+    static final int MANAGE_TYPE_NEW = 0
     //弃用的记录
-    static final int MANAGE_TYPE_DEL=3
+    static final int MANAGE_TYPE_DEL = 3
     BankTransactionsRecordResourceService bankTransactionsRecordResourceService
     BankProxyService bankProxyService
 
@@ -53,13 +49,13 @@ class BankTransactionsRecordCollectionResource {
             //todo: other code
 
             //按分页要求返回数据格式 [数据,总页数]
-            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count():0]
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
         }
     }
 
     @PUT
     @Path('/dealing')
-    Response dealing(@QueryParam('id') Long id,@QueryParam('type') Long type){
+    Response dealing(@QueryParam('id') Long id, @QueryParam('type') Long type) {
         ok {
             def ftb = BankTransactionsRecord.get(id)
             ftb.managed = true
@@ -76,10 +72,10 @@ class BankTransactionsRecordCollectionResource {
      */
     @POST
     @Path('/processed')
-    Response processed(@QueryParam('id') Long id){
+    Response processed(@QueryParam('id') Long id) {
         ok {
             def ftb = BankTransactionsRecord.get(id)
-            if(ftb==null || ftb.managed){
+            if (ftb == null || ftb.managed) {
                 throw new Exception("OperationFailed, Not Found the ID  or The record is processed.")
             }
             ftb.setProcessedOK()
@@ -95,21 +91,31 @@ class BankTransactionsRecordCollectionResource {
 
     @GET
     @Path('/order')
-    Response order(){
-        ok{
+    Response order() {
+        ok {
             bankTransactionsRecordResourceService.ProcessTransactionData()
         }
     }
 
     @POST
-    @Path('/daf')
-    Response GetAccouts(Map arg){
+    @Path('/banksAccounts')
+    Response GetAccounts(Map arg) {
         page {
-            def result=[]
-            arg.each {
-             result.add( bankProxyService.QueryBalance(it))
+            // // ([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]
+            def data = BankAccount.list().collect {
+                def res = [:]
+                res.putAll(it.properties)
+                res.putAll(
+                        bankProxyService.QueryBalance([account: it.account, CcyType: "C", CcyCode: "RMB"])
+                )
+                return  res
             }
-            result
+//            def result = []
+//            arg.account.each {
+//                result.add(bankProxyService.QueryBalance([account: it, CcyType: "C", CcyCode: "RMB"]))
+//            }
+//            result
+            [data: data, total: data.size()]
         }
     }
 }

@@ -72,4 +72,19 @@ class SudaMoney {
             return true
         }
     }
+
+    @POST
+    @Path('/bankOrderFailed')
+    Response noAccept(@QueryParam('id') Long id,@QueryParam("error") String error) {
+        ok {
+            def order=BankOrderEntry.get(id)
+            if(order==null){
+                throw  new Exception("ID 不正确")
+            }
+            order.processedDate=new Date()
+            order.bz=error
+            order.save(failOnError: true)
+            return true
+        }
+    }
 }

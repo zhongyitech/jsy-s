@@ -8,23 +8,29 @@ import grails.converters.XML
  */
 class BankProxyService {
 
-    //
+    /**
+     * 查询账户余额查询
+     * @param accounts
+     * @return
+     */
     public def QueryBalance(Map accounts) {
-        def data = []
-        for (int i = 0; i < 3; i) {
-            MessageBody msg = new MessageBody("")
-            data.add(BankPacket.CreateRequest("4001", msg, null).SendPacket {
-                BankPacket pack ->
-                    def result = [:]
-                    new XmlParser().parseText(pack.messageBody.getResult()).children().each {
-                        result.put(it.name(), it.value()[0])
-                    }
-                    result
-            })
+        MessageBody msg = new MessageBody("")
+        BankPacket.CreateRequest("4001", msg, null).SendPacket {
+            BankPacket pack ->
+                def result = [:]
+                new XmlParser().parseText(pack.messageBody.getResult()).children().each {
+                    result.put(it.name(), it.value()[0])
+                }
+                print(result)
+                result
         }
-        data
     }
 
+    /**
+     * 查询账户历史交易明细
+     * @param arg
+     * @return
+     */
     def TransatcionRecords(Map arg) {
         def sb = new StringBuilder()
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
@@ -47,13 +53,13 @@ class BankProxyService {
                 }
                 def list = []
                 xmlp.getByName("list").each {
-                    def obj=[:]
-                    it.value().each{
+                    def obj = [:]
+                    it.value().each {
                         obj.put(it.name(), it.value()[0])
                     }
                     list.add(obj)
                 }
-                result.put("list",list)
+                result.put("list", list)
                 print(result)
                 result
         }
