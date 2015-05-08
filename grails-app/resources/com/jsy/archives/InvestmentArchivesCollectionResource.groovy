@@ -403,11 +403,14 @@ class InvestmentArchivesCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 
+    /**
+     * 对满足条件的投资档案生成提成信息
+     * @param id 投资档案ID
+     * @return
+     */
     @PUT
     @Path("/updateforprint")
     Response updateforprint(@QueryParam('id') Long id) {
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
         def ia
         try {
             ia = InvestmentArchives.get(id)
@@ -417,22 +420,19 @@ class InvestmentArchivesCollectionResource {
 
             //添加业务提成
             def commissionInfo = CommissionInfo.findAllByArchivesId(ia.id)
+            //没有生成过业务提成的才生成
             if (commissionInfo.size() == 0) {
                 ia.ywtcs.each {
-                    //业务提成金额
-                    new CommissionInfo(zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
+                    new CommissionInfo(
+                            userCommision: it,
+                            zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
                 }
             }
             ok JsonResult.success(ia)
-
         } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI
             print(e)
             ok JsonResult.error(e.message)
         }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", ia as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //打印更新接口还有奖励领了，然后

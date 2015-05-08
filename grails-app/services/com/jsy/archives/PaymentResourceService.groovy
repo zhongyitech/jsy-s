@@ -59,6 +59,7 @@ class PaymentResourceService {
 
         if (resultData != null && resultData.containsKey("FrontLogNo")) {
             dto.frontLogNo = resultData["FrontLogNo"]
+            dto.fee1 = resultData["Fee1"]
         }
         dto.status = PAYMENT_STATUS.Paying
 
@@ -69,12 +70,16 @@ class PaymentResourceService {
             //查询到支付成功就设置为"已支付"
             if (queryResult.success) {
                 dto.status = PAYMENT_STATUS.PaySuccess
-            } else {
+                dto.yfsj = new Date()
             }
         } catch (Exception ex) {
+            //不处理 尝试性操作,后续会有任务再查询交易结果
         }
+        dto.lastUpdated = new Date()
         pay4004.save(failOnError: true)
         dto.save(failOnError: true)
+        //返回银行的接收信息
+        resultData
     }
 
     def create(Payment dto) {

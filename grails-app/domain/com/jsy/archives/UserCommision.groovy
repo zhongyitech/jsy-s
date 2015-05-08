@@ -29,6 +29,8 @@ class UserCommision {
     Date glffsj2
     Date glffsj3
 
+
+
     static constraints = {
         tcffsj nullable: true
         sjffsj nullable: true

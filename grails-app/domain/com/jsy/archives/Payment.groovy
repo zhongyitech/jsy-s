@@ -29,6 +29,8 @@ class Payment {
     //兑付状态，付款状态，0：未付，1：付款中，2：已付
     int  status=0
     String payStatus=""
+    //转账成功之后的手续费
+    String fee1
 
     //调用银行支付接口后,银行返回的转账流水
     String frontLogNo

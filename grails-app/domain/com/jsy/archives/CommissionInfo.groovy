@@ -54,6 +54,8 @@ class CommissionInfo {
     //id
     Long comId=0
 
+    //提成数据分配记录ID
+    UserCommision userCommision
     //类型0为业务，1为管理
     int lx
     /**

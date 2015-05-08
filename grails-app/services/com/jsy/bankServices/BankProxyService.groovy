@@ -1,6 +1,8 @@
 package com.jsy.bankServices
 
+import com.jsy.archives.Payment
 import com.jsy.bankPacket.Pack4004
+import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
 import grails.converters.XML
 
@@ -163,6 +165,9 @@ class BankProxyService {
             pack
         }
         def Yhcljg = result["Yhcljg"] as String
+        if (Yhcljg == null || Yhcljg.isEmpty() || Yhcljg.length() < 6) {
+            throw new Exception("银行处理结果返回码规则不正确!:不能为空或长度小于6位")
+        }
         def code = Yhcljg.substring(0, 6)
         def responseData = [resultData: result, success: false, code: code, msg: Yhcljg.substring(6).trim()]
         switch (code) {
@@ -176,5 +181,19 @@ class BankProxyService {
                 break
         }
         return responseData
+    }
+
+    /**
+     * 定时任务查询兑付单的支付情况
+     */
+    void TransferQueryTask() {
+        def payOrders = Payment.findAllByStatus(PAYMENT_STATUS.PayWait)
+        payOrders.each { Payment pay ->
+            def result = TransferSingleQuery(pay.cstInnerFlowNo, pay.frontLogNo)
+            pay.payStatus = result.code + ":" + result.msg
+            if (result.success) {
+                pay.status = PAYMENT_STATUS.PaySuccess
+            }
+        }
     }
 }
