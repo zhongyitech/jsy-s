@@ -1,5 +1,7 @@
 package com.jsy.bankServices
 
+import com.jsy.bankPacket.Pack4004
+import com.jsy.utility.UtilityString
 import org.h2.message.Trace
 
 /**
@@ -133,16 +135,14 @@ class HEAD {
         String newValue = ""
         //数字前补0
         if (value.class.name == Integer.class.name) {
-            newValue = String.format("%0" + location.l + "d", value).replace(" ", "0");
+            newValue = UtilityString.RequestFormat(value,location.l)
         }
         //字符后补空格
         if (value.class.name == String.class.name) {
             def val = value as String
-            while (val.length() == location.l) {
-                val += " "
-            }
-            newValue = val
-        }
+//            newValue=val.padRight(val.length()-location.l," ")
+            newValue = UtilityString.RequestFormat(val, location.l)
+    }
         def src = newValue.getBytes(getCharset())
         System.arraycopy(src, 0, _refValue, location.s, src.length)
     }
@@ -156,9 +156,16 @@ class HEAD {
     }
 
     public static void main(String[] args) {
-        println(new BankProxyService().QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
-//        new BankProxyService().TransatcionRecords([adf: "affasd"])
-        println(new BankProxyService().CheckServerStatus())
-        println(new BankProxyService().TransferSingleQuery("safa","dsaf","dsafa"))
+        def bps=new BankProxyService()
+        println(bps.QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
+        println(bps.TransatcionRecords([adf: "affasd"]))
+        def status=bps.CheckServerStatus()
+        println(status)
+        println(bps.TransferSingleQuery("safa", "dsaf", "dsafa"))
+
+        def s4004 =bps.TransferSing(
+               new Pack4004()
+        )
+        println(s4004)
     }
 }
