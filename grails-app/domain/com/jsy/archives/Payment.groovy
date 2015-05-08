@@ -28,6 +28,12 @@ class Payment {
 
     //兑付状态，付款状态，0：未付，1：付款中，2：已付
     int  status=0
+
+    //调用银行支付接口后,银行返回的转账流水
+    String frontLogNo
+    //系统自定义的凭证号:与pack4004请求包的数据关联
+    String cstInnerFlowNo
+
     //支付时间
     Date zfsj
     //已付时间
@@ -40,12 +46,13 @@ class Payment {
     Date dateCreated
     Date lastUpdated
 
-
 //    def beforeInsert() {
 //        scsj=new Date()
 //    }
 
     static constraints = {
         yfsj nullable: true
+        frontLogNo nullable: true
+        cstInnerFlowNo nullable: true
     }
 }

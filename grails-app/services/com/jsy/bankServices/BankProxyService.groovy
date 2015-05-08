@@ -19,8 +19,8 @@ class BankProxyService {
         def sb = new StringBuilder()
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
         sb.append("<Result>")
-        sb.append("<Account>" + UtilityString.RequestFormat(arg.Account, 14) + "</Account>")
-        sb.append("<CcyCode>" + UtilityString.RequestFormat(arg.CcyCode, 3) + "</CcyCode>")
+        sb.append("<Account>" + arg.Account + "</Account>")
+        sb.append("<CcyCode>" + arg.CcyCode + "</CcyCode>")
         sb.append("</Result>")
         MessageBody msg = new MessageBody(sb.toString())
         def result = [:]
@@ -44,13 +44,13 @@ class BankProxyService {
         def sb = new StringBuilder()
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
         sb.append("<Result>")
-        sb.append("<AcctNo>" + UtilityString.RequestFormat(arg.AcctNo, 14) + "</AcctNo>")
-        sb.append("<CcyCode>" + UtilityString.RequestFormat(arg.CcyCode, 3) + "</CcyCode>")
-        sb.append("<BeginDate>" + UtilityString.RequestFormat(arg.BeginDate, 8) + "</BeginDate>")
-        sb.append("<EndDate>" + UtilityString.RequestFormat(arg.EndDate, 8) + "</EndDate>")
-        sb.append("<PageNo>" + UtilityString.RequestFormat(arg.PageNo, 6) + "</PageNo>")
-        sb.append("<PageSize>" + UtilityString.RequestFormat(arg.PageSize, 6) + "</PageSize>")
-        sb.append("<Reserve>" + UtilityString.RequestFormat(arg.Reserve, 120) + "</Reserve>")
+        sb.append("<AcctNo>" + arg.AcctNo + "</AcctNo>")
+        sb.append("<CcyCode>" + arg.CcyCode + "</CcyCode>")
+        sb.append("<BeginDate>" + arg.BeginDate + "</BeginDate>")
+        sb.append("<EndDate>" + arg.EndDat + "</EndDate>")
+        sb.append("<PageNo>" + arg.PageNo + "</PageNo>")
+        sb.append("<PageSize>" + arg.PageSize + "</PageSize>")
+        sb.append("<Reserve>" + arg.Reserve + "</Reserve>")
         sb.append("</Result>")
         def result = [:]
 
@@ -107,6 +107,7 @@ class BankProxyService {
      * 单笔汇款 4004
      * @param arg
      */
+
     def TransferSing(Pack4004 arg) {
         def stringBuilder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
         stringBuilder.append("<Result>")
@@ -114,8 +115,8 @@ class BankProxyService {
             def key = it.key as String
             if (key.startsWith('_')) {
                 def fkey = key.replace('_', '')
-                def value=it.value ==null ? "" : it.value
-                stringBuilder.append("<" + fkey + ">" + value+ "</" + fkey + ">")
+                def value = it.value == null ? "" : it.value
+                stringBuilder.append("<" + fkey + ">" + value + "</" + fkey + ">")
             }
         }
         stringBuilder.append("</Result>")
@@ -130,7 +131,7 @@ class BankProxyService {
                 result.put(it.name(), it.value()[0])
             }
             //成功请求之后保存到数据库
-//            arg.save(failOnError: true)
+            arg.save(failOnError: true)
             pack
         }
         return result
@@ -147,9 +148,9 @@ class BankProxyService {
     def TransferSingleQuery(String OrigThirdVoucher, String OrigFrontLogNo, String OrigThirdLogNo = "") {
         def stringBuilder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
         stringBuilder.append("<Result>")
-        stringBuilder.append("<OrigThirdLogNo>" + UtilityString.RequestFormat(OrigThirdLogNo, 20) + "</OrigThirdLogNo>")
-        stringBuilder.append("<OrigThirdVoucher>" + UtilityString.RequestFormat(OrigThirdVoucher, 20) + "</OrigThirdVoucher>")
-        stringBuilder.append("<OrigFrontLogNo>" + UtilityString.RequestFormat(OrigFrontLogNo, 14) + "</OrigFrontLogNo>")
+        stringBuilder.append("<OrigThirdLogNo>" + OrigThirdLogNo + "</OrigThirdLogNo>")
+        stringBuilder.append("<OrigThirdVoucher>" + OrigThirdVoucher + "</OrigThirdVoucher>")
+        stringBuilder.append("<OrigFrontLogNo>" + OrigFrontLogNo + "</OrigFrontLogNo>")
         stringBuilder.append("</Result>")
         def msg = new MessageBody(stringBuilder.toString())
         def result = [:]
