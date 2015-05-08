@@ -1,9 +1,7 @@
 package com.jsy.archives
 
-import com.jsy.system.TypeConfig
-
 /**
- * 兑付表
+ * 兑付表 (最后交由银行处理的数据)
  */
 class Payment {
     //对应兑付查询id

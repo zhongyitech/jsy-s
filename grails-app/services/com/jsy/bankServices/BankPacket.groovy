@@ -1,8 +1,6 @@
 package com.jsy.bankServices
 
 import org.codehaus.groovy.grails.commons.GrailsArrayUtils
-
-import javax.validation.Validation
 import java.nio.charset.Charset
 
 /**
@@ -123,7 +121,7 @@ public class BankPacket {
         head.SetConfig("incCode", BANK_INC_COMPANY_CODE)
         //设置交易代码
         head.SetConfig("number", transactionNumber)
-        //TODO:附近件报文谷底的生成规则未确定
+        //TODO:附近件报文头的生成规则未确定
         return new BankPacket(head, body, null, fileBody)
     }
 

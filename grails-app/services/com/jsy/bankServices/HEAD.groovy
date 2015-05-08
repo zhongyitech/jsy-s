@@ -164,7 +164,7 @@ class HEAD {
         println(bps.TransferSingleQuery("safa", "dsaf", "dsafa"))
 
         def s4004 =bps.TransferSing(
-               new Pack4004()
+               new Pack4004(_ThirdVoucher: "safasjfoafjaofaojf",_CcyCode: "RMB",_OutAcctNo: "20938420482",_OutAcctName: "Jack")
         )
         println(s4004)
     }

@@ -102,6 +102,7 @@ class BankProxyService {
         }
     }
 
+    /*<?xml version="1.0" encoding="UTF-8" ?><Result><ThirdVoucher></ThirdVoucher><FrontLogNo></FrontLogNo><CcyCode></CcyCode><OutAcctName></OutAcctName><OutAcctNo></OutAcctNo><InAcctBankName></InAcctBankName><InAcctNo></InAcctNo><InAcctName></InAcctName><TranAmount></TranAmount><UnionFlag></UnionFlag><Fee1></Fee1><Fee2></Fee2><SOA_VOUCHER></SOA_VOUCHER><hostFlowNo></hostFlowNo></Result>
     /**
      * 单笔汇款 4004
      * @param arg
@@ -118,13 +119,18 @@ class BankProxyService {
             }
         }
         stringBuilder.append("</Result>")
+//        print("<?xml version=\"1.0\" encoding=\"UTF-8\" ?><Result><ThirdVoucher></ThirdVoucher><FrontLogNo></FrontLogNo><CcyCode></CcyCode><OutAcctName></OutAcctName><OutAcctNo></OutAcctNo><InAcctBankName></InAcctBankName><InAcctNo></InAcctNo><InAcctName></InAcctName><TranAmount></TranAmount><UnionFlag></UnionFlag><Fee1></Fee1><Fee2></Fee2><SOA_VOUCHER></SOA_VOUCHER><hostFlowNo></hostFlowNo></Result>"
+//        .getBytes("GBK").length)
         def msg = new MessageBody(stringBuilder.toString())
         def result = [:]
+
         BankPacket.CreateRequest("4004", msg, null).SendPacket { BankPacket pack ->
             def resultXml = new XmlParser().parseText(pack.messageBody.getResult())
             resultXml.children().each {
                 result.put(it.name(), it.value()[0])
             }
+            //成功请求之后保存到数据库
+//            arg.save(failOnError: true)
             pack
         }
         return result
