@@ -7,6 +7,7 @@ import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
 import com.jsy.system.TypeConfig
+import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
 import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -56,10 +57,22 @@ class PaymentResourceService {
         //todo:调用转账接口
         def resultData = bankProxyService.TransferSing(pay4004)
 
-        if(resultData!=null && resultData.containsKey("FrontLogNo")){
-            dto.frontLogNo=resultData["FrontLogNo"]
+        if (resultData != null && resultData.containsKey("FrontLogNo")) {
+            dto.frontLogNo = resultData["FrontLogNo"]
         }
-        dto.status = 1
+        dto.status = PAYMENT_STATUS.Paying
+
+        //尝试进行一次查询 失败直接跳过
+        try {
+            def queryResult = bankProxyService.TransferSingleQuery(pay4004._ThirdVoucher, dto.frontLogNo)
+            dto.payStatus = queryResult.code + ":" + queryResult.msg
+            //查询到支付成功就设置为"已支付"
+            if (queryResult.success) {
+                dto.status = PAYMENT_STATUS.PaySuccess
+            } else {
+            }
+        } catch (Exception ex) {
+        }
         pay4004.save(failOnError: true)
         dto.save(failOnError: true)
     }

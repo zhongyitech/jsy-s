@@ -9,6 +9,7 @@ import grails.converters.XML
  * Created by lioa on 2015/4/23.
  */
 class BankProxyService {
+    static final String R4005_SUCCESS = "转账交易成功"
 
     /**
      * 查询账户余额查询 4001
@@ -142,7 +143,7 @@ class BankProxyService {
      * 单笔汇款查询 4005
      * @param OrigThirdVoucher 4004接口上送的ThirdVoucher或者4014上送的SThirdVoucher
      * @param OrigFrontLogNo 银行返回的转账流水号
-     * @param OrigThirdLogNo 请求流水号
+     * @param OrigThirdLogNo 请求流水号(不建议使用
      * @return
      */
     def TransferSingleQuery(String OrigThirdVoucher, String OrigFrontLogNo, String OrigThirdLogNo = "") {
@@ -161,6 +162,19 @@ class BankProxyService {
             }
             pack
         }
-        return result
+        def Yhcljg = result["Yhcljg"] as String
+        def code = Yhcljg.substring(0, 6)
+        def responseData = [resultData: result, success: false, code: code, msg: Yhcljg.substring(6).trim()]
+        switch (code) {
+            case "000000":
+                if (responseData.msg == R4005_SUCCESS) {
+                    responseData.success = true
+                }
+                break
+            default:
+                responseData.success = false
+                break
+        }
+        return responseData
     }
 }
