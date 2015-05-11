@@ -32,14 +32,14 @@ class PaymentCollectionResource {
     public static final String REST_STATUS_FAI = "err"
     PaymentResourceService paymentResourceService
 
-    @POST
-    Response create(Payment dto, @QueryParam('id') Long id) {
-        ok {
-            dto.id = id
-            dto = paymentResourceService.create(dto)
-            dto
-        }
-    }
+//    @POST
+//    Response create(Payment dto, @QueryParam('id') Long id) {
+//        ok {
+//            dto.id = id
+//            dto = paymentResourceService.create(dto)
+//            dto
+//        }
+//    }
 
     @GET
     Response readAll() {
@@ -146,13 +146,22 @@ class PaymentCollectionResource {
     }
 
     /**
-     *
-     * @param ids
+     * 调用银行接口支付兑付单 (单笔支付接口)
+     * @param id
      * @return
      */
     @GET
     @Path('/toPay')
-    Response toPay(@QueryParam('ids') String ids) {
+    Response toPay(@QueryParam('id') String id) {
+        ok {
+            def result = (paymentResourceService.updatePayment(Payment.get(id), 1))
+            result
+        }
+    }
+
+    @GET
+    @Path('/toPays')
+    Response toPays(@QueryParam('ids') String ids) {
         ok {
             def res = []
             ids.split(",").each {

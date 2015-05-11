@@ -7,6 +7,8 @@ import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
 import com.jsy.system.TypeConfig
+import com.jsy.utility.MyException
+import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
 import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -14,6 +16,8 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 @Transactional(rollbackFor = Throwable.class)
 class PaymentResourceService {
     BankProxyService bankProxyService
+    PaymentInfoResourceService paymentInfoResourceService
+    UserCommisionResourceService userCommisionResourceService
     /**
      * 调用银行接口处理兑付单
      * @param dto
@@ -56,12 +60,29 @@ class PaymentResourceService {
         //todo:调用转账接口
         def resultData = bankProxyService.TransferSing(pay4004)
 
-        if(resultData!=null && resultData.containsKey("FrontLogNo")){
-            dto.frontLogNo=resultData["FrontLogNo"]
+        if (resultData != null && resultData.containsKey("FrontLogNo")) {
+            dto.frontLogNo = resultData["FrontLogNo"]
+            dto.fee1 = resultData["Fee1"]
         }
-        dto.status = 1
+        dto.status = PAYMENT_STATUS.Paying
+
+        //尝试进行一次查询 失败直接跳过
+        try {
+            def queryResult = bankProxyService.TransferSingleQuery(pay4004._ThirdVoucher, dto.frontLogNo)
+            dto.payStatus = queryResult.code + ":" + queryResult.msg
+            //查询到支付成功就设置为"已支付"
+            if (queryResult.success) {
+                dto.status = PAYMENT_STATUS.PaySuccess
+                dto.yfsj = new Date()
+            }
+        } catch (Exception ex) {
+            //不处理 尝试性操作,后续会有任务再查询交易结果
+        }
+        dto.lastUpdated = new Date()
         pay4004.save(failOnError: true)
         dto.save(failOnError: true)
+        //返回银行的接收信息
+        resultData
     }
 
     def create(Payment dto) {
@@ -110,5 +131,42 @@ class PaymentResourceService {
         if (obj) {
             obj.delete()
         }
+    }
+
+    /**
+     * 设置些兑付单已经完结
+     * 1.设置关联数据的状态
+     */
+    def setPaySuccess(Payment payment) {
+        String dflx = payment.dflx.trim()
+        switch (dflx) {
+            case "lx":  //利息支付
+            case "bj":  //本金支付
+                def target = PaymentInfo.get(payment.infoId)
+                if (target != null) {
+                    paymentInfoResourceService.setSuccess(target)
+                    target.save(failOnError: true)
+                }
+                break
+            case "yw":  //业务提成支付
+                def target = UserCommision.get(payment.infoId)
+                if (target != null) {
+                    userCommisionResourceService.setSuccess(target,payment)
+                    target.save(failOnError: true)
+                }
+                break
+            case "gl":  //管理提成支付
+                def target = UserCommision.get(payment.infoId)
+                if (target != null) {
+                    userCommisionResourceService.setSuccess(target, payment)
+                    target.save(failOnError: true)
+                }
+                break
+            default:
+                throw MyException("兑付单的类型错误!没有些类型的兑付单:" + dflx)
+                break
+        }
+        payment.status = PAYMENT_STATUS.PaySuccess
+        payment.save(failOnError: true)
     }
 }

@@ -1,6 +1,9 @@
 package com.jsy.bankServices
 
+import com.jsy.archives.Payment
+import com.jsy.archives.PaymentResourceService
 import com.jsy.bankPacket.Pack4004
+import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
 import grails.converters.XML
 
@@ -9,6 +12,8 @@ import grails.converters.XML
  * Created by lioa on 2015/4/23.
  */
 class BankProxyService {
+    static final String R4005_SUCCESS = "转账交易成功"
+    PaymentResourceService paymentResourceService
 
     /**
      * 查询账户余额查询 4001
@@ -142,7 +147,7 @@ class BankProxyService {
      * 单笔汇款查询 4005
      * @param OrigThirdVoucher 4004接口上送的ThirdVoucher或者4014上送的SThirdVoucher
      * @param OrigFrontLogNo 银行返回的转账流水号
-     * @param OrigThirdLogNo 请求流水号
+     * @param OrigThirdLogNo 请求流水号(不建议使用
      * @return
      */
     def TransferSingleQuery(String OrigThirdVoucher, String OrigFrontLogNo, String OrigThirdLogNo = "") {
@@ -161,6 +166,40 @@ class BankProxyService {
             }
             pack
         }
-        return result
+        def Yhcljg = result["Yhcljg"] as String
+        if (Yhcljg == null || Yhcljg.isEmpty() || Yhcljg.length() < 6) {
+            throw new Exception("银行处理结果返回码规则不正确!:不能为空或长度小于6位")
+        }
+        def code = Yhcljg.substring(0, 6)
+        def responseData = [resultData: result, success: false, code: code, msg: Yhcljg.substring(6).trim()]
+        switch (code) {
+            case "000000":
+                if (responseData.msg == R4005_SUCCESS) {
+                    responseData.success = true
+                }
+                break
+            default:
+                responseData.success = false
+                break
+        }
+        return responseData
+    }
+
+    /**
+     * 定时任务:查询未支付的兑付单,从记录中获取银行交易流水->调用4005查询接口确认付款的结果
+     * 成功:设置总值单为"已支付"
+     *        同步设置的数据:1.提成申请单 2. 兑付申请单 3.投资档案的提成(业务提成/管理提成)记录上的"支付时间"
+     * 不成功:留给下一次查询再做处理
+     */
+    void TransferQueryTask() {
+        def payOrders = Payment.findAllByStatus(PAYMENT_STATUS.PayWait)
+        payOrders.each { Payment pay ->
+            def result = TransferSingleQuery(pay.cstInnerFlowNo, pay.frontLogNo)
+            pay.payStatus = result.code + ":" + result.msg
+            //此总会记录的付款操作成功(银行已返回成功交易的标志),需要更新与此支付想在关的1.兑付单的状态 1.生成此次兑付操作的业务/管理/兑付 的单的状态
+            if (result.success) {
+                paymentResourceService.setPaySuccess(pay)
+            }
+        }
     }
 }
