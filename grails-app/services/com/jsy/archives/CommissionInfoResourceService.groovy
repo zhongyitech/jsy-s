@@ -45,6 +45,10 @@ class CommissionInfoResourceService {
     }
 
     //自动生成管理提成查询
+    /**
+     * "管理"类提成的生成代码
+     * @return
+     */
     def addCommissionInfo() {
         List<InvestmentArchives> investmentArchives = InvestmentArchives.findAllByDazt(0)
         investmentArchives.each {
@@ -53,15 +57,19 @@ class CommissionInfoResourceService {
                 if (s == 0) {
                     //添加第一次管理提成,取70%
                     if (gltc.tcffsj && gltc.tcffsj.before(new Date())) {
-                        new CommissionInfo(tcje: gltc.tcje * 0.7, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.qx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc).save(failOnError: true)
+                        new CommissionInfo(userCommision: gltc,zfsj: gltc.tcffsj,
+                                tcje: gltc.tcje * 0.7, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.qx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc).save(failOnError: true)
                     }
                 } else if (s == 1) {
                     if (gltc.glffsj2 && gltc.glffsj2.before(new Date())) {
-                        new CommissionInfo(tcje: gltc.tcje * 0.2, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.qx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc).save(failOnError: true)
+                        new CommissionInfo(zfsj: gltc.glffsj2,
+                                tcje: gltc.tcje * 0.2, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.qx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc, userCommision: gltc).save(failOnError: true)
                     }
                 } else if (s == 2) {
                     if (gltc.glffsj3 && gltc.glffsj3.before(new Date())) {
-                        new CommissionInfo(tcje: gltc.tcje * 0.1, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.qx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc).save(failOnError: true)
+                        new CommissionInfo(userCommision: gltc,zfsj: gltc.glffsj3,
+                                tcje: gltc.tcje * 0.1, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.qx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc).save(failOnError: true)
+
                     }
                 }
             }
@@ -114,7 +122,7 @@ class CommissionInfoResourceService {
         commissionInfo.type = 1
         //修改待办任务
         ToDoTask toDoTask = ToDoTask.get(commissionInfo.todoId)
-        toDoTask.clr = springSecurityService.getCurrentUser()
+        toDoTask.clr = springSecurityService.getCurrentUser() as User
         toDoTask.clsj = new Date()
         toDoTask.status = 1
         commissionInfo.save(failOnError: true)

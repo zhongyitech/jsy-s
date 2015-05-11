@@ -92,6 +92,11 @@ class CommissionInfoCollectionResource {
         }
     }
 
+    /**
+     * 获取提成的分页数据
+     * @param arg
+     * @return
+     */
     @POST
     @Path('/getcommissionInfo')
     Response getcommissionInfo(Map arg) {

@@ -404,7 +404,7 @@ class InvestmentArchivesCollectionResource {
     }
 
     /**
-     * 对满足条件的投资档案生成提成信息
+     * 对满足条件的投资档案生成提成信息,同时生成业务提成,调用提成生成接口
      * @param id 投资档案ID
      * @return
      */
@@ -423,6 +423,7 @@ class InvestmentArchivesCollectionResource {
             //没有生成过业务提成的才生成
             if (commissionInfo.size() == 0) {
                 ia.ywtcs.each {
+                    //根据业务提成人员配置生成业务类型的提成信息
                     new CommissionInfo(
                             userCommision: it,
                             zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
