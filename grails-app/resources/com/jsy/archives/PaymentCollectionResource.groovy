@@ -167,11 +167,7 @@ class PaymentCollectionResource {
             ids.split(",").each {
                 def obj = [id: it]
                 Long payId = Long.valueOf(it)
-                try {
-                    obj.result = (paymentResourceService.updatePayment(Payment.get(payId), 1))
-                } catch (Exception e) {
-                    obj.resutl = false
-                }
+                obj.result = (paymentResourceService.updatePayment(Payment.get(payId), 1))
                 res.add(obj)
             }
             res

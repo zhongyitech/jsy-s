@@ -63,5 +63,6 @@ class Payment {
         frontLogNo nullable: true
         cstInnerFlowNo nullable: true
         glPayCount nullable: true
+        fee1 nullable: true
     }
 }

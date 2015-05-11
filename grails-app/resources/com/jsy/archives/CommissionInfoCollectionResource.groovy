@@ -94,13 +94,14 @@ class CommissionInfoCollectionResource {
 
     /**
      * 获取提成的分页数据
-     * @param arg
+     * @param arg  分页和字段过滤数据
      * @return
      */
     @POST
     @Path('/getcommissionInfo')
     Response getcommissionInfo(Map arg) {
         page {
+            commissionInfoResourceService.addCommissionInfo()
             def page=DomainHelper.getPage(CommissionInfo,arg)
             return page
         }

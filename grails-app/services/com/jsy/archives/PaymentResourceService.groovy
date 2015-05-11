@@ -40,7 +40,7 @@ class PaymentResourceService {
                 , _CcyCode: "RMB")
 
         def fund = Fund.findByFundName(dto.fundName.trim())
-        if (fund == null || fund.funcCompany == null) throw new Exception("兑付单中的基金名称没有对应的基金对象/或合伙企业!")
+        if (fund == null || fund.funcCompany == null) throw new Exception(fund.fundName + "  没有关联的有限合伙企业，无法获取到付款银行信息！")
         def bankAccounts = fund.funcCompany.bankAccount.findAll {
             it.purpose == TypeConfig.findByTypeAndMapName(7, "兑付")
         }
@@ -65,6 +65,7 @@ class PaymentResourceService {
             dto.fee1 = resultData["Fee1"]
         }
         dto.status = PAYMENT_STATUS.Paying
+        dto.yfsj=new Date()
 
         //尝试进行一次查询 失败直接跳过
         try {
@@ -76,11 +77,12 @@ class PaymentResourceService {
                 dto.yfsj = new Date()
             }
         } catch (Exception ex) {
+            ex.printStackTrace()
             //不处理 尝试性操作,后续会有任务再查询交易结果
         }
-        dto.lastUpdated = new Date()
+        dto.save(flush: true)
         pay4004.save(failOnError: true)
-        dto.save(failOnError: true)
+        print("sdaf")
         //返回银行的接收信息
         resultData
     }
