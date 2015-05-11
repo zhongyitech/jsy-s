@@ -39,6 +39,6 @@ class UserCommision {
         glffsj2 nullable: true
         real_glffsj2 nullable: true
         glffsj3 nullable: true
-        glffsj3 nullable: true
+        real_glffsj3 nullable: true
     }
 }
