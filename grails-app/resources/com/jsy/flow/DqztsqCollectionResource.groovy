@@ -84,8 +84,29 @@ class DqztsqCollectionResource {
             def dc = DomainHelper.getDetachedCriteria(Dqztsq, arg)
             //todo: other code
 
+            def list = dc.list([max: arg.pagesize, offset: arg.startposition])
+            def customers = []
+
+            list?.each{
+                def temp = [:];
+                it.properties.each{property->
+                    temp.put(property.key,property.value)
+                }
+                temp.customerName = it.customer.name
+                temp.sqrName = it.sqr.chainName
+                //状态 0,待审核 1,审核通过
+                if(it.status == 0){
+                    temp.statusName = "待审核"
+                }else if(it.status == 1){
+                    temp.statusName = "审核通过"
+                }else{
+                    temp.statusName = "未知"
+                }
+
+                customers << temp
+            }
             //按分页要求返回数据格式 [数据,总页数]
-            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
+            return [data: customers, total: arg.startposition == 0 ? dc.count() : 0, customers:customers]
         }
     }
 
