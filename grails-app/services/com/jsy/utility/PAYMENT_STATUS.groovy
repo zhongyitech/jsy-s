@@ -8,7 +8,7 @@ class PAYMENT_STATUS {
     /**
      * Î´¸¶
      */
-    static static int PayWait = 0
+    static final int PayWait = 0
     /**
      * ¸¶¿îÖÐ
      */

@@ -1,6 +1,7 @@
 package com.jsy.bankServices
 
 import com.jsy.archives.Payment
+import com.jsy.archives.PaymentResourceService
 import com.jsy.bankPacket.Pack4004
 import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
@@ -12,6 +13,7 @@ import grails.converters.XML
  */
 class BankProxyService {
     static final String R4005_SUCCESS = "转账交易成功"
+    PaymentResourceService paymentResourceService
 
     /**
      * 查询账户余额查询 4001
@@ -184,15 +186,19 @@ class BankProxyService {
     }
 
     /**
-     * 定时任务查询兑付单的支付情况
+     * 定时任务:查询未支付的兑付单,从记录中获取银行交易流水->调用4005查询接口确认付款的结果
+     * 成功:设置总值单为"已支付"
+     *        同步设置的数据:1.提成申请单 2. 兑付申请单 3.投资档案的提成(业务提成/管理提成)记录上的"支付时间"
+     * 不成功:留给下一次查询再做处理
      */
     void TransferQueryTask() {
         def payOrders = Payment.findAllByStatus(PAYMENT_STATUS.PayWait)
         payOrders.each { Payment pay ->
             def result = TransferSingleQuery(pay.cstInnerFlowNo, pay.frontLogNo)
             pay.payStatus = result.code + ":" + result.msg
+            //此总会记录的付款操作成功(银行已返回成功交易的标志),需要更新与此支付想在关的1.兑付单的状态 1.生成此次兑付操作的业务/管理/兑付 的单的状态
             if (result.success) {
-                pay.status = PAYMENT_STATUS.PaySuccess
+                paymentResourceService.setPaySuccess(pay)
             }
         }
     }

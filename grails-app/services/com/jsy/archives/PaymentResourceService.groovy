@@ -7,6 +7,7 @@ import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
 import com.jsy.system.TypeConfig
+import com.jsy.utility.MyException
 import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
 import grails.transaction.Transactional
@@ -15,6 +16,8 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 @Transactional(rollbackFor = Throwable.class)
 class PaymentResourceService {
     BankProxyService bankProxyService
+    PaymentInfoResourceService paymentInfoResourceService
+    UserCommisionResourceService userCommisionResourceService
     /**
      * 调用银行接口处理兑付单
      * @param dto
@@ -128,5 +131,42 @@ class PaymentResourceService {
         if (obj) {
             obj.delete()
         }
+    }
+
+    /**
+     * 设置些兑付单已经完结
+     * 1.设置关联数据的状态
+     */
+    def setPaySuccess(Payment payment) {
+        String dflx = payment.dflx.trim()
+        switch (dflx) {
+            case "lx":  //利息支付
+            case "bj":  //本金支付
+                def target = PaymentInfo.get(payment.infoId)
+                if (target != null) {
+                    paymentInfoResourceService.setSuccess(target)
+                    target.save(failOnError: true)
+                }
+                break
+            case "yw":  //业务提成支付
+                def target = UserCommision.get(payment.infoId)
+                if (target != null) {
+                    userCommisionResourceService.setSuccess(target,payment)
+                    target.save(failOnError: true)
+                }
+                break
+            case "gl":  //管理提成支付
+                def target = UserCommision.get(payment.infoId)
+                if (target != null) {
+                    userCommisionResourceService.setSuccess(target, payment)
+                    target.save(failOnError: true)
+                }
+                break
+            default:
+                throw MyException("兑付单的类型错误!没有些类型的兑付单:" + dflx)
+                break
+        }
+        payment.status = PAYMENT_STATUS.PaySuccess
+        payment.save(failOnError: true)
     }
 }

@@ -71,6 +71,7 @@ class PaymentInfo {
         ToDoTask toDoTask=ToDoTask.create(todoConfig.mkmc,todoConfig.cljs,todoConfig.url)
         zfsj=new Date()
         todoId=toDoTask.id
+        dateCreated=new Date()
     }
 
     static constraints = {
