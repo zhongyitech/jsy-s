@@ -69,69 +69,72 @@ class InvestmentArchivesCollectionResource {
         try {
             InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
 
-            if ("N" == investmentArchives.fxfs) {
-                JSONObject obj = new JSONObject()
-                BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl
-                obj.put("lx", lx)
-                obj.put("fxsj", investmentArchives.fxsj1)
-                if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
-                    b = false
+            if(investmentArchives){
+                if ("N" == investmentArchives.fxfs) {
+                    JSONObject obj = new JSONObject()
+                    BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl
+                    obj.put("lx", lx)
+                    obj.put("fxsj", investmentArchives.fxsj1)
+                    if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
+                        b = false
+                    }
+                    obj.put("sffx", b)
+                    jsonArray.put(obj)
+                } else if (investmentArchives.fxfs == "W") {
+                    BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl / 2
+                    JSONObject obj1 = new JSONObject()
+                    obj1.put("lx", lx)
+                    obj1.put("fxsj", investmentArchives.fxsj1)
+                    obj1.put("sffx", true)
+                    JSONObject obj2 = new JSONObject()
+                    obj2.put("lx", lx)
+                    obj2.put("fxsj", investmentArchives.fxsj2)
+                    obj2.put("sffx", true)
+                    if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
+                        obj1.put("sffx", false)
+                    }
+                    if (investmentArchives.fxsj2 && investmentArchives.fxsj2.after(new Date())) {
+                        obj2.put("sffx", false)
+                    }
+                    jsonArray.put(obj1)
+                    jsonArray.put(obj2)
+                } else if (investmentArchives.fxfs == "J") {
+                    BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl / 4
+                    JSONObject obj1 = new JSONObject()
+                    obj1.put("lx", lx)
+                    obj1.put("fxsj", investmentArchives.fxsj1)
+                    obj1.put("sffx", true)
+                    JSONObject obj2 = new JSONObject()
+                    obj2.put("lx", lx)
+                    obj2.put("fxsj", investmentArchives.fxsj2)
+                    obj2.put("sffx", true)
+                    JSONObject obj3 = new JSONObject()
+                    obj3.put("lx", lx)
+                    obj3.put("fxsj", investmentArchives.fxsj3)
+                    obj3.put("sffx", true)
+                    JSONObject obj4 = new JSONObject()
+                    obj4.put("lx", lx)
+                    obj4.put("fxsj", investmentArchives.fxsj4)
+                    obj4.put("sffx", true)
+                    if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
+                        obj1.put("sffx", false)
+                    }
+                    if (investmentArchives.fxsj2 && investmentArchives.fxsj2.after(new Date())) {
+                        obj2.put("sffx", false)
+                    }
+                    if (investmentArchives.fxsj3 && investmentArchives.fxsj3.after(new Date())) {
+                        obj3.put("sffx", false)
+                    }
+                    if (investmentArchives.fxsj4 && investmentArchives.fxsj4.after(new Date())) {
+                        obj4.put("sffx", false)
+                    }
+                    jsonArray.put(obj1)
+                    jsonArray.put(obj2)
+                    jsonArray.put(obj3)
+                    jsonArray.put(obj4)
                 }
-                obj.put("sffx", b)
-                jsonArray.put(obj)
-            } else if (investmentArchives.fxfs == "W") {
-                BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl / 2
-                JSONObject obj1 = new JSONObject()
-                obj1.put("lx", lx)
-                obj1.put("fxsj", investmentArchives.fxsj1)
-                obj1.put("sffx", true)
-                JSONObject obj2 = new JSONObject()
-                obj2.put("lx", lx)
-                obj2.put("fxsj", investmentArchives.fxsj2)
-                obj2.put("sffx", true)
-                if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
-                    obj1.put("sffx", false)
-                }
-                if (investmentArchives.fxsj2 && investmentArchives.fxsj2.after(new Date())) {
-                    obj2.put("sffx", false)
-                }
-                jsonArray.put(obj1)
-                jsonArray.put(obj2)
-            } else if (investmentArchives.fxfs == "J") {
-                BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl / 4
-                JSONObject obj1 = new JSONObject()
-                obj1.put("lx", lx)
-                obj1.put("fxsj", investmentArchives.fxsj1)
-                obj1.put("sffx", true)
-                JSONObject obj2 = new JSONObject()
-                obj2.put("lx", lx)
-                obj2.put("fxsj", investmentArchives.fxsj2)
-                obj2.put("sffx", true)
-                JSONObject obj3 = new JSONObject()
-                obj3.put("lx", lx)
-                obj3.put("fxsj", investmentArchives.fxsj3)
-                obj3.put("sffx", true)
-                JSONObject obj4 = new JSONObject()
-                obj4.put("lx", lx)
-                obj4.put("fxsj", investmentArchives.fxsj4)
-                obj4.put("sffx", true)
-                if (investmentArchives.fxsj1 && investmentArchives.fxsj1.after(new Date())) {
-                    obj1.put("sffx", false)
-                }
-                if (investmentArchives.fxsj2 && investmentArchives.fxsj2.after(new Date())) {
-                    obj2.put("sffx", false)
-                }
-                if (investmentArchives.fxsj3 && investmentArchives.fxsj3.after(new Date())) {
-                    obj3.put("sffx", false)
-                }
-                if (investmentArchives.fxsj4 && investmentArchives.fxsj4.after(new Date())) {
-                    obj4.put("sffx", false)
-                }
-                jsonArray.put(obj1)
-                jsonArray.put(obj2)
-                jsonArray.put(obj3)
-                jsonArray.put(obj4)
             }
+
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI
             e.printStackTrace()
