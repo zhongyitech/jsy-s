@@ -1,7 +1,9 @@
 package com.jsy.flow
 
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.archives.PaymentInfo
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -11,6 +13,10 @@ class ThclsqResourceService {
 
     def create(Thclsq dto) {
         dto.save(failOnError: true)
+        InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
+        investmentArchives.dazt = INVESTMENT_SPEICAL_STATUS.TH.value
+        investmentArchives.status = INVESTMENT_STATUS.New.value
+        investmentArchives.save(failOnError: true)
         return  dto
     }
 

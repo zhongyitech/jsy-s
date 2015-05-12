@@ -28,7 +28,6 @@ class WtfksqCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     def springSecurityService
-
     WtfksqResourceService wtfksqResourceService
 
     @POST
