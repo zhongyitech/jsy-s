@@ -69,7 +69,7 @@ class Thclsq {
     int status=0
 
     def beforeInsert() {
-        this.sqr=new SpringSecurityService().getCurrentUser()
+//        this.sqr=springSecurityService.getCurrentUser()
     }
     static constraints = {
         oldArchivesId unique: true
