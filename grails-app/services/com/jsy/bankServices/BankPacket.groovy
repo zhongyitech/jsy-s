@@ -1,5 +1,6 @@
 package com.jsy.bankServices
 
+import com.jsy.utility.MyException
 import org.codehaus.groovy.grails.commons.GrailsArrayUtils
 import java.nio.charset.Charset
 
@@ -182,12 +183,20 @@ public class BankPacket {
      * @return
      */
     static Socket getSocket() {
-        //TODO:从配置文件中读取前置机配置
-        def socket = new Socket("127.0.0.1", 8885);
-        socket.setSendBufferSize(4096);
-        socket.setTcpNoDelay(true);
-        socket.setSoTimeout(5000);
-        socket.setKeepAlive(true);
-        return socket
+        try {
+            //TODO:从配置文件中读取前置机配置
+            def socket = new Socket("127.0.0.1", 8885);
+            socket.setSendBufferSize(4096);
+            socket.setTcpNoDelay(true);
+            socket.setSoTimeout(5000);
+            socket.setKeepAlive(true);
+            return socket
+        }
+        catch (ConnectException cex){
+            throw new MyException("不能连接到银行前置服务器,请检测服务是否开启.")
+        }
+        catch (Exception ex) {
+            throw ex
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.jsy.archives
 
 import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyException
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
@@ -159,10 +160,24 @@ class PaymentCollectionResource {
         }
     }
 
+    /**
+     * 批量付款操作
+     * @param ids
+     * @return
+     */
     @GET
     @Path('/toPays')
     Response toPays(@QueryParam('ids') String ids) {
         ok {
+            def arrayId = ids.split(",")
+            if (arrayId.size() > 1) {
+                def fund = Payment.get(ids[0]).fundName
+                arrayId.each {
+                    if (fund != Payment.get(Long.valueOf(it)).fundName) {
+                        throw new MyException("所选的兑付不是同一基金,不能进行批量汇款!")
+                    }
+                }
+            }
             def res = []
             ids.split(",").each {
                 def obj = [id: it]
