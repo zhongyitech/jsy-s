@@ -1,8 +1,10 @@
 package com.jsy.flow
 
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import grails.converters.JSON
 import org.json.JSONObject
 
@@ -35,8 +37,8 @@ class ThclsqCollectionResource {
         ok {
             def th =  thclsqResourceService.create(dto)
             InvestmentArchives investmentArchives=InvestmentArchives.get(dto.oldArchivesId)
-            investmentArchives.dazt=4
-            investmentArchives.status=2
+            investmentArchives.dazt=INVESTMENT_SPEICAL_STATUS.TH.value
+            investmentArchives.status=INVESTMENT_STATUS.New.value
             investmentArchives.save(failOnError: true)
             th
         }

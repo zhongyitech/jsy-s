@@ -260,8 +260,6 @@ class UserCollectionResource {
 
         //分页数据的调用方式
         page {
-            //test code
-            HEAD.Test()
             def result = userResourceService.readAllForPage(arg)
             return result
         }

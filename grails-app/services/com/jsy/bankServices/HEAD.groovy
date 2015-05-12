@@ -156,16 +156,16 @@ class HEAD {
     }
 
     public static void main(String[] args) {
-        def bps=new BankProxyService()
-        println(bps.QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
-        println(bps.TransatcionRecords([adf: "affasd"]))
-        def status=bps.CheckServerStatus()
-        println(status)
-        println(bps.TransferSingleQuery4005("safa", "dsaf", "dsafa"))
-
-        def s4004 =bps.TransferSing(
-               new Pack4004(_ThirdVoucher: "safasjfoafjaofaojf",_CcyCode: "RMB",_OutAcctNo: "20938420482",_OutAcctName: "Jack")
-        )
-        println(s4004)
+//        def bps=new BankProxyService()
+//        println(bps.QueryBalance([account: "11007187041901", CcyType: "C", CcyCode: "RMB"]))
+//        println(bps.TransatcionRecords([adf: "affasd"]))
+//        def status=bps.CheckServerStatus()
+//        println(status)
+//        println(bps.TransferSingleQuery4005("safa", "dsaf", "dsafa"))
+//
+//        def s4004 =bps.TransferSing(
+//               new Pack4004(_ThirdVoucher: "safasjfoafjaofaojf",_CcyCode: "RMB",_OutAcctNo: "20938420482",_OutAcctName: "Jack")
+//        )
+//        println(s4004)
     }
 }

@@ -5,7 +5,7 @@ import com.jsy.customerObject.Customer
 import com.jsy.system.TypeConfig
 
 /**
- * 委托收款申请
+ * 委托收款申请 [已不使用)
  * Created by 嘉文 on 2014/12/24.
  */
 class EntrustReceivable {
@@ -47,7 +47,6 @@ class EntrustReceivable {
 
     //状态
     TypeConfig typeConfig
-
 
 
     static constraints = {

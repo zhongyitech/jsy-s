@@ -17,6 +17,7 @@ import org.json.JSONObject
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
@@ -69,7 +70,7 @@ class InvestmentArchivesCollectionResource {
         try {
             InvestmentArchives investmentArchives = InvestmentArchives.findByArchiveNum(archiveNum)
 
-            if(investmentArchives){
+            if (investmentArchives) {
                 if ("N" == investmentArchives.fxfs) {
                     JSONObject obj = new JSONObject()
                     BigDecimal lx = investmentArchives.sjtzje * investmentArchives.nhsyl
@@ -265,8 +266,8 @@ class InvestmentArchivesCollectionResource {
                 dto = investmentArchivesResourceService.create(dto)
                 dto.archiveNum = CreateNumberService.getFullNumber(former, dto.id.toString())
                 dto.markNum = dto.archiveNum
-                if(dto.fund && dto.fund.fundName){
-                    dto.fundName=dto.fund.fundName
+                if (dto.fund && dto.fund.fundName) {
+                    dto.fundName = dto.fund.fundName
                 }
                 dto.save(failOnError: true)
                 //付息时间新增
@@ -288,8 +289,8 @@ class InvestmentArchivesCollectionResource {
                     dto.username = cus.name
                 }
                 dto.customer = cus
-                if(dto.fund && dto.fund.fundName){
-                    dto.fundName=dto.fund.fundName
+                if (dto.fund && dto.fund.fundName) {
+                    dto.fundName = dto.fund.fundName
                 }
                 ia = investmentArchivesResourceService.update(dto, Integer.parseInt(id))
                 return ia
@@ -324,7 +325,7 @@ class InvestmentArchivesCollectionResource {
             }
             ia.save(failOnError: true)
             if (sync) {
-                customerArchivesResourceService.copyCustomer(obj,ia);
+                customerArchivesResourceService.copyCustomer(obj, ia);
             }
             return obj
         }
@@ -609,11 +610,11 @@ class InvestmentArchivesCollectionResource {
     @Path('/ArchivesByNO')
     Response GetHeTongStatusList(Map arg) {
         MyResponse.page {
-            def user=springSecurityService.getCurrentUser()
+            def user = springSecurityService.getCurrentUser()
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, arg)
 
-            dc=dc.where {
-                eq("ywjl",user)
+            dc = dc.where {
+                eq("ywjl", user)
             }
 
             List<InvestmentArchives> investmentArchives = dc
@@ -797,6 +798,30 @@ class InvestmentArchivesCollectionResource {
             //退伙信息
             //续投信息
             result
+        }
+    }
+
+    /**
+     * 获取合同编号关联的投资档案中的基金的募集账户信息
+     * @param htbh
+     * @return
+     */
+    @GET
+    @Path("/getBankAccount")
+    Response getBankAccount(@QueryParam("htbh") String htbh) {
+        MyResponse.ok {
+            def findPurpost = TypeConfig.findByTypeAndMapValue(7, 3)
+            def result = []
+            def iv = InvestmentArchives.findByContractNum(htbh)
+            if (iv == null) throw new Exception("合同编号不正确,没有此合同编号的投资档案!")
+            if (iv.fund.funcCompany) {
+                iv.fund.funcCompany.bankAccount.each {
+                    if (it.purpose == findPurpost) {
+                        result.add(it)
+                    }
+                }
+            }
+            return result
         }
     }
 }

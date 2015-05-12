@@ -13,4 +13,6 @@ enum INVESTMENT_STATUS {
     public boolean eq(int value){
         return  this._value==value
     }
+
+    int getValue() {return  _value}
 }

@@ -23,4 +23,6 @@ enum INVESTMENT_SPEICAL_STATUS {
         }
         return ""
     }
+
+    int getValue(){return  _v}
 }

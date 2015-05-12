@@ -1,8 +1,10 @@
 package com.jsy.flow
 
 import com.jsy.archives.Contract
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.SpecialFlow
 import grails.gorm.DetachedCriteria
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -33,14 +35,13 @@ class DqztsqCollectionResource {
         ok {
             //检测旧档案是否能做特殊申请操作
             SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
-
             dto.sqrq = new Date()
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             def dd = dqztsqResourceService.create(dto)
             InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
-            investmentArchives.dazt = 1
-            investmentArchives.status = 2
+            investmentArchives.dazt = INVESTMENT_SPEICAL_STATUS.DQZT.value
+            investmentArchives.status = INVESTMENT_STATUS.New.value
             investmentArchives.save(failOnError: true)
             dd
         }
@@ -87,26 +88,26 @@ class DqztsqCollectionResource {
             def list = dc.list([max: arg.pagesize, offset: arg.startposition])
             def customers = []
 
-            list?.each{
+            list?.each {
                 def temp = [:];
-                it.properties.each{property->
-                    temp.put(property.key,property.value)
+                it.properties.each { property ->
+                    temp.put(property.key, property.value)
                 }
                 temp.customerName = it.customer.name
                 temp.sqrName = it.sqr.chainName
                 //状态 0,待审核 1,审核通过
-                if(it.status == 0){
+                if (it.status == 0) {
                     temp.statusName = "待审核"
-                }else if(it.status == 1){
+                } else if (it.status == 1) {
                     temp.statusName = "审核通过"
-                }else{
+                } else {
                     temp.statusName = "未知"
                 }
 
                 customers << temp
             }
             //按分页要求返回数据格式 [数据,总页数]
-            return [data: customers, total: arg.startposition == 0 ? dc.count() : 0, customers:customers]
+            return [data: customers, total: arg.startposition == 0 ? dc.count() : 0, customers: customers]
         }
     }
 

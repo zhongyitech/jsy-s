@@ -35,12 +35,9 @@ class WdqztsqCollectionResource {
     Response create(Wdqztsq dto) {
         ok {
             SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
-
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             def wd = wdqztsqResourceService.create(dto)
-
-
             wd
         }
     }

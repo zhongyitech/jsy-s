@@ -5,21 +5,29 @@ package com.jsy.flow
 class Khfb {
 
     //付款金额
-    BigDecimal fkje
+    BigDecimal payAmount
     //付款日期
-    Date fkrq
+    Date payDate
+
+    //受托人
+    String pName
+
+    //付款账号
+    String payBankAccount
 
     //证件类型
-    int type
-    //名称
-    String name
+    String cardType
+
+    //证件号码
+    String cardSn
+
     //法定代表人
     String fddbr
-    //证件号
-    String zjhm
 
-
+    //住址
+    String address
     static constraints = {
         fddbr nullable: true
+        address nullable: true
     }
 }

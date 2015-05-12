@@ -1,6 +1,12 @@
 package com.jsy.flow
 
+import com.jsy.archives.InvestmentArchives
+import com.jsy.auth.User
+import com.jsy.utility.ContractFlow
+import com.jsy.utility.InvestmentFlow
+import com.jsy.utility.SpecialFlow
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
 import org.json.JSONObject
 
 //import static org.grails.jaxrs.response.Responses.*
@@ -21,27 +27,21 @@ class WtfksqCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
+    def springSecurityService
 
-    def wtfksqResourceService
+    WtfksqResourceService wtfksqResourceService
 
     @POST
+    @Path('/create')
     Response create(Wtfksq dto) {
         ok {
-            def  wd =  wtfksqResourceService.create(dto)
+            dto.sqr = springSecurityService.getCurrentUser()
+            dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
+            def iv=InvestmentArchives.findByContractNum(dto.htbh)
+            SpecialFlow.Create.Validation(iv)
+            def wd = wtfksqResourceService.create(dto)
             wd
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def wd
-//        try {
-//            wd =  wtfksqResourceService.create(dto)
-//        }catch (Exception e){
-//            restStatus = REST_STATUS_FAI;
-//            print(e)
-//        }
-//        result.put("rest_status", restStatus)
-//        result.put("rest_result", wd as JSON)
-//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     @GET
@@ -53,7 +53,6 @@ class WtfksqCollectionResource {
     WtfksqResource getResource(@PathParam('id') Long id) {
         new WtfksqResource(wtfksqResourceService: wtfksqResourceService, id: id)
     }
-
 
 
 }
