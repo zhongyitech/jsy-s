@@ -34,6 +34,7 @@ class UploadFile {
 
     def beforeInsert() {
         this.creator = springSecurityService.getCurrentUser()
+        dateCreated=new Date()
     }
 
 
