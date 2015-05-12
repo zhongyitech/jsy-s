@@ -19,7 +19,7 @@ class PaymentResourceService {
     PaymentInfoResourceService paymentInfoResourceService
     UserCommisionResourceService userCommisionResourceService
     /**
-     * 调用银行接口处理兑付单
+     * 调用银行接口处理兑付单 单笔支付
      * @param dto
      * @param i
      * @return
@@ -27,7 +27,7 @@ class PaymentResourceService {
     //更新状态到3
     def updatePayment(Payment dto, int i) {
         //设置金额转化的格式
-        java.text.DecimalFormat df = new java.text.DecimalFormat("00000000000000.00");
+//        java.text.DecimalFormat df = new java.text.DecimalFormat("00000000000000.00");
         def thirdVoucher = new Date().format("yyyymmddHHmmSS") + "P4004"
 
         //todo:账号不是14位吗? 为什么要32位
@@ -56,10 +56,10 @@ class PaymentResourceService {
         //设置付款人信息
         pay4004._OutAcctNo = bankaccount.account
         pay4004._OutAcctName = bankaccount.accountName
+        //TODO:添加判断是否同行的代码
         pay4004._UnionFlag = "1"
         //todo:调用转账接口
         def resultData = bankProxyService.TransferSing(pay4004)
-
         if (resultData != null && resultData.containsKey("FrontLogNo")) {
             dto.frontLogNo = resultData["FrontLogNo"]
             dto.fee1 = resultData["Fee1"]
@@ -69,7 +69,7 @@ class PaymentResourceService {
 
         //尝试进行一次查询 失败直接跳过
         try {
-            def queryResult = bankProxyService.TransferSingleQuery(pay4004._ThirdVoucher, dto.frontLogNo)
+            def queryResult = bankProxyService.TransferSingleQuery4005(pay4004._ThirdVoucher, dto.frontLogNo)
             dto.payStatus = queryResult.code + ":" + queryResult.msg
             //查询到支付成功就设置为"已支付"
             if (queryResult.success) {
@@ -82,7 +82,6 @@ class PaymentResourceService {
         }
         dto.save(flush: true)
         pay4004.save(failOnError: true)
-        print("sdaf")
         //返回银行的接收信息
         resultData
     }

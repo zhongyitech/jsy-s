@@ -29,6 +29,10 @@ class MyResponse {
             }
             return Response.ok(JsonResult.error(msg, result)).build()
         }
+        catch (MyException myEx){
+            myEx.printStackTrace()
+            return Response.ok(JsonResult.error(myEx.message)).build()
+        }
         catch (Exception e) {
             //todo:write log
             e.printStackTrace()
