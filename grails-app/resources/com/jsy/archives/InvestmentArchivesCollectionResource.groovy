@@ -231,6 +231,17 @@ class InvestmentArchivesCollectionResource {
             def ia
             dto.bmjl = dto.ywjl.department.leader
             dto.bm = dto.bmjl.department.deptName
+            //覆盖前台数据(不允许设置的数据)
+            dto.ywtcs.each {
+                it.sjffsj = null
+                it.real_glffsj3 = null
+                it.real_glffsj2 = null
+            }
+            dto.gltcs.each {
+                it.sjffsj = null
+                it.real_glffsj2 = null
+                it.real_glffsj3 = null
+            }
 
             //create
             if ("" == id || null == id) {

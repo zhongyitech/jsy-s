@@ -5,6 +5,7 @@ import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
+import com.jsy.utility.MyException
 import com.jsy.utility.SpecialFlow
 import grails.gorm.DetachedCriteria
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -27,22 +28,25 @@ class DqztsqCollectionResource {
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
-    def dqztsqResourceService
+    DqztsqResourceService dqztsqResourceService
     def springSecurityService
 
     @POST
     Response create(Dqztsq dto) {
         ok {
+            def iv = InvestmentArchives.findByContractNum(dto.htbh)
             //检测旧档案是否能做特殊申请操作
-            SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
+            SpecialFlow.Create.Validation(iv)
+            def fund = Contract.findByHtbh(dto.htbh)?.fund
+            if (fund != null) {
+                if (fund.id == iv.fund.id) {
+                    throw new MyException("新合同编号对应的基金与原档案相同,不能进行转投!")
+                }
+            }
             dto.sqrq = new Date()
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             def dd = dqztsqResourceService.create(dto)
-            InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
-            investmentArchives.dazt = INVESTMENT_SPEICAL_STATUS.DQZT.value
-            investmentArchives.status = INVESTMENT_STATUS.New.value
-            investmentArchives.save(failOnError: true)
             dd
         }
     }

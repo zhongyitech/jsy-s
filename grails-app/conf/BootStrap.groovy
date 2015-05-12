@@ -616,6 +616,8 @@ class BootStrap {
             new OperationsAPI(resoureClass: CustomerArchives.class.toString(), url: '/api/customerArchives/update', method: 'POST', czlx: 'update').save(failOnError: true)
             new OperationsAPI(resoureClass: CustomerArchives.class.toString(), url: '/api/customerArchives/getcustomer', method: 'GET', czlx: 'read').save(failOnError: true)
             //todo:继续添加更多的操作功能权限
+
+
     }
 
     def destroy = {

@@ -1,9 +1,11 @@
 package com.jsy.flow
 
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateInvestmentArchivesService
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -14,6 +16,10 @@ class DqztsqResourceService {
     CreateInvestmentArchivesService createInvestmentArchivesService
 
     def create(Dqztsq dto) throws Exception {
+        InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
+        investmentArchives.dazt = INVESTMENT_SPEICAL_STATUS.DQZT.value
+        investmentArchives.status = INVESTMENT_STATUS.New.value
+        investmentArchives.save(failOnError: true)
         dto.save(failOnError: true)
     }
 
