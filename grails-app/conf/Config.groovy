@@ -118,6 +118,12 @@ log4j = {
         }
     }
 
+    trace 'grails.app.jobs.grails.plugin.asyncmail',
+            'grails.app.services.grails.plugin.asyncmail',
+            'grails.plugin.asyncmail'
+    // Enable the Quartz plugin logging
+    //debug 'grails.plugins.quartz'
+
 //    appenders {// write by liujw 15.03.31.15.30
 //        console name: "stdout",
 //                layout: pattern(conversionPattern: "%c{2} %m%n")
@@ -212,14 +218,15 @@ grails {
     }
 
     mail {
-        host = "smtp.163.com"
+        host = "smtp.126.com"
         port = 25
-        username = "my061830@163.com"
-        password = "19901216zj"
-//        props = ["mail.smtp.auth":"true",
-//                 "mail.smtp.socketFactory.port":"465",
-//                 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
-//                 "mail.smtp.socketFactory.fallback":"false"]
+        username = "oswaldl2009@126.com"
+        password = "surewin"
+        props = ["mail.smtp.auth":"true",
+                 "mail.smtp.socketFactory.port":"465",
+                 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+                 "mail.smtp.socketFactory.fallback":"false",
+                 "mail.transport.protocol":"smtp"]
     }
 }
 

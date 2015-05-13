@@ -76,6 +76,9 @@ class UserResourceService {
         if (null != dto.passwordExpired || "" != dto.passwordExpired) {
             obj.passwordExpired = dto.passwordExpired
         }
+        if (null != dto.email || "" != dto.email) {
+            obj.email = dto.email
+        }
         //更新角色信息
 
         def ur = UserRole.findAllByUser(User.get(uid))

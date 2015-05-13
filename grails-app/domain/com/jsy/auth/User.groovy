@@ -15,6 +15,15 @@ class User {
     //中文名
     String chainName
 
+	//邮箱
+	String email
+
+	//性别
+	boolean gender
+
+	//电话号码
+	String phoneNum
+
     //收款人
     String skr=""
 
@@ -45,6 +54,8 @@ class User {
         chainName nullable: true
         khh nullable: true
         yhzh nullable: true
+		gender nullable: true
+		phoneNum nullable: true
 	}
 
 	static mapping = {

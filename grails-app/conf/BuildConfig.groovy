@@ -78,7 +78,7 @@ grails.project.dependency.resolution = {
 
         compile ":quartz:1.0.2"
 
-        compile ":asynchronous-mail:1.0-RC6"
+        compile ":asynchronous-mail:1.2"
 
         //compile ":cache-headers:1.1.7"
 

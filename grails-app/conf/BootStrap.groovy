@@ -143,6 +143,7 @@ class BootStrap {
             def adminDeparment = new Department(deptName: "系统测试部", fundCompanyInformation: defaultCompany, performance: performance1, type: 0, description: "负责系统功能的测试和开发部门(Dev Test)", status: 0, buildDate: new Date()).save(failOnError: true)
 
             def admin = User.findByUsername('admin') ?: new User(
+                    email: 'admin@126.com',
                     skr: 'oswaldl',
                     khh: '平安银行',
                     yhzh: '8888888888',
@@ -155,6 +156,7 @@ class BootStrap {
             adminDeparment.save(failOnError: true)
 
             def ordinary = User.findByUsername('oswaldl') ?: new User(
+                    email: 'oswaldl@126.com',
                     skr: 'oswaldl',
                     khh: '平安银行',
                     yhzh: '888888888888',
@@ -164,6 +166,7 @@ class BootStrap {
                     chainName: "业务经理(Test)",
                     enabled: true).save(flush: true)
             def kitty = User.findByUsername('kitty') ?: new User(
+                    email: 'kitty@126.com',
                     skr: '助理人员',
                     khh: '平安银行',
                     yhzh: '123456789',
@@ -175,6 +178,7 @@ class BootStrap {
             department.leader = kitty
             department.save(failOnError: true)
             def peter = User.findByUsername('peter') ?: new User(
+                    email: 'peter@126.com',
                     skr: '项目部人员',
                     khh: '平安银行',
                     yhzh: '436461352352',
@@ -184,6 +188,7 @@ class BootStrap {
                     department: adminDeparment,
                     enabled: true).save(flush: true)
             def joe = User.findByUsername('joe') ?: new User(
+                    email: 'joe@126.com',
                     skr: '财务人员',
                     khh: '平安银行',
                     yhzh: '465742632',
