@@ -1,32 +1,45 @@
 package com.jsy.flow
 
 import com.jsy.auth.User
-import com.jsy.customerObject.Customer
-import com.jsy.fundObject.Fund
 
 /**
- * ºÏ²¢ÉêÇë±í
+ * åˆå¹¶ç”³è¯·è¡¨
  */
 class Mergesq {
-    //ĞÂµµ°¸id
+    /*----------------å‰å°æäº¤çš„æ•°æ®-------------------------*/
+
+    //åˆå¹¶æ¡£æ¡ˆç¼–å·
     String newContractNum
-    //»ù½ğÃû³Æ
-    String fundName
-    //ºÏÍ¬±àºÅ
+    //åˆåŒç¼–å·
     String htbh
-    //±¸×¢
+    //å¤‡æ³¨
     String bz
-    //ÉêÇëÈË
-    User sqr
-    //ÉêÇë²¿ÃÅ
-    String sqbm
-    //ÉêÇëÈÕÆÚ
-    Date sqrq = new Date()
-
+    //èµ·æ¯æ—¥æœŸ
     Date unionStartDate
-
-    //Êµ¼Ê¿Û³ıÀûÏ¢
+    //å®é™…æ‰£é™¤åˆ©æ¯
     BigDecimal real_lx
+
+    /*----------------éœ€è¦åå°å†™å…¥çš„æ•°æ®-------------------------*/
+    //ç”³è¯·äºº
+    User sqr
+    //ç”³è¯·éƒ¨é—¨
+    String sqbm
+    //ç”³è¯·æ—¥æœŸ
+    Date sqrq = new Date()
+    //åŸºé‡‘åç§°
+    String fundName
+    //æ·»åŠ åˆå¹¶æ¬¾
+    BigDecimal addAmount
+    //æ€»é‡‘é¢
+    BigDecimal totalAmount
+    //æ”¶ç›Šç‡
+    BigDecimal totalRate
+    //æŠ•èµ„æœŸé™
+    String totalTzqx
+    //åº”æ‰£é™¤åˆ©æ¯
+    BigDecimal muteLx
+    //ä»˜æ¯æ–¹å¼
+    String totalFxfj
 
     static constraints = {
     }

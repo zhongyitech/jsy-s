@@ -7,7 +7,7 @@ import com.jsy.archives.InvestmentArchives
  * Created by lioa on 2015/4/21.
  */
 enum SpecialFlow {
-    Create(0), Edit(1), Accept(2),Cancel(3)
+    Create(0), Edit(1), Accept(2), Cancel(3)
     private int _step = 0
 
     SpecialFlow(int _step) {
@@ -20,19 +20,19 @@ enum SpecialFlow {
      */
     public boolean Validation(InvestmentArchives iv) {
         if (iv == null) {
-            throw new Exception("合同编号不正确!")
+            throw new MyException("合同编号不正确!", "htbh")
         }
         switch (_step) {
             case 0:
                 if (iv.customer == null) {
-                    throw new Exception("投资档案的客户信息还没有完善,不能做特殊申请操作..")
+                    throw new MyException("投资档案的客户信息还没有完善,不能做特殊申请操作..")
                 }
                 if (iv.dazt != 0) {
-                    throw new Exception("投资档案已经有特殊申请操作了!")
+                    throw new MyException("投资档案已经有特殊申请操作了!")
                 }
                 print(iv.status)
                 if (!INVESTMENT_STATUS.Normal.eq(iv.status)) {
-                    throw new Exception("投资档案还没有入档,不能做特殊申请操作.")
+                    throw new MyException("投资档案还没有入档,不能做特殊申请操作.")
                 }
                 break;
             case 1:

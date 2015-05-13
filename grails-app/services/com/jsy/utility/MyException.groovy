@@ -5,7 +5,9 @@ package com.jsy.utility
  */
 class MyException extends Exception {
 
-    MyException(String var1) {
+    MyException(String var1,String fieldName=null) {
         super(var1)
+
     }
+
 }
