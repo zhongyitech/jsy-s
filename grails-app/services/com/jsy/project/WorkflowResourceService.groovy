@@ -33,7 +33,7 @@ class WorkflowResourceService {
         initFund();
         initFund_Company_Relate();
         initInvestment();
-        initCommissionData();
+//        initCommissionData();
         createProjects()
 //        initPayRecords();
         initRole();

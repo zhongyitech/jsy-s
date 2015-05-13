@@ -7,6 +7,7 @@ import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.util.Utils
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
+import grails.plugin.asyncmail.AsynchronousMailService
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -29,7 +30,7 @@ import javax.ws.rs.core.Response
 class PayRecordCollectionResource {
 
     PayRecordResourceService payRecordResourceService
-
+    AsynchronousMailService asyncMailService
 
     @POST
     @Path('/readAllForPage')
@@ -158,6 +159,28 @@ class PayRecordCollectionResource {
                     customerArchivesTo:customerArchivesTo,
             );
             payRecordResourceService.create(dto)
+
+
+            long beginDateTms = System.currentTimeMillis() //+ 3*30*60*60 //三个月的时间
+            String toMail = "oswaldl@foxmail.com"//project?.projectOwner?.email
+            String mailSubject = "催收款：项目（"+project.name+" ）在日期"+obj.paydate+"的汇款(￥"+obj.paytotal+")由产生的本金和利息需要收款了"
+
+
+            asyncMailService.sendMail {
+                // Mail parameters
+                from 'oswaldl2009@126.com'
+                to toMail
+                subject mailSubject;
+                html '<body><u>'+mailSubject+'</u></body>';
+                // Additional asynchronous parameters (optional)
+                beginDate new Date(beginDateTms)    // Starts after one minute, default current date
+                endDate new Date(beginDateTms+3600000)   // Must be sent in one hour, default infinity
+                maxAttemptsCount 3;   // Max 3 attempts to send, default 1
+                attemptInterval 300000;    // Minimum five minutes between attempts, default 300000 ms
+                delete true;    // Marks the message for deleting after sent
+                immediate true;    // Run the send job after the message was created
+                priority 10;   // If priority is greater then message will be sent faster
+            }
 
             result.put("rest_status", restStatus)
             result.put("rest_result", "")

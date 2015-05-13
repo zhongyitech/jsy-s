@@ -22,7 +22,7 @@ class SendMailService {
     def toMail(MailBean mailBean) {
         try{
             asynchronousMailService.sendAsynchronousMail {
-                from "my061830@163.com"
+                from "jsyfundmail@163.com"
                 to mailBean.mailTo;
                 subject mailBean.subject
                 html mailBean.content
