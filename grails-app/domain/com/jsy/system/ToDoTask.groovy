@@ -23,8 +23,10 @@ class ToDoTask {
     //处理地址
     String url
 
-    static ToDoTask create(String ssmk, Role cljs,String url) {
-        def instance = new ToDoTask(ssmk: ssmk, cljs: cljs,url:url,cjsj:new Date(),status:0)
+    String bz
+
+    static ToDoTask create(String ssmk, Role cljs, String url) {
+        def instance = new ToDoTask(ssmk: ssmk, cljs: cljs, url: url, cjsj: new Date(), status: 0)
         instance.save(failOnError: true)
         instance
     }
@@ -32,5 +34,6 @@ class ToDoTask {
     static constraints = {
         clsj nullable: true
         clr nullable: true
+        bz nullable: true
     }
 }

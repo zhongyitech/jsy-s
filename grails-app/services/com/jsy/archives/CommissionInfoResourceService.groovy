@@ -48,6 +48,7 @@ class CommissionInfoResourceService {
     //自动生成管理提成查询
     /**
      * 业务提成生成代码
+     *
      * @return
      */
     //TODO:添加到自动运行任务

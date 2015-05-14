@@ -45,6 +45,9 @@ class UserCommision {
         if (this.tcffsj != null) {
             this.tcffsj = DateUtility.lastDayWholePointDate(this.tcffsj)
         }
+        this.sjffsj = null
+        this.real_glffsj2 = null
+        this.real_glffsj3 = null
     }
     static constraints = {
         tcffsj nullable: true

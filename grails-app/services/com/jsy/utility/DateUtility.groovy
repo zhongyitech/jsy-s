@@ -29,9 +29,7 @@ class DateUtility {
 //            return new Date(date.getTime() - (24 * 60 * 60 * 1000));
             return new Date(date.getTime());
         } else {
-            Date date2 = new Date(date.getTime() - gc.get(gc.HOUR_OF_DAY) * 60 * 60
-                    * 1000 - gc.get(gc.MINUTE) * 60 * 1000 - gc.get(gc.SECOND)
-                    * 1000 - 24 * 60 * 60 * 1000);
+            Date date2 = new Date(date.getTime() - gc.get(gc.HOUR_OF_DAY) * 60 * 60 * 1000 - gc.get(gc.MINUTE) * 60 * 1000 - gc.get(gc.SECOND) * 1000);
             return date2;
         }
     }
