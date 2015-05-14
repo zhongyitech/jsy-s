@@ -47,7 +47,7 @@ class CommissionInfoResourceService {
 
     //自动生成管理提成查询
     /**
-     * "管理"类提成的生成代码
+     * 业务提成生成代码
      * @return
      */
     //TODO:添加到自动运行任务
@@ -95,7 +95,6 @@ class CommissionInfoResourceService {
         if (sl == 0 || sl >= 1) {
             throw new MyException("税率应该设置为大于0,并且小于1.")
         }
-
         CommissionInfo commissionInfo = CommissionInfo.get(comId)
         if (commissionInfo.type != 0) {
             println '正在处理或已处理！'

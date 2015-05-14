@@ -24,9 +24,9 @@ class FilePackageResourceService {
 
     def create(FilePackage dto) {
         ContractFlow.InputFilePackage.ValidationNum(dto.contractNum)
-        def iv=InvestmentArchives.findByContractNum(dto.contractNum)
+        def iv = InvestmentArchives.findByContractNum(dto.contractNum)
         dto.save(failOnError: true)
-        iv.status = 1 //设置为正常状态
+        iv.status = INVESTMENT_STATUS.Normal.value
         iv.save(failOnError: true)
         dto
     }

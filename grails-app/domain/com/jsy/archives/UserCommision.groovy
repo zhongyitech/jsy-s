@@ -1,6 +1,7 @@
 package com.jsy.archives
 
 import com.jsy.auth.User
+import com.jsy.utility.DateUtility
 
 /**
  * 业务提成信息/管理提成
@@ -26,13 +27,25 @@ class UserCommision {
     Date sjffsj
 
     //管理提成发放时间
+    //第二次发放时间
     Date glffsj2
     Date real_glffsj2
-    //实际发放时间
+    //第三次发放时间
     Date glffsj3
     //实际发放时间
     Date real_glffsj3
 
+    def beforeInsert() {
+        if (this.glffsj2 != null) {
+            this.glffsj2 = DateUtility.lastDayWholePointDate(this.glffsj2)
+        }
+        if (this.glffsj3 != null) {
+            this.glffsj3 = DateUtility.lastDayWholePointDate(this.glffsj3)
+        }
+        if (this.tcffsj != null) {
+            this.tcffsj = DateUtility.lastDayWholePointDate(this.tcffsj)
+        }
+    }
     static constraints = {
         tcffsj nullable: true
         sjffsj nullable: true

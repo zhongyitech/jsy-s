@@ -184,11 +184,12 @@ class BankProxyService {
                 pack
             }
             def Yhcljg = result["Yhcljg"] as String
+            print(Yhcljg)
             if (Yhcljg == null || Yhcljg.isEmpty() || Yhcljg.length() < 6) {
                 throw new Exception("银行处理结果返回码规则不正确!:不能为空或长度小于6位")
             }
             def code = Yhcljg.substring(0, 6)
-            def responseData = [resultData: result, success: false, code: code, msg: Yhcljg.substring(6).trim()]
+            def responseData = [resultData: result, success: false, code: code, msg: Yhcljg.substring(7).trim()]
             switch (code) {
                 case "000000":
                     if (responseData.msg == R4005_SUCCESS) {
@@ -201,7 +202,7 @@ class BankProxyService {
             }
             return responseData
         } catch (Exception ex) {
-            ex.printStackTrace()
+            // ex.printStackTrace()
             throw new MyException(ex.message)
         }
     }
@@ -215,14 +216,17 @@ class BankProxyService {
     //TODO:添加到自动运行任务中
     void TransferQueryTask() throws Exception {
         try {
-            def payOrders = Payment.findAllByStatus(PAYMENT_STATUS.PayWait)
+            println("执行自动动任务:查询转账情意,并设置相关付款数据")
+            def payOrders = Payment.findAllByStatus(PAYMENT_STATUS.Paying)
             payOrders.each { Payment pay ->
                 try {
+                    println('------Bank Code 4004 ------')
+                    println("\n查询的4004指令:" + pay.frontLogNo)
                     def result = TransferSingleQuery4005(pay.cstInnerFlowNo, pay.frontLogNo)
                     pay.payStatus = result.code + ":" + result.msg
                     //此总会记录的付款操作成功(银行已返回成功交易的标志),需要更新与此支付想在关的1.兑付单的状态 1.生成此次兑付操作的业务/管理/兑付 的单的状态
                     if (result.success) {
-                        paymentResourceService.setPaySuccess(pay)
+                        (paymentResourceService?:new PaymentResourceService()).setPaySuccess(pay)
                     }
                 } catch (Exception ex) {
                     //不阻赛后续的查询,下次去再尝试运行

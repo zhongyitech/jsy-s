@@ -1,5 +1,7 @@
 package com.jsy.archives
 
+import com.jsy.utility.DateUtility
+
 /**
  * 兑付表 (最后交由银行处理的数据)
  */
@@ -57,7 +59,14 @@ class Payment {
 //    def beforeInsert() {
 //        scsj=new Date()
 //    }
-
+    def beforeInsert() {
+        if (this.glPayCount != null) {
+            this.glPayCount = DateUtility.lastDayWholePointDate(this.glPayCount)
+        }
+        if (this.zfsj != null) {
+            this.zfsj = DateUtility.lastDayWholePointDate(this.zfsj)
+        }
+    }
     static constraints = {
         yfsj nullable: true
         frontLogNo nullable: true

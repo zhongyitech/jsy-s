@@ -7,6 +7,7 @@ import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Company
 import com.jsy.system.TypeConfig
+import com.jsy.utility.DateUtility
 import com.jsy.utility.MyException
 import com.jsy.utility.PAYMENT_STATUS
 import com.jsy.utility.UtilityString
@@ -65,7 +66,7 @@ class PaymentResourceService {
             dto.fee1 = resultData["Fee1"]
         }
         dto.status = PAYMENT_STATUS.Paying
-        dto.yfsj=new Date()
+        dto.yfsj = new Date()
 
         //尝试进行一次查询 失败直接跳过
         try {
@@ -145,21 +146,32 @@ class PaymentResourceService {
             case "bj":  //本金支付
                 def target = PaymentInfo.get(payment.infoId)
                 if (target != null) {
-                    paymentInfoResourceService.setSuccess(target)
+                    (paymentInfoResourceService ?: new PaymentInfoResourceService()).setSuccess(target)
                     target.save(failOnError: true)
                 }
                 break
             case "yw":  //业务提成支付
                 def target = UserCommision.get(payment.infoId)
                 if (target != null) {
-                    userCommisionResourceService.setSuccess(target,payment)
+                    //业务管理提成设备支付时间
+                    target.sjffsj = payment.yfsj
+                    target.yhzh = payment.zh
+                    target.khh = payment.khh
                     target.save(failOnError: true)
                 }
                 break
             case "gl":  //管理提成支付
                 def target = UserCommision.get(payment.infoId)
                 if (target != null) {
-                    userCommisionResourceService.setSuccess(target, payment)
+                    //管理提成根据时间参数设置支付时间
+                    if (DateUtility.areSameDay(payment.glPayCount, target.glffsj2)) {
+                        target.real_glffsj2 = payment.yfsj
+                    }
+                    if (DateUtility.areSameDay(payment.glPayCount, target.glffsj3)) {
+                        target.real_glffsj3 = payment.yfsj
+                    }
+                    target.yhzh = payment.zh
+                    target.khh = payment.khh
                     target.save(failOnError: true)
                 }
                 break

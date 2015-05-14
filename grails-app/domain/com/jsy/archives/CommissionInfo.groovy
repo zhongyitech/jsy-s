@@ -2,6 +2,7 @@ package com.jsy.archives
 
 import com.jsy.system.ToDoTask
 import com.jsy.system.TodoConfig
+import com.jsy.utility.DateUtility
 
 /**
  * 提成查询
@@ -30,7 +31,7 @@ class CommissionInfo {
     //业务经理
     String ywjl
     //提成人
-    String tcr=""
+    String tcr = ""
     //收款人
     String skr
     //开户行
@@ -38,21 +39,21 @@ class CommissionInfo {
     //银行帐号
     String yhzh
     //是否公司
-    boolean  sfgs
+    boolean sfgs
     //税率
     double sl
     //税前还是税后
-    boolean  sqsh
+    boolean sqsh
     //是否已付税额
     boolean sfyfse
     //发票额
-    BigDecimal fpje=0
+    BigDecimal fpje = 0
     //付款金额
-    BigDecimal fkje=0
+    BigDecimal fkje = 0
     //税金
-    BigDecimal sj=0
+    BigDecimal sj = 0
     //id
-    Long comId=0
+    Long comId = 0
 
     //提成数据分配记录ID
     UserCommision userCommision
@@ -64,7 +65,7 @@ class CommissionInfo {
      * 1:为已经提交到oa，提成申请
      * 2:申请已处理
      */
-    int type=0
+    int type = 0
 
     //支付时间
     Date zfsj
@@ -77,10 +78,10 @@ class CommissionInfo {
     Date lastUpdated
 
     def beforeInsert() {
-        TodoConfig todoConfig=TodoConfig.findByMkbs(1)
-        ToDoTask toDoTask=ToDoTask.create(todoConfig.mkmc,todoConfig.cljs,todoConfig.url)
-        zfsj=new Date()
-        todoId=toDoTask.id
+        TodoConfig todoConfig = TodoConfig.findByMkbs(1)
+        ToDoTask toDoTask = ToDoTask.create(todoConfig.mkmc, todoConfig.cljs, todoConfig.url)
+        zfsj = DateUtility.lastDayWholePointDate(new Date())
+        todoId = toDoTask.id
     }
 
     static constraints = {

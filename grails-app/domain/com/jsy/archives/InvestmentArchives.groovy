@@ -89,7 +89,7 @@ class InvestmentArchives {
     //第四次付息时间
     Date fxsj4
     //全部付完了或者转投结束，不在付款
-    //是否已经生成过总会数据(在兑付查询中是否已经有记录)
+    //是否已经生成过兑付数据(在兑付查询中是否已经有记录)
     boolean  stopPay=false
     //打印次数
     int dycs=0
