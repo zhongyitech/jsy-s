@@ -233,11 +233,21 @@ class InvestmentArchivesCollectionResource {
             dto.bm = dto.bmjl.department.deptName
             //覆盖前台数据(不允许设置的数据)
             dto.ywtcs.each {
+
                 it.sjffsj = null
                 it.real_glffsj3 = null
                 it.real_glffsj2 = null
             }
+            Calendar rightNow = Calendar.getInstance();
+            def nowDt = DateUtility.lastDayWholePointDate(new Date())
+            rightNow.setTime(nowDt);
             dto.gltcs.each {
+                //TODO:覆盖前台传递的管理提成发放时间  第一次70%:下一月5号 20%: 下一年末 10% 再下一年末
+                rightNow.add(Calendar.MONTH, 1)
+                rightNow.add(Calendar.DAY_OF_YEAR, 5)
+                it.tcffsj = rightNow.getTime()
+                it.glffsj2 = DateUtility.lastDayWholePointDate(DateUtility.getCurrYearLast(rightNow.get(Calendar.YEAR) + 1))
+                it.glffsj3 = DateUtility.lastDayWholePointDate(DateUtility.getCurrYearLast(rightNow.get(Calendar.YEAR) + 2))
                 it.sjffsj = null
                 it.real_glffsj2 = null
                 it.real_glffsj3 = null

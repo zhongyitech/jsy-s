@@ -1,11 +1,9 @@
 package jsy
 
-import com.jsy.archives.CommissionInfo
 import com.jsy.archives.CommissionInfoResourceService
 import com.jsy.archives.PaymentInfoResourceService
 import com.jsy.archives.UserCommision
 import com.jsy.system.NotificationMail
-import com.jsy.system.ToDoTask
 import com.jsy.utility.DateUtility
 import grails.plugin.asyncmail.AsynchronousMailService
 
@@ -20,7 +18,9 @@ class AutoBuildGltcJob {
     CommissionInfoResourceService commissionInfoResourceService
 
     static triggers = {
-        cron name: 'tcAndPay', cronExpression: "0/30 * * * * ?"
+        //todo:set everyDay
+        cron name: 'tcAndPay', cronExpression: "0/30 0 * * * ?"
+//        cron name: 'tcAndPay', cronExpression: "0/30 0 0 * * ?"
     }
 
     def execute() {
@@ -33,7 +33,7 @@ class AutoBuildGltcJob {
             println("Build  CommissionInfo(管理提成) Error:" + ex.message)
         }
 
-        //TODO:兑付单
+        //TODO:兑付单(利息和本金兑付单)
         try {
             println("Start Task Build PaymentInfo(兑付单) ...")
             (paymentInfoResourceService ?: new PaymentInfoResourceService()).addPaymentInfo()
@@ -45,6 +45,7 @@ class AutoBuildGltcJob {
         Calendar rightNow = Calendar.getInstance();
         def nowDt = DateUtility.lastDayWholePointDate(new Date())
         rightNow.setTime(nowDt);
+
         //TODO:查询提成单,根据规则发邮件给业务经理
         try {
             Date sendDate = DateUtility.lastDayWholePointDate(new Date(new Date().getTime() - (10 * 24 * 60 * 60 * 1000)));
