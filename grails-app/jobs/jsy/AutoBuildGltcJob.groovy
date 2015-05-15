@@ -20,7 +20,7 @@ class AutoBuildGltcJob {
     CommissionInfoResourceService commissionInfoResourceService
 
     static triggers = {
-        cron name: 'tcAndPay', cronExpression: "0/10 * * * * ?"
+        cron name: 'tcAndPay', cronExpression: "0/30 * * * * ?"
     }
 
     def execute() {
@@ -42,14 +42,16 @@ class AutoBuildGltcJob {
             println("Build PaymentInfo(兑付单) Error:" + ex.message)
         }
 
+        Calendar rightNow = Calendar.getInstance();
+        def nowDt = DateUtility.lastDayWholePointDate(new Date())
+        rightNow.setTime(nowDt);
         //TODO:查询提成单,根据规则发邮件给业务经理
         try {
             Date sendDate = DateUtility.lastDayWholePointDate(new Date(new Date().getTime() - (10 * 24 * 60 * 60 * 1000)));
-            UserCommision.findByTcffsjGreaterThanOrGlffsj2GreaterThanOrGlffsj3GreaterThan(sendDate, sendDate, sendDate)
-                    .where {
-                isNull("real_glffsj2")
-                isNull("real_glffsj3")
-            }.list().each {
+            UserCommision.findAllByTcffsjOrGlffsj2OrGlffsj3(sendDate, sendDate, sendDate)
+                    .each {
+                //只要有一个时间滑支付的都要处理
+                if (it.real_glffsj2 != null && it.real_glffsj3 != null && it.sjffsj != null) return
                 Date sDate = null
                 if (it.glffsj2 != null) {
                     //管理提成
@@ -68,27 +70,28 @@ class AutoBuildGltcJob {
                 String strD = sDate.toString()
                 def user = it.user
                 try {
-                    def femail = NotificationMail.findByUserCommisionIdAndPayTime(it.id, sDate)
+                    def femail = NotificationMail.findByUserCommisionIdAndPayTimeAnd(it.id, sDate)
                     if (femail == null) {
-                        femail.isSend = true
-                        String html = '<body><u>' + "$user.chainName 你好! 您的有一笔管理提成将在 $strD 发放,请注意. " + '</u></body>'
-                        new NotificationMail(femail: html, userCommisionId: it.id, payTime: sDate)
+                        println("Start Send Email:$user.email $user.chainName")
+                        String htmls = '<body><u>' + "$user.chainName 你好! 您的有一笔管理提成将在 $strD 发放,请注意. " + '</u></body>'
+                        new AsynchronousMailService().sendMail {
+                            from 'oswaldl2009@126.com';
+                            to user.email;
+                            subject '管理提成到期提醒';
+                            html htmls;
+                            // Additional asynchronous parameters (optional)
+                            maxAttemptsCount 3;   // Max 3 attempts to send, default 1
+                            attemptInterval 300000;    // Minimum five minutes between attempts, default 300000 ms
+                            delete true;    // Marks the message for deleting after sent
+                            immediate true;    // Run the send job after the message was created
+                            priority 10;   // If priority is greater then message will be sent faster
+                        }
+                        new NotificationMail(userCommisionId: it.id, payTime: sDate, emailTxt: htmls)
                                 .save(failOnError: true)
-//                    new AsynchronousMailService().sendMail {
-//                        from 'oswaldl2009@126.com';
-//                        to user.email;
-//                        subject '管理提成到期提醒';
-//                        html html;
-//                        // Additional asynchronous parameters (optional)
-//                        maxAttemptsCount 3;   // Max 3 attempts to send, default 1
-//                        attemptInterval 300000;    // Minimum five minutes between attempts, default 300000 ms
-//                        delete true;    // Marks the message for deleting after sent
-//                        immediate true;    // Run the send job after the message was created
-//                        priority 10;   // If priority is greater then message will be sent faster
-//                    }
+                        println("Send Email OK:$user.email")
                     }
                 } catch (Exception ex) {
-                    println(ex.message)
+                    println("Send Email ERROR: $ex.message")
                 }
             }
         } catch (Exception ex) {
