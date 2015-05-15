@@ -41,7 +41,7 @@ class Fund {
     //创建日期
     Date createDate
     //扣除违约金比例
-    double kcwyjbl=0.05
+    double kcwyjbl = 0.05
 
     /* 以下基金字段是没用实际用到的，前台界面也没有  */
     //基金责任人：没用到！
@@ -80,32 +80,24 @@ class Fund {
     BigDecimal collectedPrincipal = 0
     //未收项目本金 = 0：没用到！
     BigDecimal uncollectedPrincipal = 0
-
-
-
-
     //有限合伙
     FundCompanyInformation funcCompany
-
-
     //相关联项目
     static belongsTo = []
-
     static hasMany = [
-            yieldRange:YieldRange,  //收益率范围
-            tcfpfw:Tcfpfw,          //提成分配
-            kxzqx:Kxzqx             //可选投资期限
+            yieldRange: YieldRange,  //收益率范围
+            tcfpfw    : Tcfpfw,          //提成分配
+            kxzqx     : Kxzqx             //可选投资期限
     ]
-
     //收益率范围
     //非包销情况下调用返回收益率
-    double getYieldRange(BigDecimal investment,String type){
-        double y=0
+    double getYieldRange(BigDecimal investment, String type) {
+        double y = 0
         this.yieldRange.each {
 //            print(it.investment1)
 //            print(it.investment2)
 //            print(investment)
-            if(type.equalsIgnoreCase(it.vers)&&(investment<(it.investment2==0?9999999999999999:it.investment2))&&(investment>=it.investment1)){
+            if (type.equalsIgnoreCase(it.vers) && (investment < (it.investment2 == 0 ? 9999999999999999 : it.investment2)) && (investment >= it.investment1)) {
                 y = it.yield
             }
         }
@@ -114,7 +106,7 @@ class Fund {
 
     static constraints = {
         project nullable: true
-        fundName unique: true,nullable: false
+        fundName unique: true, nullable: false
         fundNo nullable: true
         startSaleDate nullable: false
         raiseFunds nullable: true
@@ -146,10 +138,7 @@ class Fund {
         uncollectedInterest nullable: true
         collectedPrincipal nullable: true
         uncollectedPrincipal nullable: true
-        //todo:remove this
-        funcCompany nullable: true
     }
-
 
     def beforeInsert() {
         if (project && !project.fund) {
@@ -158,7 +147,6 @@ class Fund {
         }
 
     }
-
 
     def beforeUpdate() {
         if (project && !project.fund) {
