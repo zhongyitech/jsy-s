@@ -5,8 +5,8 @@ package com.jsy.fundObject
 
 class Kxzqx {
 
-    //计数值
-    int jsz
+    //期限值,可为小数
+    double jsz
     //单位
     String dw
 
