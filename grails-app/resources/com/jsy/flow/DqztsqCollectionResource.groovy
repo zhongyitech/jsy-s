@@ -124,40 +124,43 @@ class DqztsqCollectionResource {
     @Path('/getAll')
     Response getSpeicalAll(Map arg) {
         page {
-            def sType = arg.sType
+            def sType = arg.sq_type
+            String sType_descript = ""
             DetachedCriteria dc = null
             def data = []
             switch (sType) {
             //1.委托付款申请
-                case "Wtfksq":
+                case "1"://"Wtfksq":
                     dc = DomainHelper.getDetachedCriteria(Wtfksq, arg)
+                    sType_descript = "委托付款申请"
                     break
             //2.到期转投申请
-                case "Dqztsq":
+                case "2"://"Dqztsq":
                     dc = DomainHelper.getDetachedCriteria(Dqztsq, arg)
-                    data = dc.list([max: arg.pagesize, offset: arg.startposition]).collect {
-                        def row = [id: it.id]
-                        row.putAll(it.properties)
-                        row.put("sType", "到期转投")
-                        row.put("customer", [name: it.customer.name])
-                        row.put("sqr", [chainName: it.sqr.chainName])
-//                        row.put("department", it.sqr.department ? it.sqr.department.deptName : "")
-                        return row
-                    }
+                    sType_descript = "到期转投申请"
+
                     break
             //3.未到期转换申请
-                case "Wdqztsq":
+                case "3"://"Wdqztsq":
                     dc = DomainHelper.getDetachedCriteria(Wdqztsq, arg)
+                    sType_descript = "未到期转换申请"
+
                     break
             //4.基金续投
-                case "Jjxtsq":
+                case "4"://"Jjxtsq":
                     dc = DomainHelper.getDetachedCriteria(Jjxtsq, arg)
+                    sType_descript = "基金续投"
+
                     break
             //5.退伙
-                case "Thclsq":
+                case "5"://"Thclsq":
                     dc = DomainHelper.getDetachedCriteria(Thclsq, arg)
+                    sType_descript = "退伙"
+
                     break
-                case "UnionSpecial":
+                case "6":// "UnionSpecial":
+                    dc = DomainHelper.getDetachedCriteria(Mergesq, arg)
+                    sType_descript = "委托付款申请"
 
                     break
                 default:
@@ -165,6 +168,15 @@ class DqztsqCollectionResource {
                     break
             }
             if (dc != null) {
+                data = dc.list([max: arg.pagesize, offset: arg.startposition]).collect {
+                    def row = [id: it.id]
+                    row.putAll(it.properties)
+                    row.put("sType", sType_descript)
+                    row.put("sq_type", sType)
+                    row.put("customer", [name: it.customer.name])
+                    row.put("sqr", [chainName: it.sqr.chainName])
+                    return row
+                }
                 return [data: data, total: dc.count()]
             }
         }

@@ -9,7 +9,7 @@ import com.jsy.customerObject.Customer
  * 委托付款申请
  */
 class Wtfksq {
-    def springSecurityService
+//    def springSecurityService
 
     //关联的档案
     InvestmentArchives archives
@@ -37,7 +37,7 @@ class Wtfksq {
     static hasMany = [khfbs: Khfb]
 
     def beforeInsert() {
-        this.sqr = springSecurityService.getCurrentUser()
+//        this.sqr = springSecurityService.getCurrentUser()
         this.sqbm = this.sqr.department?.deptName
     }
 

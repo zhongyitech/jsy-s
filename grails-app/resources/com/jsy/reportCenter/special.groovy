@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response
 import static com.jsy.utility.MyResponse.*
 
 /**
+ * 获取特殊申请的数据，预览界面使用
  * Created by lioa on 2015/3/26.
  */
 @Path('/api/special')
@@ -78,6 +79,7 @@ class special {
     @Path("/report")
     Response getReport(@QueryParam("reporttype") String stype, @QueryParam("id") Long id) {
         ok {
+            println(stype);
             _map.get(stype)?.call(id)
         }
     }

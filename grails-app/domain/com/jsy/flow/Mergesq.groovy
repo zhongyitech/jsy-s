@@ -7,7 +7,6 @@ import com.jsy.auth.User
  */
 class Mergesq {
     /*----------------前台提交的数据-------------------------*/
-
     //合并档案编号
     String newContractNum
     //合同编号
