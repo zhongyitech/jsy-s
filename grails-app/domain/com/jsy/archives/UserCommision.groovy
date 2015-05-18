@@ -10,6 +10,9 @@ class UserCommision {
 
     //用户
     User user
+
+    //收款人类型 0:个人 1:公司
+    int cardType = 0
     //收款人
     String skr
 

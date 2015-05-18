@@ -47,7 +47,7 @@ class CommissionInfoResourceService {
 
     //自动生成管理提成查询
     /**
-     * 业务提成生成代码
+     *  管理提成 生成代码:生成提成的代码
      *
      * @return
      */
@@ -62,21 +62,63 @@ class CommissionInfoResourceService {
                     if (gltc.tcffsj && gltc.tcffsj.before(new Date())) {
                         def c = new CommissionInfo(userCommision: gltc, zfsj: gltc.tcffsj,
                                 tcje: gltc.tcje * 0.7, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.tzqx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl.chainName, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc)
+                        setRateAndAmount(it.fund, gltc, c)
                         c.save(failOnError: true)
                     }
                 } else if (s == 1) {
                     if (gltc.glffsj2 && gltc.glffsj2.before(new Date())) {
-                        new CommissionInfo(zfsj: gltc.glffsj2,
-                                tcje: gltc.tcje * 0.2, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.tzqx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl.chainName, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc, userCommision: gltc).save(failOnError: true)
+                        def
+                                c = new CommissionInfo(zfsj: gltc.glffsj2,
+                                        tcje: gltc.tcje * 0.2, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.tzqx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl.chainName, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc, userCommision: gltc)
+                        setRateAndAmount(it.fund, gltc, c)
+                        c.save(failOnError: true)
                     }
                 } else if (s == 2) {
                     if (gltc.glffsj3 && gltc.glffsj3.before(new Date())) {
-                        new CommissionInfo(userCommision: gltc, zfsj: gltc.glffsj3,
-                                tcje: gltc.tcje * 0.1, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.tzqx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl.chainName, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc).save(failOnError: true)
+                        def c = new CommissionInfo(userCommision: gltc, zfsj: gltc.glffsj3,
+                                tcje: gltc.tcje * 0.1, lx: 1, fundName: it.fund.fundName, customer: it.customer.name, tzje: it.sjtzje, syl: it.nhsyl, archivesId: it.id, rgqx: it.tzqx, rgrq: it.rgrq, tcr: gltc.user.chainName, ywjl: it.ywjl.chainName, skr: gltc.skr, yhzh: gltc.yhzh, khh: gltc.khh, sfgs: !gltc.user.isUser, tcl: it.ywtc)
+                        setRateAndAmount(it.fund, gltc, c)
+                        c.save(failOnError: true)
 
                     }
                 }
             }
+        }
+    }
+
+    def addYWCommissionInfo() {
+
+    }
+    /**
+     * 计算提成的税额和发票及支付额
+     * @param fund 基金
+     * @param uc 提成数据
+     */
+    static def setRateAndAmount(Fund fund, UserCommision uc, CommissionInfo outInfo) {
+        def tcfp = fund.tcfpfw.find { tc ->
+            uc.user.department.leader && (tc.manageerId == uc.user.department.leader.id)
+        }
+        if (tcfp == null)
+            throw new MyException("提成分配设置不正确，该业务经理的部门没有设置提成分配数据！" + uc.user.chainName)
+        outInfo.sfgs = (uc.cardType == 1)
+        outInfo.sqsh = tcfp.rateBefore
+        outInfo.sl = tcfp.rate
+        //个人收款
+        if (uc.cardType == 0) {
+            outInfo.sj = uc.tcje * tcfp.rate
+            //发票金额
+            outInfo.fpje = tcfp.rateBefore ? uc.tcje : uc.tcje * (1 + tcfp.rate)
+            //支付金额
+            outInfo.fkje = tcfp.rateBefore ? uc.tcje * (1 - tcfp.rate) : uc.tcje
+            outInfo.sfyfse = false
+        } else {
+            //公司(机构)收款
+            outInfo.sj = tcfp.rateBefore ? 0 : uc.tcje * tcfp.rate
+            //发票金额
+            outInfo.fpje = tcfp.rateBefore ? uc.tcje : uc.tcje * (1 + tcfp.rate)
+            //支付金额
+            outInfo.fkje = tcfp.rateBefore ? uc.tcje : uc.tcje * (1 + tcfp.rate)
+            outInfo.sfyfse = true
         }
     }
 

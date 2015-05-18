@@ -47,6 +47,7 @@ class InvestmentArchivesCollectionResource {
     def paymentInfoResourceService
     def springSecurityService
     CustomerArchivesResourceService customerArchivesResourceService
+    CommissionInfoResourceService commissionInfoResourceService
     //根据档案id取附件
     @GET
     @Path('/getFiles')
@@ -304,6 +305,7 @@ class InvestmentArchivesCollectionResource {
 
             } else {
                 //update
+                //TODO:添加更新操作需要在后台替换的数据 1:管理提成和业务提成
                 Customer cus = null
                 if (!(dto.customer == null || dto.customer.credentialsNumber == null || dto.customer.credentialsNumber == "")) {
                     cus = dto.customer.save(failOnError: true)
@@ -450,9 +452,11 @@ class InvestmentArchivesCollectionResource {
             if (commissionInfo.size() == 0) {
                 ia.ywtcs.each {
                     //根据业务提成人员配置生成业务类型的提成信息
-                    new CommissionInfo(
+                    def c = new CommissionInfo(
                             userCommision: it,
-                            zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc).save(failOnError: true)
+                            zfsj: new Date(), lx: 0, fundName: ia.fund.fundName, customer: ia.username, tzje: ia.tzje, syl: ia.nhsyl, archivesId: ia.id, rgqx: ia.tzqx, rgrq: ia.rgrq, tcr: it.user.chainName, ywjl: ia.ywjl.chainName, skr: it.skr, yhzh: it.yhzh, khh: it.khh, sfgs: !it.user.isUser, tcje: it.tcje, tcl: ia.ywtc)
+                    commissionInfoResourceService.setRateAndAmount(ia.fund, it, c)
+                    c.save(failOnError: true)
                 }
             }
             ok JsonResult.success(ia)
