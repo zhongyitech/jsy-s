@@ -60,6 +60,9 @@ class BankTransactionsRecord {
 //    备注 （可空）
     String remark
 
+    //处理情况的描述
+    String processDescript
+
     def beforeInsert() {
         createDate = new Date()
     }
@@ -70,22 +73,23 @@ class BankTransactionsRecord {
         transactionsCode nullable: true
         evidenceCode nullable: true
         remark nullable: true
+        processDescript nullable: true
     }
     /**
      * 记录已经处理的状态设置
      */
-    void setProcessedOK(){
-        managed=true
-        processedDate=new Date()
-        manageType=1
+    void setProcessedOK() {
+        managed = true
+        processedDate = new Date()
+        manageType = 1
     }
 
     /**
      * 记录弃用的状态设置
      */
-    void setDeletedTag(){
-        processedDate=new Date()
-        managed=true
-        manageType=2
+    void setDeletedTag() {
+        processedDate = new Date()
+        managed = true
+        manageType = 2
     }
 }

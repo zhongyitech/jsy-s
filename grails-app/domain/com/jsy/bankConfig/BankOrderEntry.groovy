@@ -6,7 +6,7 @@ class BankOrderEntry {
     //凭证编号
     String evidenceCode
 
-    //摘要
+    //摘要(需要替换占位符）
     String summary
 
     //科目名称

@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response
 class BankOrderEntryCollectionResource {
 
     def bankOrderEntryResourceService
-    def bankTransactionsRecordResourceService
+    BankTransactionsRecordResourceService bankTransactionsRecordResourceService
 
 
 
@@ -26,6 +26,7 @@ class BankOrderEntryCollectionResource {
     @Path('/readAllForPage')
     Response readAllForPage(Map arg) {
         MyResponse.page {
+            //从银行流水生成凭证数据
             bankTransactionsRecordResourceService.ProcessTransactionData()
             DomainHelper.getPage(BankOrderEntry,arg)
 //            [data:bankTransactionsRecordResourceService.ProcessTransactionData(),total:10]

@@ -31,7 +31,7 @@ class BankTransactionsRecordCollectionResource {
     //弃用的记录
     static final int MANAGE_TYPE_DEL = 3
     BankTransactionsRecordResourceService bankTransactionsRecordResourceService
-    BankProxyService bankProxyService
+    def bankProxyService
 
     @POST
     Response create(FundToBank dto) {

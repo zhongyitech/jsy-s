@@ -1,6 +1,7 @@
 package com.jsy.flow
 
 import com.jsy.auth.User
+import com.jsy.customerObject.Customer
 
 /**
  * 合并申请表
@@ -39,6 +40,8 @@ class Mergesq {
     BigDecimal muteLx
     //付息方式
     String totalFxfj
+
+    Customer customer
 
     static constraints = {
     }

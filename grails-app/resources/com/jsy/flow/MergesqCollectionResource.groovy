@@ -51,8 +51,9 @@ class MergesqCollectionResource {
             dto.sqrq = new Date()
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
-            dto.fundName=iv.fundName
+            dto.fundName = iv.fundName
             dto.totalAmount = dto.addAmount + iv.tzje
+            dto.customer = iv.customer
             def yield = GetYieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, dto.totalAmount, iv.contractNum.substring(3, 3 + 1).toUpperCase())
             //todo:重新计算的收益率
             dto.totalTzqx = iv.tzqx
@@ -61,6 +62,14 @@ class MergesqCollectionResource {
             dto.totalFxfj = iv.fxfs
             dto.totalRate = yield.rest_yield
             mergesqResourceService.create(dto)
+        }
+    }
+
+    @POST
+    @Path("/edit")
+    Response edit(Mergesq dto) {
+        ok {
+
         }
     }
 
