@@ -216,7 +216,7 @@ class BankProxyService {
     //TODO:添加到自动运行任务中
     void TransferQueryTask() throws Exception {
         try {
-            println("执行自动动任务:查询转账情意,并设置相关付款数据")
+            println("执行自动动任务:查询转账确认情况，并设置相关付款数据")
             def payOrders = Payment.findAllByStatus(PAYMENT_STATUS.Paying)
             payOrders.each { Payment pay ->
                 try {
@@ -226,7 +226,7 @@ class BankProxyService {
                     pay.payStatus = result.code + ":" + result.msg
                     //此总会记录的付款操作成功(银行已返回成功交易的标志),需要更新与此支付想在关的1.兑付单的状态 1.生成此次兑付操作的业务/管理/兑付 的单的状态
                     if (result.success) {
-                        (paymentResourceService?:new PaymentResourceService()).setPaySuccess(pay)
+                        (paymentResourceService ?: new PaymentResourceService()).setPaySuccess(pay)
                     }
                 } catch (Exception ex) {
                     //不阻赛后续的查询,下次去再尝试运行

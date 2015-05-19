@@ -19,10 +19,14 @@ class AutoQueryBankJob {
         cron name: 'bankQuery', cronExpression: "0/10 * * * * ?"
     }
     def execute() {
+        //查询银行交易信息
         try {
            new BankProxyService().TransferQueryTask()
         } catch (Exception ex) {
             println("执行自动任务错误!")
         }
+
+        //todo:定期执行凭证生成代码
+
     }
 }
