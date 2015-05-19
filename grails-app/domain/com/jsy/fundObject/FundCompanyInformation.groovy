@@ -5,6 +5,7 @@ import com.jsy.project.TSFlowFile
 import com.jsy.system.Company
 import com.jsy.system.Department
 import com.jsy.system.TypeConfig
+import com.jsy.system.UploadFile
 
 //基金公司信息表
 class FundCompanyInformation {
@@ -60,14 +61,16 @@ class FundCompanyInformation {
     String remark
 
     //公司类型 0普通公司  1有限合伙
-    TypeConfig  companyType
+    TypeConfig companyType
 
     //协议模板 0为单GP   1为双GP
     int protocolTemplate = 0
 
+    //公司电子印章
+    UploadFile reportTokenImg
+
     //合伙人排序,id以逗号分开  1,2,3
     String hhrpx
-
 
     //营业执照
     TSFlowFile businessLicense
@@ -86,18 +89,18 @@ class FundCompanyInformation {
 
     //合伙人
     static hasMany = [
-            partner: FundCompanyInformation,
-            bankAccount:BankAccount,
-            othersFiles:TSFlowFile,  //其他文件
-            funds: Fund    //基金
+            partner    : FundCompanyInformation,
+            bankAccount: BankAccount,
+            othersFiles: TSFlowFile,  //其他文件
+            funds      : Fund    //基金
     ]
 
     static mappedBy = [
             businessLicense: "none",
-            orgCode: "none",
-            taxFile: "none",
-            banksPermit: "none",
-            useCodePermit: "none",
+            orgCode        : "none",
+            taxFile        : "none",
+            banksPermit    : "none",
+            useCodePermit  : "none",
     ]
 
     static constraints = {
@@ -126,5 +129,7 @@ class FundCompanyInformation {
         taxFile nullable: true
         banksPermit nullable: true
         useCodePermit nullable: true
+
+        reportTokenImg nullable: true
     }
 }
