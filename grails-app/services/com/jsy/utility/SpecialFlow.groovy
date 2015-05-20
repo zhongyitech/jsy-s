@@ -4,6 +4,7 @@ import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 
 /**
+ * 特殊申请单的流程检测
  * Created by lioa on 2015/4/21.
  */
 enum SpecialFlow {

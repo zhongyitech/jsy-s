@@ -4,6 +4,7 @@ import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.User
 import com.jsy.bankConfig.BankAccount
 import com.jsy.customerObject.Customer
+import com.jsy.utility.UtilityString
 
 /**
  * 委托付款申请
@@ -11,6 +12,7 @@ import com.jsy.customerObject.Customer
 class Wtfksq {
 //    def springSecurityService
 
+    String number=""
     //关联的档案
     InvestmentArchives archives
     //客户
@@ -39,6 +41,7 @@ class Wtfksq {
     def beforeInsert() {
 //        this.sqr = springSecurityService.getCurrentUser()
         this.sqbm = this.sqr.department?.deptName
+        this.number = "JSY-FKET-" + UtilityString.RequestFormat(4, Wtfksq.count())
     }
 
     static constraints = {

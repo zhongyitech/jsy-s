@@ -2,6 +2,7 @@ package com.jsy.flow
 
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
+import com.jsy.utility.UtilityString
 import grails.plugin.springsecurity.SpringSecurityService
 
 /**
@@ -10,6 +11,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 class Thclsq {
 //    def springSecurityService
 
+    String number=""
     //旧档案id
     Long oldArchivesId
     //客户
@@ -70,6 +72,8 @@ class Thclsq {
 
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()
+        this.number = "JSY-TH-" + UtilityString.RequestFormat(4, Wdqztsq.count())
+
     }
     static constraints = {
         oldArchivesId unique: true

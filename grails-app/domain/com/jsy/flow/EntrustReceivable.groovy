@@ -3,6 +3,7 @@ package com.jsy.flow
 import com.jsy.archives.InvestmentArchives
 import com.jsy.customerObject.Customer
 import com.jsy.system.TypeConfig
+import com.jsy.utility.UtilityString
 
 /**
  * 委托收款申请 [已不使用)
@@ -10,6 +11,7 @@ import com.jsy.system.TypeConfig
  */
 class EntrustReceivable {
 
+    String number=""
     //投资档案
     InvestmentArchives investmentArchives
 
@@ -48,6 +50,9 @@ class EntrustReceivable {
     //状态
     TypeConfig typeConfig
 
+    def beforeInsert() {
+        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(4, EntrustReceivable.count())
+    }
 
     static constraints = {
 

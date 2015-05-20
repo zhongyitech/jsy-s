@@ -1,9 +1,13 @@
 package com.jsy.flow
+
+import com.jsy.utility.UtilityString
+
 /**
  * 客户副表，收款人付款人一类
  */
 class Khfb {
 
+    String number = ""
     //付款金额
     BigDecimal payAmount
     //付款日期
@@ -26,6 +30,10 @@ class Khfb {
 
     //住址
     String address
+
+    def beforeInsert() {
+        this.number = "JSY-HB-" + UtilityString.RequestFormat(4, Mergesq.count())
+    }
     static constraints = {
         fddbr nullable: true
         address nullable: true

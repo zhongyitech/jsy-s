@@ -60,7 +60,7 @@ class special {
                 }
                 return null
         })
-        //未到期转投
+        //到期转投
         _map.put("2", {
             Long id ->
                 def sq = Dqztsq.get(id)

@@ -10,9 +10,8 @@ dataSource {
 //    username = "jsy"
 //    password = "jsy1qaz"
     username = "root"
-    password = "123654"
+    password = "1234"
     dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -21,7 +20,6 @@ hibernate {
 //    cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
     singleSession = true // configure OSIV singleSession mode
 }
-
 // environment specific settings
 environments {
     development {
@@ -29,9 +27,9 @@ environments {
 //            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
             dbCreate = "update"
+//            dbCreate = "create-drop"
 //            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
-//            url = "jdbc:mysql://192.168.4.141:3306/test1?user=root&password=surewin&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
-            url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=123654&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+            url = "jdbc:mysql://localhost:3306/jsydb?user=root&password=123654&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             properties {
                 // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                 jmxEnabled = true
@@ -66,8 +64,8 @@ environments {
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
 
             dbCreate = "update"
-//            url = "jdbc:mysql://localhost:3306/jsytest?user=root&password=1234&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
-            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+            url = "jdbc:mysql://localhost:3306/jsydb?user=root&password=1234&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
+//            url = "jdbc:mysql://192.168.1.59:3306/jsytest?user=jsy&password=jsy1qaz&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false"
             properties {
                 // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                 jmxEnabled = true

@@ -3,12 +3,14 @@ package com.jsy.flow
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
+import com.jsy.utility.UtilityString
 
 /**
  * 到期转投申请
  */
 class Dqztsq {
 //    def springSecurityService
+    String number = ""
     //客户
     Customer customer
     //旧档案id
@@ -45,13 +47,13 @@ class Dqztsq {
     Date sqrq
 
     //生成日期
-    Date scrq=new Date()
+    Date scrq = new Date()
     //状态 0,待审核 1,审核通过
-    int status=0
+    int status = 0
 
-//    def beforeInsert() {
-//        this.sqr= springSecurityService.getCurrentUser()
-//    }
+    def beforeInsert() {
+        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(4, Dqztsq.count())
+    }
     static constraints = {
         sqr nullable: true
         oldArchivesId unique: true

@@ -34,6 +34,8 @@ class DqztsqCollectionResource {
     @POST
     Response create(Dqztsq dto) {
         ok {
+            //todo:生成特殊申请单的唯一编号
+
             def iv = InvestmentArchives.findByContractNum(dto.htbh)
             //检测旧档案是否能做特殊申请操作
             SpecialFlow.Create.Validation(iv)

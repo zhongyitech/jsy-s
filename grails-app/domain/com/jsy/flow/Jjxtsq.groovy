@@ -3,13 +3,15 @@ package com.jsy.flow
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.system.TypeConfig
+import com.jsy.utility.UtilityString
 
 /**
  * 基金续投申请
  */
 class Jjxtsq {
-    def springSecurityService
+//    def springSecurityService
 
+    String number=""
     //旧档案id
     Long oldArchivesId
     //新档案id
@@ -55,7 +57,7 @@ class Jjxtsq {
     //续投到期日期
     Date xtdqrq
     //续投预期收益率
-    double  xtyqsyl
+    double xtyqsyl
     //续投计息方式
     String xtjxfs
 
@@ -63,12 +65,13 @@ class Jjxtsq {
     String bz
 
     //生成日期
-    Date scrq=new Date()
+    Date scrq = new Date()
     //状态
-    int status=0
+    int status = 0
 
     def beforeInsert() {
-        this.sqr=springSecurityService.getCurrentUser()
+//        this.sqr=springSecurityService.getCurrentUser()
+        this.number = "JSY-XT-" + UtilityString.RequestFormat(4, Dqztsq.count())
     }
 
     static constraints = {

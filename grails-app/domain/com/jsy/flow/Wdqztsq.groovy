@@ -3,6 +3,7 @@ package com.jsy.flow
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
+import com.jsy.utility.UtilityString
 import grails.plugin.springsecurity.SpringSecurityService
 
 /**
@@ -12,6 +13,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 class Wdqztsq {
 //    def springSecurityService
 
+    String number=""
     //客户
     Customer customer
     //旧档案id
@@ -77,9 +79,9 @@ class Wdqztsq {
     //状态
     int status = 0
 
-//    def beforeInsert() {
-//        this.sqr =new SpringSecurityService().getCurrentUser()
-//    }
+    def beforeInsert() {
+        this.number = "JSY-WZT-" + UtilityString.RequestFormat(4, Wdqztsq.count())
+    }
     static constraints = {
         sqr nullable: true
         newArchivesId nullable: true
