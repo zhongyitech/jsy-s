@@ -63,6 +63,21 @@ class special {
         //未到期转投
         _map.put("2", {
             Long id ->
+                def sq = Dqztsq.get(id)
+                if (sq) {
+                    def result = [id: sq.id]
+                    result.putAll(sq.properties)
+                    def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
+                    result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
+                    result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
+                    result.putAt("company", company.properties)
+                    return result
+                }
+                return null
+        })
+        //未到期转投
+        _map.put("3", {
+            Long id ->
                 def sq = Wdqztsq.get(id)
                 if (sq) {
                     def result = [id: sq.id]
