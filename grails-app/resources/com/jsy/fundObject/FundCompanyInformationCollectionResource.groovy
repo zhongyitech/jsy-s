@@ -37,8 +37,8 @@ class FundCompanyInformationCollectionResource {
 
         ok {
             dto.bankAccount.each {
-                if(it.purpose==null){
-                    throw  new Exception("银行的用途没有选择")
+                if (it.purpose == null) {
+                    throw new Exception("银行的用途没有选择")
                 }
             }
             fundCompanyInformationResourceService.create(dto)
@@ -50,8 +50,8 @@ class FundCompanyInformationCollectionResource {
 
         ok {
             dto.bankAccount.each {
-                if(it.purpose==null){
-                    throw  new Exception("银行的用途没有选择")
+                if (it.purpose == null) {
+                    throw new Exception("银行的用途没有选择")
                 }
             }
             dto.id = id;
@@ -217,11 +217,11 @@ class FundCompanyInformationCollectionResource {
         ok { return FundCompanyInformation.findAllByCompanyType(TypeConfig.get(type)) }
     }
 
-    @GET
-    @Path('/getAccountFromFundName')
-    Response getAccountFromFundName(@QueryParam('fundName') String fundName) {
-        ok { FundCompanyInformation.findAllByFund(Fund.findByFundName(fundName)).bankAccount }
-    }
+//    @GET
+//    @Path('/getAccountFromFundName')
+//    Response getAccountFromFundName(@QueryParam('fundName') String fundName) {
+//        ok { FundCompanyInformation.findAllByFund(Fund.findByFundName(fundName)).bankAccount }
+//    }
 
     /**
      * 获取有限合伙的公司列表,用于有限合伙选择列表
@@ -252,35 +252,35 @@ class FundCompanyInformationCollectionResource {
                 }.list()
             }
             list.collect {
-                [mapName: it.companyName , id: it.id]
+                [mapName: it.companyName, id: it.id]
             }
         }
     }
 
     @GET
     @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String name,@QueryParam('extraData') String jsonData) {
+    Response findByNameLike(@QueryParam('params') String name, @QueryParam('extraData') String jsonData) {
         def entity = []
         def companies = FundCompanyInformation.findAllByCompanyNameLike("%" + name + "%")
         org.json.JSONArray jsonArray = new org.json.JSONArray()
         companies.each {
             JSONObject jso = new JSONObject()
-            if(it.companyType.mapValue==1){
-                jso.put("value", "合伙："+it.companyName)
-            }else{
-                jso.put("value", "公司："+it.companyName)
+            if (it.companyType.mapValue == 1) {
+                jso.put("value", "合伙：" + it.companyName)
+            } else {
+                jso.put("value", "公司：" + it.companyName)
             }
 
-            jso.put("data", "F-"+it.id)
+            jso.put("data", "F-" + it.id)
             jsonArray.put(jso)
         }
 
         def customers = CustomerArchives.findAllByNameLike("%" + name + "%")
         customers.each {
             JSONObject jso = new JSONObject()
-            jso.put("value", "客户："+it.name)
+            jso.put("value", "客户：" + it.name)
 
-            jso.put("data", "C-"+it.id)
+            jso.put("data", "C-" + it.id)
             jsonArray.put(jso)
         }
 
@@ -319,11 +319,15 @@ class FundCompanyInformationCollectionResource {
         }
     }
 
+    /**
+     * 获取公司所对应的银行信息
+     * @param customerid
+     * @return
+     */
     @GET
     @Path('/loadCBanks')
     Response loadCBanks(@QueryParam('customerid') int customerid) {
         MyResponse.ok {
-
             def project_banks = CustomerArchives.get(customerid)?.bankAccount?.collect { bank ->
                 def rtn2 = [:]
                 rtn2.id = bank.id
@@ -336,16 +340,30 @@ class FundCompanyInformationCollectionResource {
                 rtn2.overReceive = bank.overReceive
                 rtn2
             }
-
             def banks = []
             project_banks?.each {
                 if (it) {
                     banks.addAll(it)
                 }
             }
-
             return banks.unique();
         }
     }
 
+    /**
+     * 获取公司的电子印章数据 （用于协议显示）
+     * @param fundId 基金id
+     * @return
+     */
+    @GET
+    @Path("/electronicSeal")
+    Response getSeal(@QueryParam('fundId') Long fundId) {
+        ok {
+            def fund = Fund.get(fundId)
+            if (fund && fund.funcCompany) {
+                return fund.funcCompany.reportTokenImg
+            }
+            return null
+        }
+    }
 }

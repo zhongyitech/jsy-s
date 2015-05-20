@@ -804,6 +804,11 @@ class InvestmentArchivesCollectionResource {
         }
     }
 
+    /**
+     * 获取投资档案的详细信息 （投资档案明细的数据）
+     * @param id
+     * @return
+     */
     @GET
     @Path('/detail')
     Response detail(@QueryParam('id') Long id) {
@@ -812,17 +817,20 @@ class InvestmentArchivesCollectionResource {
             def res = investmentArchivesResourceService.read(id)
             result.putAll(res.properties)
             result.ywtcs = []
+            //业务提成信息
             res.ywtcs.each {
                 result.ywtcs.push(it.properties)
             }
             result.gltcs = []
+            //管理提成信息
             res.gltcs.each {
                 result.gltcs.push(it.properties)
             }
-            //附加付息信息
+            //附加付息信息（已付和未付的都需要返回）
             result.paymentInfo = PaymentInfo.findAllByArchivesId(res.id)
-            //退伙信息
-            //续投信息
+            //todo:退伙信息
+            //todo:续投信息
+            //todo:其它有的特殊申请的信息
             result
         }
     }
@@ -850,4 +858,7 @@ class InvestmentArchivesCollectionResource {
             return result
         }
     }
+
+
+
 }

@@ -7,6 +7,7 @@ import com.jsy.auth.User
 import com.jsy.bankConfig.BankAccount
 
 /**
+ * 特殊申请单的集中处理接口
  * Created by lioa on 2015/4/2.
  */
 import com.jsy.bankConfig.BankOrder
@@ -16,6 +17,7 @@ import com.jsy.flow.Dqztsq
 import com.jsy.flow.DqztsqResourceService
 import com.jsy.flow.Thclsq
 import com.jsy.flow.Wdqztsq
+import com.jsy.flow.Wtfksq
 import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Department
@@ -44,23 +46,38 @@ import static com.jsy.utility.MyResponse.*
 class special {
     static Map<String, Closure> _map = new HashMap<String, Closure>()
     static {
-        //到期转投申请
-        _map.put("dqzt", {
+        //委托付款申请
+        _map.put("1", {
             Long id ->
-                def sq = Dqztsq.get(id)
+                def sq = Wtfksq.get(id)
+                if (sq) {
+                    def result = [id: sq.id]
+                    result.putAll(sq.properties)
+                    def company = sq.archives.fund.funcCompany
+                    result.putAt("oldArchives", sq.archives)
+                    result.putAt("company", company.properties)
+                    return result
+                }
+                return null
+        })
+        //未到期转投
+        _map.put("2", {
+            Long id ->
+                def sq = Wdqztsq.get(id)
                 if (sq) {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)
                     def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
                     result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
                     result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
-                    result.put("company", company.properties)
+                    result.putAt("company", company.properties)
                     return result
                 }
                 return null
         })
+
         //退伙申请
-        _map.put("thdgp", {
+        _map.put("3", {
             Long id ->
                 def sq = Thclsq.get(id)
                 if (sq) {
@@ -68,7 +85,7 @@ class special {
                     result.putAll(sq.properties)
                     def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
                     result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
-                    result.put("company", company.properties)
+                    result.putAt("company", company.properties)
                     return result
                 }
                 return null
