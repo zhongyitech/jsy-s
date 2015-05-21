@@ -25,7 +25,7 @@ class Mergesq {
     //申请部门
     String sqbm
     //申请日期
-    Date sqrq = new Date()
+    Date scrq = new Date()
     //基金名称
     String fundName
     //添加合并款
@@ -40,6 +40,8 @@ class Mergesq {
     BigDecimal muteLx
     //付息方式
     String totalFxfj
+
+    int status = 0
 
     Customer customer
 

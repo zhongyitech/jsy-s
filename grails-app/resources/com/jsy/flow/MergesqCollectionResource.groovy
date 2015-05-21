@@ -48,7 +48,7 @@ class MergesqCollectionResource {
                 throw new MyException("合同申请的目标档案:" + ex.message)
             }
             if (dto.real_lx < 0) throw new MyException("实际扣除利息不能小于0")
-            dto.sqrq = new Date()
+            dto.scrq = new Date()
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             dto.fundName = iv.fundName

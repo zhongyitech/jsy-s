@@ -167,4 +167,10 @@ class special {
             _map.get(stype)?.call(id)
         }
     }
+
+    @POST
+    @Path("/delete")
+    Response del(@QueryParam("id") Long id, @QueryParam("sType") Long sType) {
+        
+    }
 }

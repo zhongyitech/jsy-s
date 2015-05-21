@@ -160,13 +160,12 @@ class DqztsqCollectionResource {
                     sType_descript = "退伙"
 
                     break
+                //合并申请单
                 case "6":// "UnionSpecial":
                     dc = DomainHelper.getDetachedCriteria(Mergesq, arg)
-                    sType_descript = "委托付款申请"
-
+                    sType_descript = "合并申请"
                     break
                 default:
-
                     break
             }
             if (dc != null) {
