@@ -14,7 +14,7 @@ class Khfb {
     Date payDate
 
     //受托人
-    String pName
+    String name
 
     //付款账号
     String payBankAccount
