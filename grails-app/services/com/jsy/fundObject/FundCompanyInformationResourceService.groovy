@@ -49,6 +49,7 @@ class FundCompanyInformationResourceService {
         }
         obj.partner.removeAll()
         dto.partner.each {
+            println(it.companyName)
             obj.addToPartner(it)
         }
         obj.save(failOnError: true)
