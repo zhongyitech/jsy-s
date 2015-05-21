@@ -89,6 +89,9 @@ class FundCompanyInformation {
     //使用代码证
     TSFlowFile useCodePermit
 
+    //是否是执行事务合伙人
+    boolean isDefaultPartner=false
+
     //合伙人
     static hasMany = [
             partner    : FundCompanyInformation,

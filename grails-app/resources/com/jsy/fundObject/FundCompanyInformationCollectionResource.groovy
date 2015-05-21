@@ -183,9 +183,13 @@ class FundCompanyInformationCollectionResource {
     @Path("/findById")
     Response findById(@QueryParam('id') Long id) {
         ok {
-            def result = FundCompanyInformation.get(id)
-            println(id)
-            println(result.partner)
+            def company = FundCompanyInformation.get(id)
+            def result = [id: company.id]
+            result.putAll(company.properties)
+            if(company.partner.size()>0){
+                result.putAt("partner",company.partner.sort { !it.isDefaultPartner})
+                println(result.partner.first());
+            }
             result
         }
     }

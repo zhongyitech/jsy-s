@@ -7,7 +7,7 @@ import com.jsy.auth.User
 import com.jsy.bankConfig.BankAccount
 
 /**
- * �������뵥�ļ��д����ӿ�
+ * 特殊申请单的集中处理接口
  * Created by lioa on 2015/4/2.
  */
 import com.jsy.bankConfig.BankOrder
@@ -22,6 +22,7 @@ import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Department
 import com.jsy.system.OperationRecord
+import com.jsy.utility.MyException
 import grails.converters.JSON
 import groovy.sql.Sql
 
@@ -37,7 +38,7 @@ import javax.ws.rs.core.Response
 import static com.jsy.utility.MyResponse.*
 
 /**
- * ��ȡ������������ݣ�Ԥ������ʹ��
+ * 获取特殊申请的数据，预览界面使用
  * Created by lioa on 2015/3/26.
  */
 @Path('/api/special')
@@ -46,7 +47,7 @@ import static com.jsy.utility.MyResponse.*
 class special {
     static Map<String, Closure> _map = new HashMap<String, Closure>()
     static {
-        //ί�и�������
+        //委托付款申请
         _map.put("1", {
             Long id ->
                 def sq = Wtfksq.get(id)
@@ -55,39 +56,42 @@ class special {
                     result.putAll(sq.properties)
                     def oldIA = sq.archives
                     def company = sq.archives.fund.funcCompany
+                    if (company == null) throw new MyException("没有为基金：$sq.archives.fundName 绑定有限合伙企业")
                     result.putAt("oldArchives", oldIA)
                     result.putAt("company", company.properties)
                     result.putAt("project", oldIA.fund.project)
-                    //��ͬǩ����
+                    //合同签定方
                     def htTarget = oldIA.fund.funcCompany.companyName
                     result.putAt("htTarget", htTarget)
                     return result
                 }
                 return null
         })
-        //����תͶ
+        //到期转投
         _map.put("2", {
             Long id ->
                 def sq = Dqztsq.get(id)
                 if (sq) {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)
-                    def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
                     def oldIA = InvestmentArchives.get(sq.oldArchivesId)
+                    def company = oldIA.fund.funcCompany
+                    if (company == null) throw new MyException("没有为基金：$oldIA.fundName 绑定有限合伙企业")
+
                     result.putAt("oldArchives", oldIA)
                     def newFundName = Contract.findByHtbh(sq.xhtbh).fund.fundName
                     result.putAt("newFundName", newFundName)
 //                    result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
                     result.putAt("company", company.properties)
-                    //��ͬǩ����
-                    //todo:���º�ͬǩ�����Ļ�ȡ����
+                    //合同签定方
+                    //todo:更新合同签定方的获取规则
                     def htTarget = oldIA.fund.funcCompany.companyName
                     result.putAt("htTarget", htTarget)
                     return result
                 }
                 return null
         })
-        //δ����תͶ
+        //未到期转投
         _map.put("3", {
             Long id ->
                 def sq = Wdqztsq.get(id)
@@ -96,25 +100,26 @@ class special {
                     result.putAll(sq.properties)
                     def oldIA = InvestmentArchives.get(sq.oldArchivesId)
                     def company = oldIA.fund.funcCompany
+                    if (company == null) throw new MyException("没有为基金：$oldIA.fundName 绑定有限合伙企业")
                     def htTarget = oldIA.fund.funcCompany.companyName
-                    //
-                    def targets = company.partners
+                    def targets = company.partner.sort { !it.isDefaultPartner }
+                    def newFundName = Contract.findByHtbh(sq.xhtbh).fund.fundName
+                    result.putAt("newFundName", newFundName)
 
                     result.putAt("oldArchives", oldIA)
                     result.putAt("company", company.properties)
                     result.putAt("project", oldIA.fund.project)
                     result.putAt("htTarget", htTarget)
                     result.putAt("targets", targets)
-                    //�����Ƿ��ǵ�GP����
+                    result.putAt("mainPartner", targets.size() > 0 ? targets.first() : "")
+                    //设置是否是单GP数据
                     result.putAt("isSingle", company.protocolTemplate == 0)
-
-
                     return result
                 }
                 return null
         })
 
-        //�˻�����
+        //退伙申请
         _map.put("4", {
             Long id ->
                 def sq = Wdqztsq.get(id)
@@ -124,6 +129,30 @@ class special {
                     def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
                     result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
                     result.putAt("company", company.properties)
+                    return result
+                }
+                return null
+        })
+        //退伙申请
+        _map.put("5", {
+            Long id ->
+                def sq = Thclsq.get(id)
+                if (sq) {
+                    def result = [id: sq.id]
+                    result.putAll(sq.properties)
+                    def oldIA = InvestmentArchives.get(sq.oldArchivesId)
+                    def company = oldIA.fund.funcCompany
+                    if (company == null) throw new MyException("没有为基金：$oldIA.fundName 绑定有限合伙企业")
+                    def htTarget = oldIA.fund.funcCompany.companyName
+                    //todo:第一个为执行事务合伙人，需要解决数据返回无序的问题
+                    def targets = company.partner.sort { !it.isDefaultPartner }
+                    result.putAt("oldArchives", oldIA)
+                    result.putAt("company", company.properties)
+                    result.putAt("project", oldIA.fund.project)
+                    result.putAt("htTarget", htTarget)
+                    result.putAt("targets", targets)
+                    //设置是否是单GP数据
+                    result.putAt("isSingle", company.protocolTemplate == 0)
                     return result
                 }
                 return null

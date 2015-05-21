@@ -14,6 +14,9 @@ class FundCompanyInformationResourceService {
         obj.bankAccount.each {
             it.companyInformation = obj
         }
+        if (dto.partner.size() > 0) {
+            dto.partner.first().isDefaultPartner = true
+        }
         dto.partner.each {
             obj.addToPartner(it)
         }
@@ -48,6 +51,9 @@ class FundCompanyInformationResourceService {
             it.save(failOnError: true)
         }
         obj.partner.removeAll()
+        if (dto.partner.size() > 0) {
+            dto.partner.first().isDefaultPartner = true
+        }
         dto.partner.each {
             println(it.companyName)
             obj.addToPartner(it)
