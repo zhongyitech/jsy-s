@@ -55,6 +55,7 @@ class FundCompanyInformationCollectionResource {
                 }
             }
             dto.id = id;
+
             return fundCompanyInformationResourceService.update(dto)
         }
     }
@@ -182,7 +183,10 @@ class FundCompanyInformationCollectionResource {
     @Path("/findById")
     Response findById(@QueryParam('id') Long id) {
         ok {
-            return FundCompanyInformation.get(id)
+            def result = FundCompanyInformation.get(id)
+            println(id)
+            println(result.partner)
+            result
         }
     }
 

@@ -53,9 +53,14 @@ class special {
                 if (sq) {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)
+                    def oldIA = sq.archives
                     def company = sq.archives.fund.funcCompany
-                    result.putAt("oldArchives", sq.archives)
+                    result.putAt("oldArchives", oldIA)
                     result.putAt("company", company.properties)
+                    result.putAt("project", oldIA.fund.project)
+                    //合同签定方
+                    def htTarget = oldIA.fund.funcCompany.companyName
+                    result.putAt("htTarget", htTarget)
                     return result
                 }
                 return null
@@ -68,9 +73,16 @@ class special {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)
                     def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
-                    result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
-                    result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
+                    def oldIA = InvestmentArchives.get(sq.oldArchivesId)
+                    result.putAt("oldArchives", oldIA)
+                    def newFundName = Contract.findByHtbh(sq.xhtbh).fund.fundName
+                    result.putAt("newFundName", newFundName)
+//                    result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
                     result.putAt("company", company.properties)
+                    //合同签定方
+                    //todo:更新合同签定方的获取规则
+                    def htTarget = oldIA.fund.funcCompany.companyName
+                    result.putAt("htTarget", htTarget)
                     return result
                 }
                 return null
@@ -82,19 +94,30 @@ class special {
                 if (sq) {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)
-                    def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
-                    result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
-                    result.putAt("newArchives", InvestmentArchives.get(sq.newArchivesId))
+                    def oldIA = InvestmentArchives.get(sq.oldArchivesId)
+                    def company = oldIA.fund.funcCompany
+                    def htTarget = oldIA.fund.funcCompany.companyName
+                    //
+                    def targets = company.partners
+
+                    result.putAt("oldArchives", oldIA)
                     result.putAt("company", company.properties)
+                    result.putAt("project", oldIA.fund.project)
+                    result.putAt("htTarget", htTarget)
+                    result.putAt("targets", targets)
+                    //设置是否是单GP数据
+                    result.putAt("isSingle", company.protocolTemplate == 0)
+
+
                     return result
                 }
                 return null
         })
 
         //退伙申请
-        _map.put("3", {
+        _map.put("4", {
             Long id ->
-                def sq = Thclsq.get(id)
+                def sq = Wdqztsq.get(id)
                 if (sq) {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)

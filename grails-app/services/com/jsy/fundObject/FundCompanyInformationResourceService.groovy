@@ -14,6 +14,9 @@ class FundCompanyInformationResourceService {
         obj.bankAccount.each {
             it.companyInformation = obj
         }
+        dto.partner.each {
+            obj.addToPartner(it)
+        }
         obj
     }
 
@@ -43,6 +46,10 @@ class FundCompanyInformationResourceService {
         obj.bankAccount.each {
             it.companyInformation = obj
             it.save(failOnError: true)
+        }
+        obj.partner.removeAll()
+        dto.partner.each {
+            obj.addToPartner(it)
         }
         obj.save(failOnError: true)
         obj

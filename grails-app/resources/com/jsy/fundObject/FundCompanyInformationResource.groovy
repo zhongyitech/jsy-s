@@ -1,3 +1,4 @@
+
 package com.jsy.fundObject
 
 import static org.grails.jaxrs.response.Responses.*
