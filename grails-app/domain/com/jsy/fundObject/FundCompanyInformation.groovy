@@ -21,6 +21,8 @@ class FundCompanyInformation {
     //注册地址
     String address
 
+    //营业额执照号码
+    String credentialsNumber=""
     //募集账户
 //    static hasMany = []
 
