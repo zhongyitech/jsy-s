@@ -2,6 +2,7 @@ package com.jsy.archives
 
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
+import com.jsy.flow.ContractPredistribution
 import com.jsy.fundObject.Finfo
 import com.jsy.fundObject.Fund
 import com.jsy.system.TypeConfig
@@ -758,6 +759,9 @@ class InvestmentArchivesCollectionResource {
             def c = Contract.findByHtbh(num)
             if (c == null) {
                 throw new Exception("合同编号还没有登记")
+            }
+            if(ContractPredistribution.findByHtbh(num)){
+                throw new MyException("合同编号已经被预分配给特殊申请单了！请换用其它合同编号！")
             }
             c.properties
         }
