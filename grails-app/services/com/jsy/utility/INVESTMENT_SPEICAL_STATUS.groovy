@@ -1,8 +1,8 @@
 package com.jsy.utility
 
-import java.security.PublicKey
 
 /**
+ * 特殊申请的流程控制
  * Created by lioa on 2015/4/30.
  */
 enum INVESTMENT_SPEICAL_STATUS {

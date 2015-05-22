@@ -83,7 +83,12 @@ class MergesqCollectionResource {
         new MergesqResource(mergesqResourceService: mergesqResourceService, id: id)
     }
 
-
+    /**
+     * 重新计算投资档案的收益率
+     * @param id    档案id
+     * @param newAmount 追加的投资金额
+     * @return  总投资额、新的年化率、投资期限、付息方式
+     */
     @GET
     @Path('/unionPre')
     Response unionPre(@QueryParam("ivid") Long id, @QueryParam("newAmount") BigDecimal newAmount) {

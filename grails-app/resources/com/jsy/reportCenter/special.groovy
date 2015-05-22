@@ -171,6 +171,6 @@ class special {
     @POST
     @Path("/delete")
     Response del(@QueryParam("id") Long id, @QueryParam("sType") Long sType) {
-        
+
     }
 }

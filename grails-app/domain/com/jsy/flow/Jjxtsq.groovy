@@ -11,7 +11,7 @@ import com.jsy.utility.UtilityString
 class Jjxtsq {
 //    def springSecurityService
 
-    String number=""
+    String number = ""
     //旧档案id
     Long oldArchivesId
     //新档案id
@@ -38,8 +38,6 @@ class Jjxtsq {
     //申请部门
     String sqbm
 
-    //续投类型
-    String xtlx
     //续投申请日期
     Date xtsqrq
     //续投本金额
@@ -68,6 +66,9 @@ class Jjxtsq {
     Date scrq = new Date()
     //状态
     int status = 0
+
+    //续投类型
+    int xtType = 0
 
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()

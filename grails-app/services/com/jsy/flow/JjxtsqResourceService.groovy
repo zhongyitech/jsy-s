@@ -3,7 +3,9 @@ package com.jsy.flow
 import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.utility.CreateInvestmentArchivesService
+import com.jsy.utility.GetYieldService
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
+import com.jsy.utility.MyException
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
@@ -74,6 +76,23 @@ class JjxtsqResourceService {
         oldInv.save(failOnError: true)
         //新建档案
         return createInvestmentArchivesService.create(oldInv.fund,oldInv,jjxtsq.ztzje,jjxtsq.xhtbh,jjxtsq.rgrq)
+    }
+
+    /**
+     * 用新的投资金额计算收益率数据
+     * @param id
+     * @param totalAmount
+     * @return
+     */
+    def getNewInfo(long id,BigDecimal totalAmount){
+        def iv = InvestmentArchives.get(id)
+        if (iv == null)
+            throw new MyException("投资档案ID号不正确!")
+        println("contractNum:" + iv.contractNum)
+        println("totalAmount:" + totalAmount)
+        def ver = iv.contractNum.substring(3, 3 + 1)
+        def yield = GetYieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, totalAmount, ver.toUpperCase())
+        return [totalAmount: totalAmount, totalRate: yield.rest_yield, totalTzqx: iv.tzqx, muteLx: 0, totalFxfj: iv.fxfs]
     }
 
 }

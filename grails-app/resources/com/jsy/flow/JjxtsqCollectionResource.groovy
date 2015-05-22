@@ -4,7 +4,9 @@ import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.GetYieldService
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
+import com.jsy.utility.MyException
 import com.jsy.utility.SpecialFlow
 import grails.converters.JSON
 import org.json.JSONObject
@@ -33,18 +35,29 @@ class JjxtsqCollectionResource {
     JjxtsqResourceService jjxtsqResourceService
     def springSecurityService
 
+    /**
+     * 创建续投特殊申请单
+     * @param dto
+     * @return
+     */
     @POST
     Response create(Jjxtsq dto) {
         ok {
-
             def iv = InvestmentArchives.findByContractNum(dto.htbh)
             //检测旧档案是否能做特殊申请操作
             SpecialFlow.Create.Validation(iv)
+            //TODO:判断续投的类型是否与数据一致
+
+            /*-----需要覆盖的数据------*/
             dto.scrq = new Date()
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
+            def newData= jjxtsqResourceService.getNewInfo(iv.id, dto.xtbje)
+            dto.xtyqsyl =newData.totalRate
+            dto.xtjxfs = newData.totalFxfj
+            dto.xhtbh=dto.htbh
+            /*-----end------*/
             def jj = jjxtsqResourceService.create(dto)
-
             jj
         }
     }
@@ -81,7 +94,13 @@ class JjxtsqCollectionResource {
             //按分页要求返回数据格式 [数据,总页数]
             return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: arg.startposition == 0 ? dc.count() : 0]
         }
-
     }
 
+    @GET
+    @Path('reviewXt')
+    Response reviewXt(@QueryParam('vid') Long id, @QueryParam('totalAmount') BigDecimal totalAmount) {
+        ok {
+            jjxtsqResourceService.getNewInfo(id, totalAmount)
+        }
+    }
 }
