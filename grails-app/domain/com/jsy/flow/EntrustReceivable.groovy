@@ -51,7 +51,7 @@ class EntrustReceivable {
     TypeConfig typeConfig
 
     def beforeInsert() {
-        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(4, EntrustReceivable.count())
+        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(EntrustReceivable.count(),4)
     }
 
     static constraints = {

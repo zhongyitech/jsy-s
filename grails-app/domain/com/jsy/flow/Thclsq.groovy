@@ -72,7 +72,7 @@ class Thclsq {
 
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()
-        this.number = "JSY-TH-" + UtilityString.RequestFormat(4, Wdqztsq.count())
+        this.number = "JSY-TH-" + UtilityString.RequestFormat(Wdqztsq.count(),4)
 
     }
     static constraints = {

@@ -12,7 +12,7 @@ import com.jsy.utility.UtilityString
 class Wtfksq {
 //    def springSecurityService
 
-    String number=""
+    String number = ""
     //关联的档案
     InvestmentArchives archives
     //客户
@@ -41,7 +41,7 @@ class Wtfksq {
     def beforeInsert() {
 //        this.sqr = springSecurityService.getCurrentUser()
         this.sqbm = this.sqr.department?.deptName
-        this.number = "JSY-FKET-" + UtilityString.RequestFormat(4, Wtfksq.count())
+        this.number = "JSY-FKET-" + UtilityString.RequestFormat(Wtfksq.count(), 4)
     }
 
     static constraints = {

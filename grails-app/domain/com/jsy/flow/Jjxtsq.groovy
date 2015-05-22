@@ -72,7 +72,7 @@ class Jjxtsq {
 
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()
-        this.number = "JSY-XT-" + UtilityString.RequestFormat(4, Dqztsq.count())
+        this.number = "JSY-XT-" + UtilityString.RequestFormat(Dqztsq.count(), 4)
     }
 
     static constraints = {

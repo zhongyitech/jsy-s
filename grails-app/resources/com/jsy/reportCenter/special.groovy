@@ -15,6 +15,7 @@ import com.jsy.bankConfig.BankOrderEntry
 import com.jsy.customerObject.Customer
 import com.jsy.flow.Dqztsq
 import com.jsy.flow.DqztsqResourceService
+import com.jsy.flow.Jjxtsq
 import com.jsy.flow.Thclsq
 import com.jsy.flow.Wdqztsq
 import com.jsy.flow.Wtfksq
@@ -119,16 +120,28 @@ class special {
                 return null
         })
 
-        //退伙申请
+        //基金续投
         _map.put("4", {
             Long id ->
-                def sq = Wdqztsq.get(id)
+                def sq = Jjxtsq.get(id)
                 if (sq) {
                     def result = [id: sq.id]
                     result.putAll(sq.properties)
-                    def company = InvestmentArchives.get(sq.oldArchivesId).fund.funcCompany
-                    result.putAt("oldArchives", InvestmentArchives.get(sq.oldArchivesId))
+                    def oldIA = InvestmentArchives.get(sq.oldArchivesId)
+                    def company = oldIA.fund.funcCompany
+                    if (company == null) throw new MyException("没有为基金：$oldIA.fundName 绑定有限合伙企业")
+                    def htTarget = oldIA.fund.funcCompany.companyName
+                    def targets = company.partner.sort { !it.isDefaultPartner }
+                    def newFundName = Contract.findByHtbh(sq.xhtbh).fund.fundName
+                    result.putAt("newFundName", newFundName)
+                    result.putAt("oldArchives", oldIA)
                     result.putAt("company", company.properties)
+                    result.putAt("project", oldIA.fund.project)
+                    result.putAt("htTarget", htTarget)
+                    result.putAt("targets", targets)
+                    result.putAt("mainPartner", targets.size() > 0 ? targets.first() : "")
+                    //设置是否是单GP数据
+                    result.putAt("isSingle", company.protocolTemplate == 0)
                     return result
                 }
                 return null

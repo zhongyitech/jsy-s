@@ -80,7 +80,7 @@ class Wdqztsq {
     int status = 0
 
     def beforeInsert() {
-        this.number = "JSY-WZT-" + UtilityString.RequestFormat(4, Wdqztsq.count())
+        this.number = "JSY-WZT-" + UtilityString.RequestFormat( Wdqztsq.count(),4)
     }
     static constraints = {
         sqr nullable: true

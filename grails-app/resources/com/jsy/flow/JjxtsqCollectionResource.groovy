@@ -47,7 +47,6 @@ class JjxtsqCollectionResource {
             //检测旧档案是否能做特殊申请操作
             SpecialFlow.Create.Validation(iv)
             //TODO:判断续投的类型是否与数据一致
-
             /*-----需要覆盖的数据------*/
             dto.scrq = new Date()
             dto.sqr = springSecurityService.getCurrentUser()

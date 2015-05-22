@@ -32,7 +32,7 @@ class Khfb {
     String address
 
     def beforeInsert() {
-        this.number = "JSY-HB-" + UtilityString.RequestFormat(4, Mergesq.count())
+        this.number = "JSY-HB-" + UtilityString.RequestFormat( Mergesq.count(),4)
     }
     static constraints = {
         fddbr nullable: true

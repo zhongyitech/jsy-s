@@ -52,7 +52,7 @@ class Dqztsq {
     int status = 0
 
     def beforeInsert() {
-        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(4, Dqztsq.count())
+        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(Dqztsq.count(),4)
     }
     static constraints = {
         sqr nullable: true
