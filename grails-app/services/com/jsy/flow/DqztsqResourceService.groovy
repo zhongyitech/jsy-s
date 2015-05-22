@@ -1,10 +1,12 @@
 package com.jsy.flow
 
+import com.jsy.archives.Contract
 import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.utility.CreateInvestmentArchivesService
+import com.jsy.utility.DateUtility
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.MyException
 import grails.transaction.Transactional
@@ -22,7 +24,7 @@ class DqztsqResourceService {
         investmentArchives.status = INVESTMENT_STATUS.New.value
         investmentArchives.save(failOnError: true)
         dto.save(failOnError: true)
-        def cpr=ContractPredistribution.addRow(dto.xhtbh,dto.guid)
+        def cpr = ContractPredistribution.addRow(dto.xhtbh, dto.guid)
         cpr.save(failOnError: true)
     }
 
@@ -133,6 +135,8 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
+                ContractPredistribution.findByGuid(dc.guid)?.delete()
+
                 dc.delete()
 
                 break
@@ -143,6 +147,8 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
+                ContractPredistribution.findByGuid(dc.guid)?.delete()
+
                 dc.delete()
 
                 break
@@ -153,6 +159,7 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
+
                 dc.delete()
 
                 break
@@ -163,6 +170,7 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
+                ContractPredistribution.findByGuid(dc.guid)?.delete()
                 dc.delete()
                 break
             default:
@@ -192,17 +200,34 @@ class DqztsqResourceService {
             case 2:
                 def dc = Dqztsq.get(id)
                 vaildSpeicalCanCancel(dc)
-                def iv = InvestmentArchives.get(dc.oldArchivesId)
+                def source = InvestmentArchives.get(dc.oldArchivesId)
                 /*   先获取新合同编号   */
-                
-
-
-
+                def dest = new InvestmentArchives()
+                def newFund = Contract.findByHtbh(dc.xhtbh).fund
+                //先全部复制
+                dest.properties = source.properties
+                //---处理特殊的数据
+                dest.id = null
+                dest.fund = newFund
+                dest.fundName = newFund.fundName
+                dest.contractNum = dc.xhtbh
+                dest.bj = dest.tzje = dc.ztje
+                //新的认购日期
+                dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
+                def qx = Double.parseDouble(source.tzqx.substring(0, source.tzqx.length() - 1))
+                def rightNow = Calendar.getInstance()
+                rightNow.setTime(dest.rgrq)
+                int month=qx*12
+                rightNow.add(Calendar.MONTH,month)
+                dest.dqrq = DateUtility.lastDayWholePointDate(rightNow.getTime())
+                dest.save(failOnError: true)
 
                 /*------操作完成之后保存数据------*/
-                iv.status = INVESTMENT_STATUS.Normal.value
-                iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
-                iv.save(failOnError: true)
+                source.status = INVESTMENT_STATUS.Normal.value
+                source.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
+                source.save(failOnError: true)
+                //删除预分配数据
+                ContractPredistribution.findByGuid(dc.guid)?.delete()
                 dc.status = 1
 
                 break
