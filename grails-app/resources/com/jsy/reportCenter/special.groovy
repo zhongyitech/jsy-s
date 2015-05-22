@@ -1,6 +1,7 @@
 package com.jsy.reportCenter
 
 import com.jsy.archives.Contract
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.auth.Menus
 import com.jsy.auth.User
@@ -16,6 +17,7 @@ import com.jsy.customerObject.Customer
 import com.jsy.flow.Dqztsq
 import com.jsy.flow.DqztsqResourceService
 import com.jsy.flow.Jjxtsq
+import com.jsy.flow.Mergesq
 import com.jsy.flow.Thclsq
 import com.jsy.flow.Wdqztsq
 import com.jsy.flow.Wtfksq
@@ -23,6 +25,7 @@ import com.jsy.fundObject.Fund
 import com.jsy.fundObject.FundCompanyInformation
 import com.jsy.system.Department
 import com.jsy.system.OperationRecord
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.MyException
 import grails.converters.JSON
 import groovy.sql.Sql
@@ -46,6 +49,7 @@ import static com.jsy.utility.MyResponse.*
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class special {
+    DqztsqResourceService dqztsqResourceService
     static Map<String, Closure> _map = new HashMap<String, Closure>()
     static {
         //委托付款申请
@@ -119,7 +123,6 @@ class special {
                 }
                 return null
         })
-
         //基金续投
         _map.put("4", {
             Long id ->
@@ -172,6 +175,12 @@ class special {
         })
     }
 
+    /**
+     * 获取特殊申请的协议模板数据
+     * @param stype 特殊申请类型
+     * @param id 特殊申请单ID
+     * @return
+     */
     @GET
     @Path("/report")
     Response getReport(@QueryParam("reporttype") String stype, @QueryParam("id") Long id) {
@@ -181,9 +190,28 @@ class special {
         }
     }
 
+    /**
+     * 取消此申请单
+     * @param id 申请单ID
+     * @param sType 申请单类型
+     * @return
+     */
     @POST
-    @Path("/delete")
+    @Path("/cancel")
     Response del(@QueryParam("id") Long id, @QueryParam("sType") Long sType) {
+        ok {
+            dqztsqResourceService.cancelOrder(id, sType)
+            return true
+        }
+    }
 
+
+    @POST
+    @Path("/accept")
+    Response accept(@QueryParam("id") Long id, @QueryParam("sType") Long sType) {
+        ok {
+            dqztsqResourceService.acceptOrder(id, sType)
+            return true
+        }
     }
 }

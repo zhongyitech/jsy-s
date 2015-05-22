@@ -36,13 +36,19 @@ enum SpecialFlow {
                     throw new MyException("投资档案还没有入档,不能做特殊申请操作.")
                 }
                 break;
+        //edit
             case 1:
                 if (iv.dazt != 0) {
 
                 }
                 break;
+        //accept
             case 2:
                 break
+        //cancel
+            case 3:
+                break
+
             default:
                 break
         }

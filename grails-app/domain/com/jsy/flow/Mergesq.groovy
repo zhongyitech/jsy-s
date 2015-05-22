@@ -45,6 +45,8 @@ class Mergesq {
 
     Customer customer
 
+    Long oldArchivesId=0
+
     static constraints = {
     }
 }
