@@ -39,7 +39,7 @@ class DqztsqCollectionResource {
             def iv = InvestmentArchives.findByContractNum(dto.htbh)
             //检测旧档案是否能做特殊申请操作
             SpecialFlow.Create.Validation(iv)
-            def fund = Contract.findByHtbh(dto.htbh)?.fund
+            def fund = Contract.findByHtbh(dto.xhtbh)?.fund
             if (fund != null) {
                 if (fund.id == iv.fund.id) {
                     throw new MyException("新合同编号对应的基金与原档案相同,不能进行转投!")

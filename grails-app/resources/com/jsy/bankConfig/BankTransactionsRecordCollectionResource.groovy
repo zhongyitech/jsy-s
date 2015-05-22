@@ -31,7 +31,7 @@ class BankTransactionsRecordCollectionResource {
     //弃用的记录
     static final int MANAGE_TYPE_DEL = 3
     BankTransactionsRecordResourceService bankTransactionsRecordResourceService
-    def bankProxyService
+//    BankProxyService bankProxyService
 
     @POST
     Response create(FundToBank dto) {
@@ -106,7 +106,7 @@ class BankTransactionsRecordCollectionResource {
                 def res = [:]
                 res.putAll(it.properties)
                 res.putAll(
-                        bankProxyService.QueryBalance([account: it.account, CcyType: "C", CcyCode: "RMB"])
+                        new BankProxyService().QueryBalance([account: it.account, CcyType: "C", CcyCode: "RMB"])
                 )
                 return  res
             }

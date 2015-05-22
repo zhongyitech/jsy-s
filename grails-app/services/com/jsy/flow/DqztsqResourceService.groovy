@@ -22,6 +22,8 @@ class DqztsqResourceService {
         investmentArchives.status = INVESTMENT_STATUS.New.value
         investmentArchives.save(failOnError: true)
         dto.save(failOnError: true)
+        def cpr=ContractPredistribution.addRow(dto.xhtbh,dto.guid)
+        cpr.save(failOnError: true)
     }
 
     def read(id) {
@@ -119,6 +121,8 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
+                //删除预分配合同编号
+                ContractPredistribution.findByGuid(dc.guid)?.delete()
                 dc.delete()
 
                 break
@@ -173,6 +177,7 @@ class DqztsqResourceService {
      */
     def acceptOrder(long id, Long stype) {
         switch (stype) {
+        //委托付款
             case 1:
                 def dc = Wtfksq.get(id)
                 vaildSpeicalCanCancel(dc)
@@ -183,15 +188,25 @@ class DqztsqResourceService {
                 dc.status = 1
 
                 break
+        //到期转投 TODO:
             case 2:
                 def dc = Dqztsq.get(id)
                 vaildSpeicalCanCancel(dc)
                 def iv = InvestmentArchives.get(dc.oldArchivesId)
+                /*   先获取新合同编号   */
+                
+
+
+
+
+                /*------操作完成之后保存数据------*/
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
+                dc.status = 1
 
                 break
+        //未到期转投 TODO:
             case 3:
                 def dc = Wdqztsq.get(id)
                 vaildSpeicalCanCancel(dc)
@@ -201,6 +216,7 @@ class DqztsqResourceService {
                 iv.save(failOnError: true)
 
                 break
+        //续投 TODO:
             case 4:
                 def dc = Jjxtsq.get(id)
                 vaildSpeicalCanCancel(dc)
@@ -210,6 +226,7 @@ class DqztsqResourceService {
                 iv.save(failOnError: true)
 
                 break
+        //退伙 TODO:
             case 5:
                 def dc = Thclsq.get(id)
                 vaildSpeicalCanCancel(dc)
@@ -217,8 +234,8 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
-
                 break
+        //合并 TODO:
             case 6:
                 def dc = Mergesq.get(id)
                 vaildSpeicalCanCancel(dc)
@@ -226,7 +243,6 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
-
 
                 break
             default:

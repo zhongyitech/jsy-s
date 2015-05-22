@@ -51,8 +51,11 @@ class Dqztsq {
     //状态 0,待审核 1,审核通过
     int status = 0
 
+    String guid=""
+
     def beforeInsert() {
-        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(Dqztsq.count(),4)
+        this.number = "JSY-DQZT-" + UtilityString.RequestFormat(Dqztsq.count(), 4)
+        this.guid = UUID.randomUUID()
     }
     static constraints = {
         sqr nullable: true

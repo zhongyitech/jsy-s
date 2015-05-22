@@ -18,6 +18,8 @@ class WdqztsqResourceService {
         investmentArchives.dazt = INVESTMENT_SPEICAL_STATUS.WDQZT.value
         investmentArchives.status = INVESTMENT_STATUS.New.value
         investmentArchives.save(failOnError: true)
+        def cpr=ContractPredistribution.addRow(dto.xhtbh,dto.guid)
+        cpr.save(failOnError: true)
         return dto
     }
 

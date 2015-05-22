@@ -79,8 +79,10 @@ class Wdqztsq {
     //状态
     int status = 0
 
+    String guid
     def beforeInsert() {
         this.number = "JSY-WZT-" + UtilityString.RequestFormat( Wdqztsq.count(),4)
+        this.guid = UUID.randomUUID()
     }
     static constraints = {
         sqr nullable: true

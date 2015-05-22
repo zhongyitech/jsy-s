@@ -70,9 +70,13 @@ class Jjxtsq {
     //续投类型
     int xtType = 0
 
+    String guid=""
+
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()
         this.number = "JSY-XT-" + UtilityString.RequestFormat(Dqztsq.count(), 4)
+        this.guid = UUID.randomUUID()
+
     }
 
     static constraints = {

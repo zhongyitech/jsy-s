@@ -2,6 +2,7 @@ package com.jsy.flow
 
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
+import com.jsy.utility.UtilityString
 
 /**
  * 合并申请表
@@ -12,6 +13,7 @@ class Mergesq {
     String newContractNum
     //合同编号
     String htbh
+    String xhtbh
     //备注
     String bz
     //起息日期
@@ -42,11 +44,21 @@ class Mergesq {
     String totalFxfj
 
     int status = 0
+    String number = ""
 
     Customer customer
 
-    Long oldArchivesId=0
+    Long oldArchivesId = 0
+    String guid = ""
 
+    def beforeInsert() {
+        this.number = "JSY-HB-" + UtilityString.RequestFormat(Mergesq.count(), 4)
+        this.guid = UUID.randomUUID()
+        this.xhtbh = this.newContractNum
+    }
     static constraints = {
+        number nullable: true
+        guid nullable: true
+        xhtbh nullable: true
     }
 }

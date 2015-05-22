@@ -54,6 +54,7 @@ class MergesqCollectionResource {
             dto.fundName = iv.fundName
             dto.totalAmount = dto.addAmount + iv.tzje
             dto.customer = iv.customer
+            dto.xhtbh = dto.newContractNum
             def yield = GetYieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, dto.totalAmount, iv.contractNum.substring(3, 3 + 1).toUpperCase())
             //todo:重新计算的收益率
             dto.totalTzqx = iv.tzqx
@@ -85,9 +86,9 @@ class MergesqCollectionResource {
 
     /**
      * 重新计算投资档案的收益率
-     * @param id    档案id
+     * @param id 档案id
      * @param newAmount 追加的投资金额
-     * @return  总投资额、新的年化率、投资期限、付息方式
+     * @return 总投资额、新的年化率、投资期限、付息方式
      */
     @GET
     @Path('/unionPre')

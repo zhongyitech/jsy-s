@@ -13,6 +13,9 @@ class MergesqResourceService {
         investmentArchives.status = INVESTMENT_STATUS.New.value
         investmentArchives.save(failOnError: true)
         dto.save(failOnError: true)
+        def cpr=ContractPredistribution.addRow(dto.xhtbh,dto.guid)
+        cpr.save(failOnError: true)
+
     }
 
     def read(id) {
