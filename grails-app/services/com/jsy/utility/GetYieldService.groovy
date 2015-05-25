@@ -3,6 +3,7 @@ package com.jsy.utility
 import com.jsy.archives.InvestmentArchives
 import com.jsy.archives.InvestmentArchivesResourceService
 import com.jsy.archives.PayTime
+import com.jsy.archives.UserCommision
 import com.jsy.fundObject.Fund
 import grails.transaction.Transactional
 
@@ -49,27 +50,37 @@ class GetYieldService {
      * @param ia
      */
     public static def restSetTc(InvestmentArchives dto) {
-        dto.ywtcs.each {
-            it.sjffsj = null
-            it.real_glffsj3 = null
-            it.real_glffsj2 = null
+        def yw = dto.ywtcs.toList()
+        def gl = dto.gltcs.toList()
+        yw.each {
+            UserCommision uc = new UserCommision()
+            uc.properties = it.properties
+            uc.id = null
+            uc.glffsj3 = uc.glffsj2 = uc.sjffsj = null
+            uc.tcffsj = DateUtility.lastDayWholePointDate(dto.rgrq)
+            uc.tcje = dto.tzje * dto.ywtc * uc.tcbl
+            yw.add(uc)
         }
         Calendar rightNow = Calendar.getInstance();
-        def nowDt = DateUtility.lastDayWholePointDate(new Date())
-        rightNow.setTime(nowDt);
-        dto.gltcs.each {
+        def nowDt = DateUtility.lastDayWholePointDate(dto.rgrq)
+        gl.each {
             //TODO:覆盖前台传递的管理提成发放时间  第一次70%:下一月5号 20%: 下一年末 10% 再下一年末
+            rightNow.setTime(nowDt);
             rightNow.add(Calendar.MONTH, 1)
             rightNow.set(Calendar.DAY_OF_MONTH, 5)
+            def gluc = new UserCommision()
+            gluc.properties = it.properties
+            gluc.id = null
             //下一个
-            it.tcffsj = rightNow.getTime()
+            gluc.tcffsj = rightNow.getTime()
             //第二年年末
-            it.glffsj2 = DateUtility.lastDayWholePointDate(DateUtility.getCurrYearLast(rightNow.get(Calendar.YEAR) + 1))
+            gluc.glffsj2 = DateUtility.lastDayWholePointDate(DateUtility.getCurrYearLast(rightNow.get(Calendar.YEAR) + 1))
             //第三年年开
-            it.glffsj3 = DateUtility.lastDayWholePointDate(DateUtility.getCurrYearLast(rightNow.get(Calendar.YEAR) + 2))
-            it.sjffsj = null
-            it.real_glffsj2 = null
-            it.real_glffsj3 = null
+            gluc.glffsj3 = DateUtility.lastDayWholePointDate(DateUtility.getCurrYearLast(rightNow.get(Calendar.YEAR) + 2))
+            gluc.sjffsj = null
+            gluc.real_glffsj2 = null
+            gluc.real_glffsj3 = null
+            gl.add(gluc)
         }
     }
     /**

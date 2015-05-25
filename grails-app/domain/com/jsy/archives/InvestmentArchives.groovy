@@ -102,7 +102,7 @@ class InvestmentArchives {
 
     //业务和客户收益分配
     //附件
-    static hasMany = [ywtcs: UserCommision, gltcs: UserCommision, customerCommision: CustomerCommision, uploadFiles: UploadFile, payTimes: PayTime]
+    static hasMany = [ywtcs: UserCommision, gltcs: UserCommision, uploadFiles: UploadFile, payTimes: PayTime]
 
     //档案状态 //0是正常的//1到期转投2未到期转投3基金续投申请4退伙申请
     int dazt = 0
@@ -122,12 +122,13 @@ class InvestmentArchives {
         /*  自动计算到期日期，不使用传入的数据 */
         def qx = Double.parseDouble(this.tzqx.substring(0, this.tzqx.length() - 1))
         this.dqrq = DateUtility.addMonth(this.rgrq, (int) (qx * 12))
-        //设置提成数据
-        GetYieldService.restSetTc(this)
         //生成档案号
         StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
         println("archiveNum " + CreateNumberService.getRandomNumber(new StringBuffer(former)))
-        this.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
+        this.markNum = this.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
+        //设置提成数据
+//        GetYieldService.restSetTc(this)
+
     }
 
     static constraints = {

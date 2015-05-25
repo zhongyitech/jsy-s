@@ -6,6 +6,7 @@ import com.jsy.archives.InvestmentArchives
 import com.jsy.archives.InvestmentArchivesResourceService
 import com.jsy.archives.PayTime
 import com.jsy.system.TypeConfig
+import com.jsy.system.UploadFile
 import com.jsy.utility.CreateInvestmentArchivesService
 import com.jsy.utility.DateUtility
 import com.jsy.utility.GetYieldService
@@ -14,6 +15,8 @@ import com.jsy.utility.MyException
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
+
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater
 
 @Transactional(rollbackFor = Throwable.class)
 class DqztsqResourceService {
@@ -207,6 +210,8 @@ class DqztsqResourceService {
                 //先全部复制
                 dest.properties = source.properties
                 //---处理特殊的数据
+                dest.archiveNum = ""
+                dest.description = "到期转投后的档案( $source.archiveNum )"
                 dest.id = null
                 dest.fund = newFund
                 dest.fundName = newFund.fundName
@@ -216,17 +221,28 @@ class DqztsqResourceService {
                 dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
                 //设置投资金额
                 dest.tzje = newAmount
-
+                dest.ywtcs = []
+                dest.gltcs = []
+                dest.payTimes = []
+                dest.uploadFiles = []
+                source.uploadFiles.each {
+                    def uf = new UploadFile()
+                    uf.properties = it.properties
+                    uf.id = null
+                    dest.uploadFiles.add(uf)
+                }
+                dest.dycs = 0
+                dest.zjdysj = null
+                dest.sjtzje = dest.tzje
+                GetYieldService.restSetTc(dest)
+                GetYieldService.restGetYield(dest)
                 dest.save(failOnError: true)
-//                getYieldService.restPayTime(dest)                                       //
                 List times = InvestmentArchivesResourceService.scfxsj(DateUtility.lastDayWholePointDate(dest.rgrq), dest.tzqx, dest.fxfs)
                 int i = 1
-                dest.payTimes.clear()
                 //生成兑付记录
                 times.each {
                     PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dest)
                     println(dest)
-//                    dest.addToPayTimes(payTime)
                     dest.payTimes.add(payTime)
                     i++
                 }
@@ -235,7 +251,8 @@ class DqztsqResourceService {
                 source.tzje = source.tzje - dc.ztje
                 //设置原档案的本金额
                 source.bj = source.tzje - dc.ztje
-                source.htzt = TypeConfig.findByTypeAndMapValue(1, 4)       //存档
+                def typec = TypeConfig.findByTypeAndMapValue(1, 4)
+                source.htzt = typec      //存档
 
                 /*------操作完成之后保存数据------*/
                 source.status = INVESTMENT_STATUS.BackUp.value
@@ -245,10 +262,8 @@ class DqztsqResourceService {
                 dest.save(failOnError: true)
                 //删除预分配数据
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
-                dc.status = 1
-
-                throw new MyException("No Completed Method")
-
+//                dc.status = 1
+//                throw new MyException("No Completed Method")
                 break
         //未到期转投 TODO:
             case 3:
