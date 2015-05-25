@@ -2,15 +2,12 @@ package com.jsy.archives
 
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
-import com.jsy.customerObject.CustomerCommision
 import com.jsy.fundObject.Fund
 import com.jsy.system.TypeConfig
 import com.jsy.system.UploadFile
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DateUtility
-import com.jsy.utility.GetYieldService
-
-import java.text.SimpleDateFormat
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 
 /**
  * 投资档案
@@ -124,8 +121,10 @@ class InvestmentArchives {
         this.dqrq = DateUtility.addMonth(this.rgrq, (int) (qx * 12))
         //生成档案号
         StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
-        println("archiveNum " + CreateNumberService.getRandomNumber(new StringBuffer(former)))
         this.markNum = this.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
+        this.htzt = INVESTMENT_STATUS.New.value
+        this.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
+        this.yrk=false
     }
 
     static constraints = {

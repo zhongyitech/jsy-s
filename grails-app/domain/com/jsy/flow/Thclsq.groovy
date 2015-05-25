@@ -73,7 +73,6 @@ class Thclsq {
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()
         this.number = "JSY-TH-" + UtilityString.RequestFormat(Wdqztsq.count(),4)
-
     }
     static constraints = {
         oldArchivesId unique: true

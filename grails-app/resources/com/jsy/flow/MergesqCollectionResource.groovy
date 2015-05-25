@@ -1,7 +1,7 @@
 package com.jsy.flow
 
 import com.jsy.archives.InvestmentArchives
-import com.jsy.utility.GetYieldService
+import com.jsy.utility.YieldService
 import com.jsy.utility.MyException
 import com.jsy.utility.MyResponse
 import com.jsy.utility.SpecialFlow
@@ -52,10 +52,11 @@ class MergesqCollectionResource {
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             dto.fundName = iv.fundName
-            dto.totalAmount = dto.addAmount + iv.tzje
+            dto.addAmount = iv.bj + dto.addAmount       //重新设置数据，覆盖前台传递的数值
+            dto.totalAmount = dto.addAmount
             dto.customer = iv.customer
             dto.xhtbh = dto.newContractNum
-            def yield = GetYieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, dto.totalAmount, iv.contractNum.substring(3, 3 + 1).toUpperCase())
+            def yield = YieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, dto.totalAmount, iv.contractNum.substring(3, 3 + 1).toUpperCase())
             //todo:重新计算的收益率
             dto.totalTzqx = iv.tzqx
             //todo:计算应扣除利息的数值
@@ -101,7 +102,7 @@ class MergesqCollectionResource {
             def totalAmount = iv.tzje + newAmount
             println("totalAmount:" + totalAmount)
             def ver = iv.contractNum.substring(3, 3 + 1)
-            def yield = GetYieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, newAmount + iv.tzje, ver.toUpperCase())
+            def yield = YieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, newAmount + iv.tzje, ver.toUpperCase())
             return [totalAmount: iv.tzje + newAmount, totalRate: yield.rest_yield, totalTzqx: iv.tzqx, muteLx: 0, totalFxfj: iv.fxfs]
         }
     }

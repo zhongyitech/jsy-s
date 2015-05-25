@@ -3,7 +3,7 @@ package com.jsy.flow
 import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
 import com.jsy.utility.CreateInvestmentArchivesService
-import com.jsy.utility.GetYieldService
+import com.jsy.utility.YieldService
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.MyException
 import grails.transaction.Transactional
@@ -93,7 +93,7 @@ class JjxtsqResourceService {
         println("contractNum:" + iv.contractNum)
         println("totalAmount:" + totalAmount)
         def ver = iv.contractNum.substring(3, 3 + 1)
-        def yield = GetYieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, totalAmount, ver.toUpperCase())
+        def yield = YieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, totalAmount, ver.toUpperCase())
         return [totalAmount: totalAmount, totalRate: yield.rest_yield, totalTzqx: iv.tzqx, muteLx: 0, totalFxfj: iv.fxfs]
     }
 

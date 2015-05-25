@@ -6,8 +6,6 @@ import com.jsy.archives.UserCommision
 import com.jsy.fundObject.Fund
 import grails.transaction.Transactional
 
-import java.text.SimpleDateFormat
-
 @Transactional(rollbackFor = Throwable.class)
 class CreateInvestmentArchivesService {
 
@@ -28,7 +26,7 @@ class CreateInvestmentArchivesService {
         StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
         newInv.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
         newInv.markNum = newInv.archiveNum
-        newInv.nhsyl=GetYieldService.getYield(fund.id, oldInv.bmjl.id, je,htbh.substring(3,4))//截取合同版本，生成收益率
+        newInv.nhsyl=YieldService.getYield(fund.id, oldInv.bmjl.id, je,htbh.substring(3,4))//截取合同版本，生成收益率
         newInv.save(failOnError: true)
         //档案附件
         oldInv.uploadFiles.each {
