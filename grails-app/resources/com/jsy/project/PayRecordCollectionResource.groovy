@@ -162,12 +162,13 @@ class PayRecordCollectionResource {
 
 
             long beginDateTms = System.currentTimeMillis() //+ 3*30*60*60 //三个月的时间
-            String toMail = "oswaldl@foxmail.com"//project?.projectOwner?.email
+            String toMail = project?.projectOwner?.email
+//            String toMail = "oswaldl@foxmail.com"
             String mailSubject = "催收款：项目（"+project.name+" ）在日期"+obj.paydate+"的汇款(￥"+obj.paytotal+")由产生的本金和利息需要收款了"
 
 
             asyncMailService.sendMail {
-                // Mail parameters
+                // from的写法必须和配置相同！
                 from 'oswaldl2009@126.com'
                 to toMail
                 subject mailSubject;

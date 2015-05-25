@@ -189,6 +189,82 @@ class TSProjectCollectionResource {
         }
     }
 
+    @POST
+    @Path('/complete_oagather')
+    Response completeOagather(String datastr) {
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
+
+            //权限校验
+            def user = springSecurityService.getCurrentUser();
+            def phase = project.getProjectWorkflow().getGatherInfo()
+            def accessable = projectResourceService.checkUserAccessable2(phase,project,user);
+            if(!accessable){
+                throw new Exception("you can not access this phase")
+            }
+
+            //数据保存
+            projectResourceService.completeOAGather(project,obj)
+        }
+    }
+
+    @POST
+    @Path('/complete_oaresearch')
+    Response completeOaresearch(String datastr) {
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
+
+            //权限校验
+            def user = springSecurityService.getCurrentUser();
+            def phase = project.getProjectWorkflow().getResearch()
+            def accessable = projectResourceService.checkUserAccessable2(phase,project,user);
+            if(!accessable){
+                throw new Exception("you can not access this phase")
+            }
+
+            //数据保存
+            projectResourceService.completeOAResearch(project,obj)
+        }
+    }
+
+    @POST
+    @Path('/complete_oamakecontact')
+    Response completeOamakecontact(String datastr) {
+        MyResponse.ok {
+            // get project
+            org.json.JSONObject obj = JSON.parse(datastr)
+            def projectid = obj.projectid
+            TSProject project = TSProject.get(projectid);
+            if(!project){
+                throw new Exception("no such project found")
+            }
+
+            //权限校验
+            def user = springSecurityService.getCurrentUser();
+            def phase = project.getProjectWorkflow().getMakeContact()
+            def accessable = projectResourceService.checkUserAccessable2(phase,project,user);
+            if(!accessable){
+                throw new Exception("you can not access this phase")
+            }
+
+            //数据保存
+            projectResourceService.completeOAMakeContact(project,obj)
+        }
+    }
+
+
     //提交现场考察
     @POST
     @Path('/complete_research')
@@ -486,13 +562,20 @@ class TSProjectCollectionResource {
 
     @POST
     @Path('/endProject')
-    Response updateProjectAttr(@QueryParam("id") int projectid,@QueryParam("mark") int mark){
+    Response endProject(@QueryParam("id") int projectid,@QueryParam("mark") String mark,@QueryParam("endProjectFiles") JSONArray endProjectFiles){
         MyResponse.ok {
             TSProject project = TSProject.get(projectid)
             if(project){
                 project.archive = true
                 project.isEnded = true
                 project.endSummary = mark
+
+                endProjectFiles.each {file->
+                    UploadFile temp = new UploadFile(fileName:file.fileName,filePath:file.filePath)
+                    project.addToEndProjectFiles(temp)
+                }
+
+
                 project.save(failOnError: true)
                 return "done"
             }else{
@@ -729,7 +812,7 @@ class TSProjectCollectionResource {
 
             def file=UploadFile.findByFilePath(fileId)
             def adminRole = Role.findByAuthority('ROLE_ADMIN')
-            if(file.creator){
+            if(file?.creator){
                 User current = springSecurityService.getCurrentUser()
                 if(file.creator == current){
                     file?.delete()

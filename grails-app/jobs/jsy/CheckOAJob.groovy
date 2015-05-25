@@ -11,6 +11,6 @@ class CheckOAJob {
     }
 
     def execute() {
-        projectResourceService.checkOAJob()
+//        projectResourceService.checkOAJob()
     }
 }

@@ -379,6 +379,8 @@ class FundCollectionResource {
                     interest_payback+=(it.interest_bill-it.interest_pay)
                     overdue_payback+=(it.getOverDue()-it.overDue_pay)
                 }
+
+                //汇入银行
                 rtn.bankAccount="无法确定"
                 rtn.should_payback=should_payback
                 rtn.main_payback=main_payback
