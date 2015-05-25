@@ -125,7 +125,6 @@ class InvestmentArchives {
         this.htzt = INVESTMENT_STATUS.New.value
         this.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
         this.yrk=false
-
     }
 
     static constraints = {

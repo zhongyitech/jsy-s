@@ -304,36 +304,65 @@ class DqztsqResourceService {
                 //删除预分配数据
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
                 dc.status = 1
-//                throw new MyException("No Completed Method")
                 break
-        //续投 TODO:
+        //续投 TODO:需要与客户沟通具体的业务逻辑？
             case 4:
+                /*
+                业务：增加投资档案的投资金额
+                连带处理：1. 更新每次人付息的金额 2.已经付息的不做修改
+                 */
                 def dc = Jjxtsq.get(id)
                 vaildSpeicalCanCancel(dc)
                 def iv = InvestmentArchives.get(dc.oldArchivesId)
+                iv.tzje = dc.ztzje
+                iv.description = "已续投本金：（$dc.ztzje)"
+                yieldService.restGetYield(iv)
+
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
-
+                dc.status = 1
                 break
-        //退伙 TODO:
+        //退伙
             case 5:
                 def dc = Thclsq.get(id)
                 vaildSpeicalCanCancel(dc)
                 def iv = InvestmentArchives.get(dc.oldArchivesId)
-                iv.status = INVESTMENT_STATUS.Normal.value
+                if (iv.status == INVESTMENT_STATUS.BackUp.value) {
+                    throw new MyException("投资档案已经归档或者已经做了操作，不能重复处理！")
+                }
+                //TODO:添加其它功能
+
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
+                iv.status = INVESTMENT_STATUS.BackUp.value
+                def typec = TypeConfig.findByTypeAndMapValue(1, 4)
+                iv.htzt = typec      //存档
+                iv.description = "已做退伙"
+                dc.status = 1
                 iv.save(failOnError: true)
                 break
         //合并 TODO:
             case 6:
                 def dc = Mergesq.get(id)
                 vaildSpeicalCanCancel(dc)
-                def iv = InvestmentArchives.get(dc.oldArchivesId)
-                iv.status = INVESTMENT_STATUS.Normal.value
-                iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
-                iv.save(failOnError: true)
+                def source = InvestmentArchives.get(dc.oldArchivesId)
+                def dest = InvestmentArchives.findByContractNum(dc.xhtbh)
+                if (dest == null) {
+                    throw new MyException("要合资入的投资档案编号不正确！找不到与此相关的投资档案。")
+                }
+                if (dest.status != INVESTMENT_STATUS.Normal.value) {
+                    throw new MyException("投资档案状态不正确，不能进行合并操作。")
+                }
+                dest.bj += dc.totalAmount
+                //重新计算年化率
+                yieldService.restGetYield(dest)
 
+                source.bj = 0
+                source.status = INVESTMENT_STATUS.BackUp.value
+                source.description = "已合并到：$dest.contractNum"
+                source.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
+                source.save(failOnError: true)
+                dc.status = 1
                 break
             default:
                 break
