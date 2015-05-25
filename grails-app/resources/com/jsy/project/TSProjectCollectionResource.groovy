@@ -128,7 +128,7 @@ class TSProjectCollectionResource {
         jsonObject.put("query","Unit")
         jsonObject.put("suggestions",jsonArray)
 
-        ok jsonObject.toString()
+        return Response.ok(jsonObject.toString()).status(200).build();
     }
 
     /**
