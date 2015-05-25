@@ -33,12 +33,25 @@ class DateUtility {
             return date2;
         }
     }
+
+    /**
+     * 对日期增加几个月
+     * @param date 原日期
+     * @param months 要增加的月数
+     * @return 返回新的日期（没有时间信息）
+     */
+    public static Date addMonth(Date date, int months) {
+        def rightNow = Calendar.getInstance()
+        rightNow.setTime(date)
+        rightNow.add(Calendar.MONTH, months)
+        return lastDayWholePointDate(rightNow.getTime())
+    }
     /**
      * 获取某年第一天日期
      * @param year 年份
      * @return Date
      */
-    public static Date getCurrYearFirst(int year){
+    public static Date getCurrYearFirst(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
@@ -51,7 +64,7 @@ class DateUtility {
      * @param year 年份
      * @return Date
      */
-    public static Date getCurrYearLast(int year){
+    public static Date getCurrYearLast(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);

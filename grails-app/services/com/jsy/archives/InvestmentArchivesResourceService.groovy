@@ -38,7 +38,6 @@ class InvestmentArchivesResourceService {
             throw new Exception("已归档，无法修改！")
         }
 //        obj.customer.delete()
-
         // def did = obj.customer?.id
         try {
             obj?.payTimes.each {
@@ -135,7 +134,7 @@ class InvestmentArchivesResourceService {
     }
 
     //根据付息起始时间、期限、付息方式，生成对应多个付息时间
-    def scfxsj(Date startTime, String qx, String fxfs) {
+   static def scfxsj(Date startTime, String qx, String fxfs) {
         List list = new ArrayList()
         //日历对象
         Calendar calendar = Calendar.getInstance();

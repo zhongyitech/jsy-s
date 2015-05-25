@@ -48,6 +48,7 @@ class BootStrap {
             new TypeConfig(type: 1, mapName: "待售", mapValue: 1).save(failOnError: true)
             new TypeConfig(type: 1, mapName: "在售", mapValue: 2).save(failOnError: true)
             new TypeConfig(type: 1, mapName: "售罄", mapValue: 3).save(failOnError: true)
+            new TypeConfig(type: 1, mapName: "存档", mapValue: 4).save(failOnError: true)
             //档案机密程序
             new TypeConfig(type: 2, mapName: "机密", mapValue: 1).save(failOnError: true)
             new TypeConfig(type: 2, mapName: "公开", mapValue: 2).save(failOnError: true)

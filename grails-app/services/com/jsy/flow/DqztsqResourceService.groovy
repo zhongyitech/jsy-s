@@ -3,10 +3,12 @@ package com.jsy.flow
 import com.jsy.archives.Contract
 import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
-import com.jsy.customerObject.Customer
-import com.jsy.fundObject.Fund
+import com.jsy.archives.InvestmentArchivesResourceService
+import com.jsy.archives.PayTime
+import com.jsy.system.TypeConfig
 import com.jsy.utility.CreateInvestmentArchivesService
 import com.jsy.utility.DateUtility
+import com.jsy.utility.GetYieldService
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.MyException
 import grails.transaction.Transactional
@@ -17,6 +19,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 class DqztsqResourceService {
 
     CreateInvestmentArchivesService createInvestmentArchivesService
+    GetYieldService getYieldService
 
     def create(Dqztsq dto) throws Exception {
         InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
@@ -114,7 +117,6 @@ class DqztsqResourceService {
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
                 dc.delete()
-
                 break
             case 2:
                 def dc = Dqztsq.get(id)
@@ -126,7 +128,6 @@ class DqztsqResourceService {
                 //删除预分配合同编号
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
                 dc.delete()
-
                 break
             case 3:
                 def dc = Wdqztsq.get(id)
@@ -136,7 +137,6 @@ class DqztsqResourceService {
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
-
                 dc.delete()
 
                 break
@@ -148,7 +148,6 @@ class DqztsqResourceService {
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
-
                 dc.delete()
 
                 break
@@ -159,7 +158,6 @@ class DqztsqResourceService {
                 iv.status = INVESTMENT_STATUS.Normal.value
                 iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
                 iv.save(failOnError: true)
-
                 dc.delete()
 
                 break
@@ -201,7 +199,9 @@ class DqztsqResourceService {
                 def dc = Dqztsq.get(id)
                 vaildSpeicalCanCancel(dc)
                 def source = InvestmentArchives.get(dc.oldArchivesId)
+                def newAmount = dc.ztje + dc.ztsye                                      //新档案的投资额=转投收益+转投金额
                 /*   先获取新合同编号   */
+                //1. 创建新的投资档案
                 def dest = new InvestmentArchives()
                 def newFund = Contract.findByHtbh(dc.xhtbh).fund
                 //先全部复制
@@ -211,24 +211,43 @@ class DqztsqResourceService {
                 dest.fund = newFund
                 dest.fundName = newFund.fundName
                 dest.contractNum = dc.xhtbh
-                dest.bj = dest.tzje = dc.ztje
+                dest.archiveFrom = source.id
                 //新的认购日期
                 dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
-                def qx = Double.parseDouble(source.tzqx.substring(0, source.tzqx.length() - 1))
-                def rightNow = Calendar.getInstance()
-                rightNow.setTime(dest.rgrq)
-                int month=qx*12
-                rightNow.add(Calendar.MONTH,month)
-                dest.dqrq = DateUtility.lastDayWholePointDate(rightNow.getTime())
+                //设置投资金额
+                dest.tzje = newAmount
+
                 dest.save(failOnError: true)
+//                getYieldService.restPayTime(dest)                                       //
+                List times = InvestmentArchivesResourceService.scfxsj(DateUtility.lastDayWholePointDate(dest.rgrq), dest.tzqx, dest.fxfs)
+                int i = 1
+                dest.payTimes.clear()
+                //生成兑付记录
+                times.each {
+                    PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dest)
+                    println(dest)
+//                    dest.addToPayTimes(payTime)
+                    dest.payTimes.add(payTime)
+                    i++
+                }
+
+                //2. ------处理原投资档案------
+                source.tzje = source.tzje - dc.ztje
+                //设置原档案的本金额
+                source.bj = source.tzje - dc.ztje
+                source.htzt = TypeConfig.findByTypeAndMapValue(1, 4)       //存档
 
                 /*------操作完成之后保存数据------*/
-                source.status = INVESTMENT_STATUS.Normal.value
+                source.status = INVESTMENT_STATUS.BackUp.value
                 source.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
+                source.description = "已到期转投"
                 source.save(failOnError: true)
+                dest.save(failOnError: true)
                 //删除预分配数据
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
                 dc.status = 1
+
+                throw new MyException("No Completed Method")
 
                 break
         //未到期转投 TODO:
