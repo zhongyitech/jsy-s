@@ -1,8 +1,10 @@
 package com.jsy.flow
 
+import com.jsy.archives.Contract
 import com.jsy.archives.InvestmentArchives
 import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyException
 import com.jsy.utility.SpecialFlow
 import grails.converters.JSON
 import org.json.JSONObject
@@ -34,7 +36,17 @@ class WdqztsqCollectionResource {
     @POST
     Response create(Wdqztsq dto) {
         ok {
-            SpecialFlow.Create.Validation(InvestmentArchives.findByContractNum(dto.htbh))
+            def iv = InvestmentArchives.findByContractNum(dto.htbh)
+            SpecialFlow.Create.Validation(iv)
+            if (dto.xhtbh == dto.htbh)
+                throw new MyException("转投到的合同编号不能与原档案编号相同")
+
+            def fund = Contract.findByHtbh(dto.xhtbh)?.fund
+            if (fund != null) {
+                if (fund.id == iv.fund.id) {
+                    throw new MyException("新合同编号对应的基金与原档案相同,不能进行转投!")
+                }
+            }
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             def wd = wdqztsqResourceService.create(dto)

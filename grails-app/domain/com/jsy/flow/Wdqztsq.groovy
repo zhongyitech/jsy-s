@@ -1,8 +1,10 @@
 package com.jsy.flow
 
+import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
+import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.UtilityString
 import grails.plugin.springsecurity.SpringSecurityService
 
@@ -13,7 +15,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 class Wdqztsq {
 //    def springSecurityService
 
-    String number=""
+    String number = ""
     //客户
     Customer customer
     //旧档案id
@@ -80,8 +82,9 @@ class Wdqztsq {
     int status = 0
 
     String guid
+
     def beforeInsert() {
-        this.number = "JSY-WZT-" + UtilityString.RequestFormat( Wdqztsq.count(),4)
+        this.number = "JSY-WZT-" + UtilityString.RequestFormat(Wdqztsq.count(), 4)
         this.guid = UUID.randomUUID()
     }
     static constraints = {

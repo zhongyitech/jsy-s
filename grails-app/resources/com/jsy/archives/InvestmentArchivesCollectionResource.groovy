@@ -8,9 +8,10 @@ import com.jsy.fundObject.Fund
 import com.jsy.system.TypeConfig
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
-import com.jsy.utility.GetYieldService
+import com.jsy.utility.YieldService
 import com.jsy.utility.JsonResult
 import com.jsy.utility.MyResponse
+import com.sun.org.apache.xpath.internal.operations.NotEquals
 import grails.converters.JSON
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,7 +19,6 @@ import org.json.JSONObject
 import javax.ws.rs.DefaultValue
 import javax.ws.rs.PUT
 import javax.ws.rs.QueryParam
-import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 
 import static org.grails.jaxrs.response.Responses.*
@@ -515,7 +515,7 @@ class InvestmentArchivesCollectionResource {
                       @QueryParam('vers') String vers) {
         def gy
         try {
-            gy = GetYieldService.getYield(fundid, managerid, investment, vers)
+            gy = YieldService.getYield(fundid, managerid, investment, vers)
             ok JsonResult.success(gy)
         } catch (Exception e) {
             print(e)
@@ -540,7 +540,7 @@ class InvestmentArchivesCollectionResource {
         MyResponse.ok {
             def user = User.get(userId)
             def leader = user.department.leader
-            return GetYieldService.getYield(fundId, leader.id, amount, ver)
+            return YieldService.getYield(fundId, leader.id, amount, ver)
         }
     }
 
@@ -597,7 +597,11 @@ class InvestmentArchivesCollectionResource {
     @Path('/IAOutput')
     Response IAOutput(Map finfo) {
         MyResponse.page {
+            //不显示档案状态为2（存档 ）
             def dc = DomainHelper.getDetachedCriteria(InvestmentArchives, finfo)
+            dc = dc.where {
+                ne("status", 2)
+            }
             def data = []
             dc.list([max: finfo.pagesize, offset: finfo.startposition]).each {
                 def row = [:]
@@ -760,7 +764,7 @@ class InvestmentArchivesCollectionResource {
             if (c == null) {
                 throw new Exception("合同编号还没有登记")
             }
-            if(ContractPredistribution.findByHtbh(num)){
+            if (ContractPredistribution.findByHtbh(num)) {
                 throw new MyException("合同编号已经被预分配给特殊申请单了！请换用其它合同编号！")
             }
             c.properties
@@ -862,7 +866,6 @@ class InvestmentArchivesCollectionResource {
             return result
         }
     }
-
 
 
 }

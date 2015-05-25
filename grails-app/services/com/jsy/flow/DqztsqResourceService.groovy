@@ -3,26 +3,21 @@ package com.jsy.flow
 import com.jsy.archives.Contract
 import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.archives.InvestmentArchives
-import com.jsy.archives.InvestmentArchivesResourceService
-import com.jsy.archives.PayTime
 import com.jsy.system.TypeConfig
 import com.jsy.system.UploadFile
 import com.jsy.utility.CreateInvestmentArchivesService
 import com.jsy.utility.DateUtility
-import com.jsy.utility.GetYieldService
+import com.jsy.utility.YieldService
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
 import com.jsy.utility.MyException
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater
-
 @Transactional(rollbackFor = Throwable.class)
 class DqztsqResourceService {
-
     CreateInvestmentArchivesService createInvestmentArchivesService
-    GetYieldService getYieldService
+    YieldService yieldService
 
     def create(Dqztsq dto) throws Exception {
         InvestmentArchives investmentArchives = InvestmentArchives.get(dto.oldArchivesId)
@@ -211,7 +206,7 @@ class DqztsqResourceService {
                 dest.properties = source.properties
                 //---处理特殊的数据
                 dest.archiveNum = ""
-                dest.description = "到期转投后的档案( $source.archiveNum )"
+                dest.description = "到期转投后的档案( $source.contractNum )"
                 dest.id = null
                 dest.fund = newFund
                 dest.fundName = newFund.fundName
@@ -221,7 +216,6 @@ class DqztsqResourceService {
                 dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
                 //设置投资金额
                 dest.tzje = newAmount
-                dest.payTimes = []
                 dest.uploadFiles = []
                 source.uploadFiles.each {
                     def uf = new UploadFile()
@@ -232,10 +226,9 @@ class DqztsqResourceService {
                 dest.dycs = 0
                 dest.zjdysj = null
                 dest.sjtzje = dest.tzje
-                getYieldService.restSetTc(dest)
-                getYieldService.restGetYield(dest)
-                getYieldService.restPayTime(dest)
-
+                yieldService.restSetTc(dest)
+                yieldService.restGetYield(dest)
+                yieldService.restPayTime(dest)
                 dest.save(failOnError: true)
 
                 //2. ------处理原投资档案------
@@ -248,23 +241,70 @@ class DqztsqResourceService {
                 /*------操作完成之后保存数据------*/
                 source.status = INVESTMENT_STATUS.BackUp.value
                 source.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
-                source.description = "已到期转投"
+                source.description = "已到期转投到$dest.contractNum"
                 source.save(failOnError: true)
                 dest.save(failOnError: true)
                 //删除预分配数据
                 ContractPredistribution.findByGuid(dc.guid)?.delete()
-//                dc.status = 1
+                dc.status = 1
 //                throw new MyException("No Completed Method")
                 break
         //未到期转投 TODO:
             case 3:
                 def dc = Wdqztsq.get(id)
                 vaildSpeicalCanCancel(dc)
-                def iv = InvestmentArchives.get(dc.oldArchivesId)
-                iv.status = INVESTMENT_STATUS.Normal.value
-                iv.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
-                iv.save(failOnError: true)
+                def source = InvestmentArchives.get(dc.oldArchivesId)
+                def newAmount = dc.ztje                                     //新档案的投资额=转投收益+转投金额
+                /*   先获取新合同编号   */
+                //1. 创建新的投资档案
+                def dest = new InvestmentArchives()
+                def newFund = dc.ztjj
+                //先全部复制
+                dest.properties = source.properties
+                //---处理特殊的数据
+                dest.archiveNum = ""
+                dest.description = "未到期转投后的档案( $source.contractNum )"
+                dest.id = null
+                dest.fund = newFund
+                dest.fundName = newFund.fundName
+                dest.contractNum = dc.xhtbh
+                dest.archiveFrom = source.id
+                //新的认购日期
+                dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
+                //设置投资金额
+                dest.tzje = newAmount
+                dest.uploadFiles = []
+                source.uploadFiles.each {
+                    def uf = new UploadFile()
+                    uf.properties = it.properties
+                    uf.id = null
+                    dest.uploadFiles.add(uf)
+                }
+                dest.dycs = 0
+                dest.zjdysj = null
+                dest.sjtzje = dest.tzje
+                yieldService.restSetTc(dest)
+                yieldService.restGetYield(dest)
+                yieldService.restPayTime(dest)
+                dest.save(failOnError: true)
 
+                //2. ------处理原投资档案------
+                source.tzje = source.tzje - dc.ztje
+                //设置原档案的本金额
+                source.bj = source.tzje - dc.ztje
+                def typec = TypeConfig.findByTypeAndMapValue(1, 4)
+                source.htzt = typec      //存档
+
+                /*------操作完成之后保存数据------*/
+                source.status = INVESTMENT_STATUS.BackUp.value
+                source.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
+                source.description = "已未到期转投到：$dest.contractNum"
+                source.save(failOnError: true)
+                dest.save(failOnError: true)
+                //删除预分配数据
+                ContractPredistribution.findByGuid(dc.guid)?.delete()
+                dc.status = 1
+//                throw new MyException("No Completed Method")
                 break
         //续投 TODO:
             case 4:

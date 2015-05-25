@@ -8,11 +8,8 @@ import com.jsy.fundObject.Fund
 import grails.transaction.Transactional
 
 @Transactional(rollbackFor = Throwable.class)
-class GetYieldService {
+class YieldService {
 
-    def serviceMethod() {
-
-    }
     /**
      * 获取年化收益率及提成比例信息
      * @param fundid
@@ -90,14 +87,14 @@ class GetYieldService {
      * @param dto
      * @return
      */
-    def restPayTime(InvestmentArchives dto) {
-        List times = InvestmentArchivesResourceService.scfxsj(DateUtility.lastDayWholePointDate(dest.rgrq), dest.tzqx, dest.fxfs)
+    def restPayTime(InvestmentArchives ia) {
+        ia.payTimes = []
+        List times = InvestmentArchivesResourceService.scfxsj(ia.rgrq, ia.tzqx, ia.fxfs)
         int i = 1
         //生成兑付记录
         times.each {
-            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dest)
-            println(dest)
-            dest.payTimes.add(payTime)
+            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: ia)
+            ia.payTimes.add(payTime)
             i++
         }
     }
