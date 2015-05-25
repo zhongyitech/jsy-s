@@ -126,9 +126,6 @@ class InvestmentArchives {
         StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
         println("archiveNum " + CreateNumberService.getRandomNumber(new StringBuffer(former)))
         this.markNum = this.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-        //设置提成数据
-//        GetYieldService.restSetTc(this)
-
     }
 
     static constraints = {

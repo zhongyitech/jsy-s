@@ -221,8 +221,6 @@ class DqztsqResourceService {
                 dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
                 //设置投资金额
                 dest.tzje = newAmount
-                dest.ywtcs = []
-                dest.gltcs = []
                 dest.payTimes = []
                 dest.uploadFiles = []
                 source.uploadFiles.each {
@@ -234,18 +232,11 @@ class DqztsqResourceService {
                 dest.dycs = 0
                 dest.zjdysj = null
                 dest.sjtzje = dest.tzje
-                GetYieldService.restSetTc(dest)
-                GetYieldService.restGetYield(dest)
+                getYieldService.restSetTc(dest)
+                getYieldService.restGetYield(dest)
+                getYieldService.restPayTime(dest)
+
                 dest.save(failOnError: true)
-                List times = InvestmentArchivesResourceService.scfxsj(DateUtility.lastDayWholePointDate(dest.rgrq), dest.tzqx, dest.fxfs)
-                int i = 1
-                //生成兑付记录
-                times.each {
-                    PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dest)
-                    println(dest)
-                    dest.payTimes.add(payTime)
-                    i++
-                }
 
                 //2. ------处理原投资档案------
                 source.tzje = source.tzje - dc.ztje

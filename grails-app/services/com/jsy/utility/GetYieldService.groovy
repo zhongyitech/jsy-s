@@ -52,6 +52,8 @@ class GetYieldService {
     public static def restSetTc(InvestmentArchives dto) {
         def yw = dto.ywtcs.toList()
         def gl = dto.gltcs.toList()
+        dto.ywtcs = []
+        dto.gltcs = []
         yw.each {
             UserCommision uc = new UserCommision()
             uc.properties = it.properties
@@ -59,7 +61,7 @@ class GetYieldService {
             uc.glffsj3 = uc.glffsj2 = uc.sjffsj = null
             uc.tcffsj = DateUtility.lastDayWholePointDate(dto.rgrq)
             uc.tcje = dto.tzje * dto.ywtc * uc.tcbl
-            yw.add(uc)
+            dto.ywtcs.add(uc)
         }
         Calendar rightNow = Calendar.getInstance();
         def nowDt = DateUtility.lastDayWholePointDate(dto.rgrq)
@@ -80,7 +82,7 @@ class GetYieldService {
             gluc.sjffsj = null
             gluc.real_glffsj2 = null
             gluc.real_glffsj3 = null
-            gl.add(gluc)
+            dto.gltcs.add(gluc)
         }
     }
     /**
@@ -89,15 +91,13 @@ class GetYieldService {
      * @return
      */
     def restPayTime(InvestmentArchives dto) {
-        //获取需要几次付息
-        List times = InvestmentArchivesResourceService.scfxsj(DateUtility.lastDayWholePointDate(dto.rgrq), dto.tzqx, dto.fxfs)
+        List times = InvestmentArchivesResourceService.scfxsj(DateUtility.lastDayWholePointDate(dest.rgrq), dest.tzqx, dest.fxfs)
         int i = 1
-        dto.payTimes = null
-//        dto.save(failOnError: true)
         //生成兑付记录
         times.each {
-            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dto).save(failOnError: true)
-            dto.addToPayTimes(payTime).save(failOnError: true)
+            PayTime payTime = new PayTime(px: i, fxsj: it, sffx: false, investmentArchives: dest)
+            println(dest)
+            dest.payTimes.add(payTime)
             i++
         }
     }
