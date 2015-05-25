@@ -52,7 +52,8 @@ class MergesqCollectionResource {
             dto.sqr = springSecurityService.getCurrentUser()
             dto.sqbm = dto.sqr.department ? dto.sqr.department.deptName : ""
             dto.fundName = iv.fundName
-            dto.totalAmount = dto.addAmount + iv.tzje
+            dto.addAmount = iv.bj + dto.addAmount       //重新设置数据，覆盖前台传递的数值
+            dto.totalAmount = dto.addAmount
             dto.customer = iv.customer
             dto.xhtbh = dto.newContractNum
             def yield = YieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, dto.totalAmount, iv.contractNum.substring(3, 3 + 1).toUpperCase())
