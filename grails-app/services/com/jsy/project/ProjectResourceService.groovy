@@ -211,9 +211,26 @@ class ProjectResourceService {
                     "accessable":accessable
                 ];
             }else if(phase.phaseEn=='gatherOA'){
+                def other_attachments = []
+                project.oaGather_othersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
                 resultObj.gatherOABean = [
                         "phase": phase,
-                        "accessable":accessable
+                        "accessable":true,
+                        "other_attachments": other_attachments,
                 ];
             }else if(phase.phaseEn=='research'){
 
@@ -276,9 +293,27 @@ class ProjectResourceService {
                         "accessable":accessable
                 ];
             }else if(phase.phaseEn=='researchOA'){
+
+                def other_attachments = []
+                project.oaResearch_othersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
                 resultObj.researchOABean = [
                         "phase": phase,
-                        "accessable":accessable
+                        "accessable":true,
+                        "other_attachments": other_attachments,
                 ];
             }else if(phase.phaseEn=='meeting'){
                 def meetingRecord = []
@@ -430,10 +465,29 @@ class ProjectResourceService {
                         "accessable":accessable
                 ];
             }else if(phase.phaseEn=='makeContactOA'){
+
+                def other_attachments = []
+                project.oaMakeContact_othersFiles.each{tsfile->
+                    def entity = [:]
+                    def files = []
+                    entity.id = tsfile.id
+                    entity.desc = tsfile.pdesc
+                    tsfile.relateFiles?.each{file->
+                        def attachFile = [:]
+                        attachFile.fileName = file.fileName
+                        attachFile.filePath = file.filePath
+                        files << attachFile
+                    }
+                    entity.files = files;
+                    other_attachments << entity
+                }
+
                 resultObj.makeContactOABean = [
                         "phase": phase,
-                        "accessable":accessable
+                        "accessable":project.isEnded,
+                        "other_attachments": other_attachments,
                 ];
+
             }
 
         }
@@ -469,6 +523,30 @@ class ProjectResourceService {
 
         //在本节点角色中，特殊时限，流程未结束
         def accessable = ( isInAccessRole || (specailAccesses!=null && specailAccesses.size()>0) ) && !phase.phaseFinished
+        return accessable
+    }
+
+    //和上面的方法相比，就少了phase.phaseFinished判断
+    def checkUserAccessable2(phase, project, user){
+        //统一用model的phaseParticipants
+        def modelPhase = TSWorkflowModelPhase.findByPhaseIndex(phase.phaseIndex)
+        def isInAccessRole = checkInRole(modelPhase.phaseParticipants,user.getAuthorities());
+        def specailAccesses = checkSpecial(project,user,phase)
+
+        //如果是历史节点，需要看看他是不是ProjectHistoryModifier
+        def historyAccesses = false;
+        if(project.currentStageEn!=phase.phaseEn){
+            def projectHistoryModifier = Role.findByAuthority("ProjectHistoryModifier")
+            if(projectHistoryModifier){
+                historyAccesses = UserRole.exists(user.id, projectHistoryModifier.id)
+            }
+            if(historyAccesses){
+                return true
+            }
+        }
+
+        //在本节点角色中，特殊时限，流程未结束
+        def accessable = ( isInAccessRole || (specailAccesses!=null && specailAccesses.size()>0) )
         return accessable
     }
 
@@ -674,6 +752,7 @@ class ProjectResourceService {
         }
 
     }
+
 
     def completeResearch(TSProject project, def obj) {
         def phase = project.getProjectWorkflow().getResearch()
@@ -1023,6 +1102,84 @@ class ProjectResourceService {
 //                println "move modelphase by job..."+moveToModel
                 project.getProjectWorkflow().moveToModelPhase(moveToModel)
             }
+        }
+    }
+
+    def completeOAGather(TSProject project, def obj){
+        def phase = project.getProjectWorkflow().getGatherOA();
+
+        if(obj.other_attachments && obj.other_attachments.size() > 0){
+            obj.other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToOaGather_othersFiles(flowFile)
+            }
+        }
+
+        //设置下一个阶段
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+            def nextphase = tsWorkflow.getResearchPhase()
+            tsWorkflow.moveToModelPhase(nextphase)
+            project.save(failOnError: true)
+        }
+    }
+
+    def completeOAResearch(TSProject project, def obj){
+        def phase = project.getProjectWorkflow().getResearchOA();
+
+        if(obj.other_attachments && obj.other_attachments.size() > 0){
+            obj.other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToOaResearch_othersFiles(flowFile)
+            }
+        }
+
+        //设置下一个阶段
+        if(project.currentStageEn==phase.phaseEn){
+            TSWorkflow tsWorkflow = project.getProjectWorkflow()
+
+            def nextphase = tsWorkflow.getMeetingPhase()
+            tsWorkflow.moveToModelPhase(nextphase)
+            project.save(failOnError: true)
+        }
+    }
+
+    def completeOAMakeContact(TSProject project, def obj){
+        def phase = project.getProjectWorkflow().getMakeContactOA();
+
+        if(obj.other_attachments && obj.other_attachments.size() > 0){
+            obj.other_attachments?.each{attachFile->
+                TSFlowFile flowFile = new TSFlowFile(pdesc: attachFile.desc,flowPhase:phase,project:project);
+                attachFile.files.each{otherFile->
+                    UploadFile file = new UploadFile(fileName:otherFile.fileName,filePath:otherFile.filePath);
+                    file.save(failOnError: true)
+                    flowFile.addToRelateFiles(file)
+                }
+                flowFile.save(failOnError: true)
+
+                project.addToOaMakeContact_othersFiles(flowFile)
+            }
+        }
+
+        //设置下一个阶段
+        if(project.currentStageEn==phase.phaseEn){
+            project.makeContactOAStatus = "complete"
+            project.isEnded=true //已经是最后一个阶段了
+            project.save(failOnError: true)
         }
     }
 

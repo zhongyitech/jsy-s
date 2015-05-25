@@ -95,20 +95,25 @@ class TSProject {
 
         /****步骤1.1 gatherInfo****/
         othersFiles:TSFlowFile,         //其他文件
+        oaGather_othersFiles:TSFlowFile,
 
         /****步骤1.3 research****/
         researchOthersFiles:TSFlowFile, //其他文件
+        oaResearch_othersFiles:TSFlowFile,
 
         /****步骤1.5 research****/
         meetingOthersFiles:TSFlowFile,  //其他文件
+        oaMeeting_othersFiles:TSFlowFile,
 
         /****步骤1.6 otherEA****/
         thirdPartyOthersFiles:TSFlowFile,   //其他文件
+        oaThirdParty_othersFiles:TSFlowFile,
 
         /****步骤2 签署合同****/
         signers: SimpleRecord,                //签署方
         attentions: SimpleRecord,             //注意事项
         makeContactOthersFiles:TSFlowFile,    //其他文件
+        oaMakeContact_othersFiles:TSFlowFile,
 
         /****结算文件****/
         endProjectFiles : UploadFile,  //结算文件
@@ -141,6 +146,12 @@ class TSProject {
             makeContactOthersFiles: "none",
             attentions: "none",
             signers: "none",
+
+            oaGather_othersFiles: "none",
+            oaResearch_othersFiles: "none",
+            oaMeeting_othersFiles: "none",
+            oaThirdParty_othersFiles: "none",
+            oaMakeContact_othersFiles: "none",
     ]
 
     static constraints = {
