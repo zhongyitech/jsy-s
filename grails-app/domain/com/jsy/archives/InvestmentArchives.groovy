@@ -122,11 +122,10 @@ class InvestmentArchives {
         //生成档案号
         StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
         this.markNum = this.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-        this.htzt = INVESTMENT_STATUS.New.value
+        this.htzt = TypeConfig.findByTypeAndMapValue(1,2)
         this.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
         this.yrk=false
     }
-
     static constraints = {
         archiveNum unique: true
         contractNum unique: true

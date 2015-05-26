@@ -56,6 +56,7 @@ class MergesqCollectionResource {
             dto.totalAmount = dto.addAmount
             dto.customer = iv.customer
             dto.xhtbh = dto.newContractNum
+            dto.oldArchivesId = iv.id
             def yield = YieldService.getYield(iv.fund.id, iv.ywjl.department.leader.id, dto.totalAmount, iv.contractNum.substring(3, 3 + 1).toUpperCase())
             //todo:重新计算的收益率
             dto.totalTzqx = iv.tzqx

@@ -346,9 +346,9 @@ class DqztsqResourceService {
                 def dc = Mergesq.get(id)
                 vaildSpeicalCanCancel(dc)
                 def source = InvestmentArchives.get(dc.oldArchivesId)
-                def dest = InvestmentArchives.findByContractNum(dc.xhtbh)
-                if (dest == null) {
-                    throw new MyException("要合资入的投资档案编号不正确！找不到与此相关的投资档案。")
+                def dest = InvestmentArchives.findByContractNum(dc.newContractNum)
+                if (dest == null || source == null) {
+                    throw new MyException("要合并的投资档案编号不正确！找不到与此相关的投资档案。")
                 }
                 if (dest.status != INVESTMENT_STATUS.Normal.value) {
                     throw new MyException("投资档案状态不正确，不能进行合并操作。")
