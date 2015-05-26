@@ -212,6 +212,8 @@ class DqztsqResourceService {
                 dest.fundName = newFund.fundName
                 dest.contractNum = dc.xhtbh
                 dest.archiveFrom = source.id
+                dest.htzt = TypeConfig.findByTypeAndMapValue(1, 2)
+                dest.yrk = false
                 //新的认购日期
                 dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
                 //设置投资金额
@@ -226,6 +228,7 @@ class DqztsqResourceService {
                 dest.dycs = 0
                 dest.zjdysj = null
                 dest.sjtzje = dest.tzje
+                dest.dazt = 0
                 yieldService.restSetTc(dest)
                 yieldService.restGetYield(dest)
                 yieldService.restPayTime(dest)
@@ -269,6 +272,9 @@ class DqztsqResourceService {
                 dest.fundName = newFund.fundName
                 dest.contractNum = dc.xhtbh
                 dest.archiveFrom = source.id
+                dest.htzt = TypeConfig.findByTypeAndMapValue(1, 2)
+                dest.yrk = false
+                dest.dazt = 0
                 //新的认购日期
                 dest.rgrq = DateUtility.lastDayWholePointDate(new Date())
                 //设置投资金额
@@ -354,6 +360,7 @@ class DqztsqResourceService {
                     throw new MyException("投资档案状态不正确，不能进行合并操作。")
                 }
                 dest.bj += dc.totalAmount
+                dest.tzje = dest.bj
                 //重新计算年化率
                 yieldService.restGetYield(dest)
 
