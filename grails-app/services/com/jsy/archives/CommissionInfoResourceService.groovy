@@ -168,7 +168,6 @@ class CommissionInfoResourceService {
                 yfk: commissionInfo.fkje,
                 dflx: type)
                 .save(failOnError: true)
-
         commissionInfo.type = 1
         //修改待办任务
         ToDoTask toDoTask = ToDoTask.get(commissionInfo.todoId)

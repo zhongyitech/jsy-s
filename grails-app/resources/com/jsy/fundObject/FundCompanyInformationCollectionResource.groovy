@@ -4,6 +4,7 @@ import com.jsy.archives.CustomerArchives
 import com.jsy.project.TSProject
 import com.jsy.system.TypeConfig
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyException
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -40,6 +41,9 @@ class FundCompanyInformationCollectionResource {
                 if (it.purpose == null) {
                     throw new Exception("银行的用途没有选择")
                 }
+                if(it.account==null || it.bankName==null ||it.bankOfDeposit ==null || it.accountName==null){
+                    throw new MyException("有一个银行数据填写不完整！")
+                }
             }
             fundCompanyInformationResourceService.create(dto)
         }
@@ -53,9 +57,11 @@ class FundCompanyInformationCollectionResource {
                 if (it.purpose == null) {
                     throw new Exception("银行的用途没有选择")
                 }
+                if(it.account==null || it.bankName==null ||it.bankOfDeposit ==null || it.accountName==null){
+                    throw new MyException("有一个银行数据填写不完整！")
+                }
             }
             dto.id = id;
-
             return fundCompanyInformationResourceService.update(dto)
         }
     }

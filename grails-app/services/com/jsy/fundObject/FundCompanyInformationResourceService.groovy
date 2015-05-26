@@ -10,17 +10,19 @@ import org.json.JSONArray
 class FundCompanyInformationResourceService {
 
     FundCompanyInformation create(FundCompanyInformation dto) {
-        def obj = dto.save(failOnError: true)
-        obj.bankAccount.each {
-            it.companyInformation = obj
-        }
+
         if (dto.partner.size() > 0) {
             dto.partner.first().isDefaultPartner = true
         }
-        dto.partner.each {
-            obj.addToPartner(it)
+//        dto.partner.each {
+//            dto.addToPartner(it)
+//        }
+        dto.save(failOnError: true)
+        dto.bankAccount.each {
+            it.companyInformation = dto
         }
-        obj
+//        dto.save(failOnError: true)
+        dto
     }
 
     def read(id) {

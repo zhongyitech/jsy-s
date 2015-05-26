@@ -8,6 +8,7 @@ import com.jsy.system.UploadFile
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DateUtility
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
+import com.jsy.utility.MyException
 
 /**
  * 投资档案
@@ -122,9 +123,9 @@ class InvestmentArchives {
         //生成档案号
         StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("I"))
         this.markNum = this.archiveNum = CreateNumberService.getRandomNumber(new StringBuffer(former))
-        this.htzt = TypeConfig.findByTypeAndMapValue(1,2)
-        this.dazt = INVESTMENT_SPEICAL_STATUS.Normal.value
-        this.yrk=false
+//        this.htzt = TypeConfig.findByTypeAndMapValue(1, 2)
+//        this.dazt = 0
+//        this.yrk = false
     }
     static constraints = {
         archiveNum unique: true
