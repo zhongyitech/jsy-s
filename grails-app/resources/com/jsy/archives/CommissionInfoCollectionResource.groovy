@@ -1,6 +1,7 @@
 package com.jsy.archives
 
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyException
 import grails.converters.JSON
 import org.json.JSONObject
 import static com.jsy.utility.MyResponse.*
@@ -31,16 +32,11 @@ class CommissionInfoCollectionResource {
      */
     @POST
     @Path('/addPayment')
-    Response addPayment(@QueryParam('comId') int comId,
-                        @QueryParam('sfyfse') boolean sfyfse,
-                        @QueryParam('fpje') BigDecimal fpje,
-                        @QueryParam('sj') BigDecimal sj,
-                        @QueryParam('fkje') BigDecimal fkje,
-                        @QueryParam('sqsh') boolean sqsh,
-                        @QueryParam('sl') double sl
-    ) {
+    Response addPayment(@QueryParam('comId') int comId) {
         ok {
-            def ci= commissionInfoResourceService.toPay(comId,sfyfse,fpje,sj,fkje,sqsh,sl)
+            def commision = CommissionInfo.get(comId)
+            if (commision == null) throw new MyException("提成数据ID不正确")
+            def ci = commissionInfoResourceService.toPay(comId, commision.sfyfse, commision.fpje, commision.sj, commision.fkje, commision.sqsh, commision.sl)
             ci
         }
     }
@@ -52,7 +48,7 @@ class CommissionInfoCollectionResource {
 
     @GET
     Response readAll() {
-        ok {commissionInfoResourceService.readAll()}
+        ok { commissionInfoResourceService.readAll() }
     }
 
     @GET
@@ -80,9 +76,9 @@ class CommissionInfoCollectionResource {
 
     @PUT
     @Path('/updateType')
-    Response updateType(@QueryParam('id') Long id,@QueryParam('sl') double sl,@QueryParam('sqsh') boolean sqsh){
+    Response updateType(@QueryParam('id') Long id, @QueryParam('sl') double sl, @QueryParam('sqsh') boolean sqsh) {
 
-        ok{
+        ok {
             CommissionInfo ci
             ci = commissionInfoResourceService.toPay(id)
             ci.sl = sl
@@ -94,7 +90,7 @@ class CommissionInfoCollectionResource {
 
     /**
      * 获取提成的分页数据
-     * @param arg  分页和字段过滤数据
+     * @param arg 分页和字段过滤数据
      * @return
      */
     @POST
@@ -102,7 +98,7 @@ class CommissionInfoCollectionResource {
     Response getcommissionInfo(Map arg) {
         page {
             commissionInfoResourceService.addCommissionInfo()
-            def page=DomainHelper.getPage(CommissionInfo,arg)
+            def page = DomainHelper.getPage(CommissionInfo, arg)
             return page
         }
     }
@@ -116,7 +112,7 @@ class CommissionInfoCollectionResource {
     @Path('/irData')
     Response initData() {
         commissionInfoResourceService.initData();
-        ok{
+        ok {
             "ok"
         }
     }
