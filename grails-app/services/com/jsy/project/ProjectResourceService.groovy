@@ -460,7 +460,7 @@ class ProjectResourceService {
                         "year1":project.year1,
                         "year2":project.year2,
                         "interestType":project.interestType,
-
+                        "daycount_per":project.daycount_per,
                         "phase": phase,
                         "accessable":accessable
                 ];
@@ -670,7 +670,7 @@ class ProjectResourceService {
             }
         }
         if(obj.businessPlanFiles_attachments && obj.businessPlanFiles_attachments.size() > 0){
-            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.analyseReportFilesDesc,flowPhase:phase,project:project);
+            TSFlowFile flowFile = new TSFlowFile(pdesc: obj.businessPlanFilesDesc,flowPhase:phase,project:project);
             flowFile.save(failOnError: true)
 
             obj.businessPlanFiles_attachments?.each{attachFile->
