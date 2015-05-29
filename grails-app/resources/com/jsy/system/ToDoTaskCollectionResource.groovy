@@ -6,6 +6,7 @@ import com.jsy.fundObject.Finfo
 import com.jsy.utility.DomainHelper
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
 import org.json.JSONObject
 
 import javax.ws.rs.QueryParam
@@ -26,22 +27,27 @@ import javax.ws.rs.core.Response
 class ToDoTaskCollectionResource {
 
     def toDoTaskResourceService
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     //查询所有待办任务
     @POST
     @Path('/all')
     Response readAll(Map arg) {
         MyResponse.page {
-            DomainHelper.getPage(ToDoTask,arg)
+            DomainHelper.getPage(ToDoTask, arg)
         }
     }
-     //查询所有待办任务
+    //查询所有待办任务
     @POST
     @Path('/getTodo')
     Response getTodo(Map arg) {
         MyResponse.page {
-            DomainHelper.getPage(ToDoTask,arg)
+            def dc = DomainHelper.getDetachedCriteria(ToDoTask, arg)
+            User user = springSecurityService.getCurrentUser()
+            println(user.getAuthorities())
+            dc = dc.inList("cljs", user.getAuthorities())
+
+            return [data: dc.list([max: arg.pagesize, offset: arg.startposition]), total: dc.count()]
         }
     }
 
@@ -62,7 +68,7 @@ class ToDoTaskCollectionResource {
     @GET
     @Path('/getById')
     Response getTodo(@QueryParam('id') Long id) {
-        MyResponse.ok{
+        MyResponse.ok {
             ToDoTask.get(id)
         }
     }
