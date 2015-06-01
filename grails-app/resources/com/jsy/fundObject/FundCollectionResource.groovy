@@ -7,6 +7,7 @@ import com.jsy.project.ReceiveRecord
 import com.jsy.project.ShouldReceiveRecord
 import com.jsy.utility.CreateNumberService
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyException
 import com.jsy.utility.MyResponse
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
@@ -39,7 +40,15 @@ class FundCollectionResource {
         ok {
             Date d = new Date()
             dto.createDate = d
-            dto.kcwyjbl = 0.05
+            dto.kcwyjbl = 0.05;
+            dto.tcfpfw.each {
+                if (it.rate <= 0 || it.rate > 1) {
+                    throw new MyException("提成税率必须介于0 - 1 之间。")
+                }
+            }
+            if (dto.minInvestmentAmount <= 0) {
+                throw new MyException("最低投资额不能为0。")
+            }
             StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
             dto.fundNo = CreateNumberService.getRandomNumber(new StringBuffer(former))
             def fund = fundResourceService.create(dto)
@@ -92,8 +101,8 @@ class FundCollectionResource {
     //删除基金
     @DELETE
     Response delete(@QueryParam('id') Long id) {
-        ok{
-            return  fundResourceService.delete(id);
+        ok {
+            return fundResourceService.delete(id);
         }
 //        JSONObject result = new JSONObject();
 //        String restStatus = REST_STATUS_SUC;
@@ -112,28 +121,17 @@ class FundCollectionResource {
     @PUT
     @Path('/update')
     Response update(Fund dto, @QueryParam('id') Long id) {
-
-        ok{
+        ok {
+            def oldFund = Fund.get(id)
+            if (oldFund == null)
+                throw new MyException("基金ID不正确，没有些ID!")
+            /*---不允许更新的字段---
+             * 基金编号、基金的关联有限合伙
+            */
+            dto.fundNo = oldFund.fundNo
+            dto.funcCompany = oldFund.funcCompany
             return fundResourceService.update(dto, id)
         }
-//        JSONObject result = new JSONObject();
-//        String restStatus = REST_STATUS_SUC;
-//        def fund
-//        try {
-//            fund = fundResourceService.update(dto, id)
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", fund as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI;
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", fund as JSON)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
-////        result.put("rest_status", restStatus)
-////        result.put("rest_result", fund as JSON)
-////        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     //读取全部基金
@@ -155,21 +153,20 @@ class FundCollectionResource {
 
     /**
      * 返回基金列表,专用接口(用于前台Select扩展功能)
-     * @return $.dom.select('id=",[data]) 专用数据
+     * @return $.dom.select ( ' id = " , [data] ) 专用数据
      */
     @GET
     @Path('/selectList')
-    Response selectList(@QueryParam("exInclude") Long fundid){
-        com.jsy.utility.MyResponse.ok{
-            def data=[]
+    Response selectList(@QueryParam("exInclude") Long fundid) {
+        com.jsy.utility.MyResponse.ok {
+            def data = []
             //todo:最好能优化为只从数据库中返回指定字段的方法
-            Fund.findAllByIdNotEqual(fundid).each{
-                data.push([id:it.id,mapName:it.fundName,])
+            Fund.findAllByIdNotEqual(fundid).each {
+                data.push([id: it.id, mapName: it.fundName,])
             }
             data
         }
     }
-
 
     //读取主页数据
     @POST
@@ -321,11 +318,6 @@ class FundCollectionResource {
         new FundResource(fundResourceService: fundResourceService, id: id)
     }
 
-//    @POST
-//    @Path('/getTable')
-//    Response findByParm(Fund dto) {
-//        ok fundResourceService.findByParm(Fund dto)
-//    }
 
     @GET
     @Path("/getKxzqx")
@@ -338,7 +330,7 @@ class FundCollectionResource {
 
     @GET
     @Path('/nameLike')
-    Response findByNameLike(@QueryParam('params') String username,@QueryParam('extraData') String jsonData) {
+    Response findByNameLike(@QueryParam('params') String username, @QueryParam('extraData') String jsonData) {
         def users = Fund.findAllByFundNameLike("%" + username + "%")
         org.json.JSONArray jsonArray = new org.json.JSONArray()
         users.each {
@@ -359,36 +351,36 @@ class FundCollectionResource {
     Response getHurry(@QueryParam('fundid') String fundid) {
         MyResponse.ok {
             Fund fund = Fund.get(fundid)
-            if(fund){
+            if (fund) {
                 def rtn = [:]
-                if(fund.funcCompany?.companyName){
-                    rtn.companyName=fund.funcCompany?.companyName
-                }else{
-                    rtn.companyName="未确定"
+                if (fund.funcCompany?.companyName) {
+                    rtn.companyName = fund.funcCompany?.companyName
+                } else {
+                    rtn.companyName = "未确定"
                 }
 
-                rtn.fundName=fund.fundName
-                rtn.id=fund.id
+                rtn.fundName = fund.fundName
+                rtn.id = fund.id
                 def should_payback = new BigDecimal(0)
                 def main_payback = new BigDecimal(0)
                 def interest_payback = new BigDecimal(0)
                 def overdue_payback = new BigDecimal(0)
-                PayRecord.findAllByFundAndArchive(fund,false).each{
-                    should_payback+=it.totalBalance()
-                    main_payback+=(it.amount-it.payMainBack)
-                    interest_payback+=(it.interest_bill-it.interest_pay)
-                    overdue_payback+=(it.getOverDue()-it.overDue_pay)
+                PayRecord.findAllByFundAndArchive(fund, false).each {
+                    should_payback += it.totalBalance()
+                    main_payback += (it.amount - it.payMainBack)
+                    interest_payback += (it.interest_bill - it.interest_pay)
+                    overdue_payback += (it.getOverDue() - it.overDue_pay)
                 }
 
                 //汇入银行
-                rtn.bankAccount="无法确定"
-                rtn.should_payback=should_payback
-                rtn.main_payback=main_payback
-                rtn.interest_payback=interest_payback
-                rtn.overdue_payback=overdue_payback
-                rtn.nowDate=new Date()
+                rtn.bankAccount = "无法确定"
+                rtn.should_payback = should_payback
+                rtn.main_payback = main_payback
+                rtn.interest_payback = interest_payback
+                rtn.overdue_payback = overdue_payback
+                rtn.nowDate = new Date()
                 return rtn
-            }else{
+            } else {
                 throw new Exception("no fund found.")
             }
 
@@ -400,16 +392,16 @@ class FundCollectionResource {
     Response getInteract(@QueryParam('fundid') String fundid) {
         MyResponse.ok {
             Fund fund = Fund.get(fundid)
-            if(fund){
+            if (fund) {
                 def rtn = [:]
-                if(fund.funcCompany?.companyName){
-                    rtn.companyName=fund.funcCompany?.companyName
-                }else{
-                    rtn.companyName="未确定"
+                if (fund.funcCompany?.companyName) {
+                    rtn.companyName = fund.funcCompany?.companyName
+                } else {
+                    rtn.companyName = "未确定"
                 }
-                rtn.fundName=fund.fundName
-                rtn.id=fund.id
-                rtn.nowDate=new Date()
+                rtn.fundName = fund.fundName
+                rtn.id = fund.id
+                rtn.nowDate = new Date()
 
                 def main_pay = new BigDecimal(0)
                 def total_receive = new BigDecimal(0)
@@ -418,47 +410,47 @@ class FundCollectionResource {
                 def total_main = new BigDecimal(0)
 
                 def details = []
-                PayRecord.findAllByFundAndArchive(fund,false).each{
-                    main_pay+= it.amount
+                PayRecord.findAllByFundAndArchive(fund, false).each {
+                    main_pay += it.amount
 
                     def detail = [:]
                     detail.payDate = it.payDate
                     detail.amount = it.amount
-                    ReceiveDetailRecord maintain = ReceiveDetailRecord.findByPayRecordAndTargetAndArchive(it,"maintain",false);
-                    ReceiveDetailRecord channel = ReceiveDetailRecord.findByPayRecordAndTargetAndArchive(it,"channel",false);
-                    if(maintain){
-                        detail.maintain_date=maintain.dateCreated
-                        detail.maintain=it.manage_pay
+                    ReceiveDetailRecord maintain = ReceiveDetailRecord.findByPayRecordAndTargetAndArchive(it, "maintain", false);
+                    ReceiveDetailRecord channel = ReceiveDetailRecord.findByPayRecordAndTargetAndArchive(it, "channel", false);
+                    if (maintain) {
+                        detail.maintain_date = maintain.dateCreated
+                        detail.maintain = it.manage_pay
                     }
-                    if(channel){
-                        detail.channel_date=channel.dateCreated
-                        detail.channel=it.community_pay
+                    if (channel) {
+                        detail.channel_date = channel.dateCreated
+                        detail.channel = it.community_pay
                     }
                     details << detail
                 }
 
 
-                ReceiveRecord.findAllByFundAndArchive(fund,false).each{
-                    total_receive+=it.amount
-                    ReceiveDetailRecord.findAllByReceiveRecordAndArchive(it,false).each{receive->
-                        if("maintain".equals(receive.target)){
-                            total_manage+=receive.amount
-                        }else if("channel".equals(receive.target)){
-                            total_channel+=receive.amount
-                        }else if("original".equals(receive.target)){
-                            total_main+=receive.amount
+                ReceiveRecord.findAllByFundAndArchive(fund, false).each {
+                    total_receive += it.amount
+                    ReceiveDetailRecord.findAllByReceiveRecordAndArchive(it, false).each { receive ->
+                        if ("maintain".equals(receive.target)) {
+                            total_manage += receive.amount
+                        } else if ("channel".equals(receive.target)) {
+                            total_channel += receive.amount
+                        } else if ("original".equals(receive.target)) {
+                            total_main += receive.amount
                         }
                     }
                 }
-                rtn.main_pay=main_pay;
-                rtn.total_receive=total_receive;
-                rtn.total_manage=total_manage;
-                rtn.total_channel=total_channel;
-                rtn.total_main=total_main;
-                rtn.details=details;
+                rtn.main_pay = main_pay;
+                rtn.total_receive = total_receive;
+                rtn.total_manage = total_manage;
+                rtn.total_channel = total_channel;
+                rtn.total_main = total_main;
+                rtn.details = details;
 
                 return rtn
-            }else{
+            } else {
                 throw new Exception("no fund found.")
             }
 
