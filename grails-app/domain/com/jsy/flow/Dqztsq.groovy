@@ -3,6 +3,7 @@ package com.jsy.flow
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
+import com.jsy.utility.MyException
 import com.jsy.utility.UtilityString
 
 /**
@@ -56,6 +57,16 @@ class Dqztsq {
     def beforeInsert() {
         this.number = "JSY-DQZT-" + UtilityString.RequestFormat(Dqztsq.count(), 4)
         this.guid = UUID.randomUUID()
+        if (this.ztjj.limitRules == 0) {
+            if (this.ztje < this.ztjj.minInvestmentAmount) {
+                throw new MyException("投资金额不满足基金（" + this.ztjj.fundName + "）的最低投资额(" + this.ztjj.minInvestmentAmount + ")要求！")
+            }
+        }
+        if (this.ztjj.limitRules == 1) {
+            if (this.ztje % this.ztjj.minInvestmentAmount != 0) {
+                throw new MyException("投资金额不满足基金（" + this.ztjj.fundName + "）的最低投资额(" + this.ztjj.minInvestmentAmount + "X)整数倍要求！")
+            }
+        }
     }
     static constraints = {
         sqr nullable: true

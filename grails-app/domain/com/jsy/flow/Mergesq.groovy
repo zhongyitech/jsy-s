@@ -1,7 +1,9 @@
 package com.jsy.flow
 
+import com.jsy.archives.Contract
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
+import com.jsy.utility.MyException
 import com.jsy.utility.UtilityString
 
 /**
@@ -55,6 +57,18 @@ class Mergesq {
         this.number = "JSY-HB-" + UtilityString.RequestFormat(Mergesq.count(), 4)
         this.guid = UUID.randomUUID()
         this.xhtbh = this.newContractNum
+        def fund = Contract.findByHtbh(this.xhtbh).fund
+        def amount = this.totalAmount
+        if (fund.limitRules == 0) {
+            if (amount < fund.minInvestmentAmount) {
+                throw new MyException("投资金额不满足基金（" + fund.fundName + "）的最低投资额(" + fund.minInvestmentAmount + ")要求！")
+            }
+        }
+        if (fund.limitRules == 1) {
+            if (amount % fund.minInvestmentAmount != 0) {
+                throw new MyException("投资金额不满足基金（" + fund.fundName + "）的最低投资额(" + fund.minInvestmentAmount + "X)整数倍要求！")
+            }
+        }
     }
     static constraints = {
         number nullable: true

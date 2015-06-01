@@ -1,10 +1,12 @@
 package com.jsy.flow
 
+import com.jsy.archives.Contract
 import com.jsy.archives.INVESTMENT_STATUS
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
 import com.jsy.fundObject.Fund
 import com.jsy.utility.INVESTMENT_SPEICAL_STATUS
+import com.jsy.utility.MyException
 import com.jsy.utility.UtilityString
 import grails.plugin.springsecurity.SpringSecurityService
 
@@ -86,6 +88,18 @@ class Wdqztsq {
     def beforeInsert() {
         this.number = "JSY-WZT-" + UtilityString.RequestFormat(Wdqztsq.count(), 4)
         this.guid = UUID.randomUUID()
+        def fund = Contract.findByHtbh(this.xhtbh).fund
+        def amount = this.ztje
+        if (fund.limitRules == 0) {
+            if (amount < fund.minInvestmentAmount) {
+                throw new MyException("投资金额不满足基金（" + fund.fundName + "）的最低投资额(" + fund.minInvestmentAmount + ")要求！")
+            }
+        }
+        if (fund.limitRules == 1) {
+            if (amount % fund.minInvestmentAmount != 0) {
+                throw new MyException("投资金额不满足基金（" + fund.fundName + "）的最低投资额(" + fund.minInvestmentAmount + "X)整数倍要求！")
+            }
+        }
     }
     static constraints = {
         sqr nullable: true

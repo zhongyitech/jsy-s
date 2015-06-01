@@ -1,8 +1,11 @@
 package com.jsy.flow
 
+import com.jsy.archives.Contract
 import com.jsy.auth.User
 import com.jsy.customerObject.Customer
+import com.jsy.fundObject.Fund
 import com.jsy.system.TypeConfig
+import com.jsy.utility.MyException
 import com.jsy.utility.UtilityString
 
 /**
@@ -70,13 +73,24 @@ class Jjxtsq {
     //续投类型
     int xtType = 0
 
-    String guid=""
+    String guid = ""
 
     def beforeInsert() {
 //        this.sqr=springSecurityService.getCurrentUser()
         this.number = "JSY-XT-" + UtilityString.RequestFormat(Dqztsq.count(), 4)
         this.guid = UUID.randomUUID()
-
+        def fund = Contract.findByHtbh(this.xhtbh).fund
+        def amount = this.ztzje
+        if (fund.limitRules == 0) {
+            if (amount < fund.minInvestmentAmount) {
+                throw new MyException("投资金额不满足基金（" + fund.fundName + "）的最低投资额(" + fund.minInvestmentAmount + ")要求！")
+            }
+        }
+        if (fund.limitRules == 1) {
+            if (amount % fund.minInvestmentAmount != 0) {
+                throw new MyException("投资金额不满足基金（" + fund.fundName + "）的最低投资额(" + fund.minInvestmentAmount + "X)整数倍要求！")
+            }
+        }
     }
 
     static constraints = {
