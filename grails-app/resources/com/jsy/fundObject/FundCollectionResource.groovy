@@ -430,6 +430,12 @@ class FundCollectionResource {
         }
     }
 
+    /**
+     * 检测投资档案的金额是否满足规则
+     * @param fundId
+     * @param amount
+     * @return
+     */
     @GET
     @Path('/InvestmentAmount')
     Response investmentAmount(@QueryParam('fundId') Long fundId, @QueryParam('amount') BigDecimal amount) {
