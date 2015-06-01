@@ -331,7 +331,8 @@ class InvestmentArchivesCollectionResource {
      */
     @POST
     @Path('/customer')
-    Response customerEdit(Customer dto, @QueryParam('id') Long id, @QueryParam('sync') Boolean sync) {
+    Response customerEdit(Customer dto,
+                          @QueryParam('id') Long id, @QueryParam('cid') Long cid, @QueryParam('sync') Boolean sync) {
         MyResponse.ok {
             def ia = InvestmentArchives.get(id)
             def old = ia.customer
@@ -346,6 +347,8 @@ class InvestmentArchivesCollectionResource {
                 //save
                 ia.customer = dto.save(failOnError: true)
                 ia.username = ia.customer.name
+                if (cid > 0)
+                    ia.customerArchive = CustomerArchives.get(cid)
                 obj = ia.customer
             }
             ia.save(failOnError: true)
