@@ -101,7 +101,14 @@ class CustomerArchivesCollectionResource {
     @Path('/name')
     Response getCustomerByName(@QueryParam("name") String name) {
         ok {
-            CustomerArchives.findByNameLike(name)?.properties
+            def user = CustomerArchives.findByNameLike(name)
+            println(user)
+            if (user) {
+                def res = [id: user.id]
+                res.putAll(user.properties)
+                return  res
+            }
+            return null;
         }
     }
 
