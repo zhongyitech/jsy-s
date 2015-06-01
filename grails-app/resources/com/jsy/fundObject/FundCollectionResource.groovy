@@ -31,7 +31,7 @@ class FundCollectionResource {
     public static final String REST_STATUS_SUC = "suc";
     public static final String REST_STATUS_FAI = "err"
     public static final String NULL_STATUS = "200"
-    def fundResourceService
+    FundResourceService fundResourceService
     AuthorityService authorityService
 
     //新增基金
@@ -47,7 +47,10 @@ class FundCollectionResource {
                 }
             }
             if (dto.minInvestmentAmount <= 0) {
-                throw new MyException("最低投资额不能为0。")
+                throw new MyException("最低投资额不能为0！")
+            }
+            if (dto.limitRules != { 0..1 }) {
+                throw new MyException("投资额规则数据不合法！")
             }
             StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
             dto.fundNo = CreateNumberService.getRandomNumber(new StringBuffer(former))
@@ -56,36 +59,6 @@ class FundCollectionResource {
             fund.save(failOnError: true)
             return fund
         }
-//        print("FundCollectionResource.create")
-//        JSONObject result = new JSONObject();
-//        JSONArray table = new JSONArray();
-//        String restStatus = REST_STATUS_SUC;
-//        Fund fund
-//        try {
-//            Date d = new Date()
-//            dto.createDate = d
-//            dto.kcwyjbl = 0.05
-//            StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
-//            dto.fundNo = CreateNumberService.getRandomNumber(new StringBuffer(former))
-//            fund = fundResourceService.create(dto)
-//            fund.fundNo = CreateNumberService.getFullNumber(former, dto.id.toString())
-//            fund.save(failOnError: true)
-//
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", fund as JSON)
-//            return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//        } catch (Exception e) {
-//            restStatus = REST_STATUS_FAI;
-//            e.printStackTrace()
-//            result.put("rest_status", restStatus)
-//            result.put("rest_result", fund as JSON)
-//            return Response.ok(result.toString()).status(500).build()
-//        }
-////        result.put("rest_status", restStatus)
-////        result.put("rest_result", fund as JSON)
-////        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
-//
-////        return fundResourceService.read(dto.fundName)
     }
 
     //test接口
@@ -457,6 +430,14 @@ class FundCollectionResource {
         }
     }
 
+    @GET
+    @Path('/InvestmentAmount')
+    Response investmentAmount(@QueryParam('fundId') Long fundId, @QueryParam('amount') BigDecimal amount) {
+        ok {
+            fundResourceService.checkInvestmentAmount(Fund.get(fundId), amount)
+            return true
+        }
+    }
 
 }
 

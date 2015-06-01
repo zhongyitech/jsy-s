@@ -41,7 +41,11 @@ class Fund {
     //创建日期
     Date createDate
     //扣除违约金比例
-    double kcwyjbl = 0.05
+    double kcwyjbl
+    //基金的最低投资额
+    double minInvestmentAmount
+    //最低限制规则 0:最小额 1:最小额（minInvestmentAmount）的几倍数
+    int limitRules = 0
 
     /* 以下基金字段是没用实际用到的，前台界面也没有  */
     //基金责任人：没用到！
@@ -142,7 +146,6 @@ class Fund {
             project.fund = this
             project.save(failOnError: true)
         }
-
     }
 
     def beforeUpdate() {
