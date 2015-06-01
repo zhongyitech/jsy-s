@@ -29,14 +29,18 @@ class MyResponse {
             }
             return Response.ok(JsonResult.error(msg, result)).build()
         }
-        catch (MyException myEx){
+        catch (MyException myEx) {
             myEx.printStackTrace()
-            return Response.ok(JsonResult.error(myEx.message)).build()
+            def msg = myEx.message == null ? myEx.cause.message : myEx.message
+            if (msg == null) msg = "出错了，但是没有捕捉到错误消息！"
+            return Response.ok(JsonResult.error(msg)).build()
         }
         catch (Exception e) {
             //todo:write log
             e.printStackTrace()
-            return Response.ok(JsonResult.error(e.message)).build()
+            def msg = e.message == null ? e.cause.message : e.message
+            if (msg == null) msg = "出错了，但是没有捕捉到错误消息！"
+            return Response.ok(JsonResult.error(msg)).build()
         }
     }
 
