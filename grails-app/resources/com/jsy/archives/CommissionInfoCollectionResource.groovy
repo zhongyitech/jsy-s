@@ -97,7 +97,11 @@ class CommissionInfoCollectionResource {
     @Path('/getcommissionInfo')
     Response getcommissionInfo(Map arg) {
         page {
-            commissionInfoResourceService.addCommissionInfo()
+            try {
+                commissionInfoResourceService.addCommissionInfo()
+            }catch (Exception ex){
+                //不对异常进行处理，有一个后台任务在执行些操作
+            }
             def page = DomainHelper.getPage(CommissionInfo, arg)
             return page
         }
