@@ -114,10 +114,22 @@ class InvestmentArchives {
      * 处理新建数据时的必要处理逻辑
      * @return
      */
-    def beforeInsert() {
+    def beforeInsert() throws MyException {
         //新的投资档案本金与投资相等
         bj = tzje
         /*  自动计算到期日期，不使用传入的数据 */
+
+        if (this.fund.limitRules == 0) {
+            if (this.tzje < this.fund.minInvestmentAmount) {
+                throw new MyException("投资金额不满足基金（" + this.fund.fundName + "）的最低投资额(" + this.fund.minInvestmentAmount + ")要求！")
+            }
+        }
+        if (this.fund.limitRules == 1) {
+            if (this.tzje % this.fund.minInvestmentAmount != 0) {
+                throw new MyException("投资金额不满足基金（" + this.fund.fundName + "）的最低投资额(" + this.fund.minInvestmentAmount + "X)整数倍要求！")
+            }
+        }
+
         def qx = Double.parseDouble(this.tzqx.substring(0, this.tzqx.length() - 1))
         this.dqrq = DateUtility.addMonth(this.rgrq, (int) (qx * 12))
         //生成档案号
@@ -126,6 +138,22 @@ class InvestmentArchives {
 //        this.htzt = TypeConfig.findByTypeAndMapValue(1, 2)
 //        this.dazt = 0
 //        this.yrk = false
+    }
+
+    /**
+     * 更新的时候验证投资金额
+     */
+    def beforeUpdate() throws MyException {
+        if (this.fund.limitRules == 0) {
+            if (this.tzje < this.fund.minInvestmentAmount) {
+                throw new MyException("投资金额不满足基金（" + this.fund.fundName + "）的最低投资额(" + this.fund.minInvestmentAmount + ")要求！")
+            }
+        }
+        if (this.fund.limitRules == 1) {
+            if (this.tzje % this.fund.minInvestmentAmount != 0) {
+                throw new MyException("投资金额不满足基金（" + this.fund.fundName + "）的最低投资额(" + this.fund.minInvestmentAmount + "X)整数倍要求！")
+            }
+        }
     }
     static constraints = {
         archiveNum unique: true
