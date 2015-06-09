@@ -1,10 +1,15 @@
 package com.jsy.reportCenter
 
+import com.jsy.archives.INVESTMENT_STATUS
+import com.jsy.archives.InvestmentArchives
+import com.jsy.archives.PaymentInfo
+
 /**
  * Created by lioa on 2015/4/2.
  */
 import com.jsy.bankConfig.BankOrder
 import com.jsy.bankConfig.BankOrderEntry
+import com.jsy.fundObject.Fund
 import grails.converters.JSON
 import groovy.sql.Sql
 
@@ -19,6 +24,7 @@ import javax.ws.rs.core.Response
 import static com.jsy.utility.MyResponse.*
 
 /**
+ * df
  * Created by lioa on 2015/3/26.
  */
 @Path('/api/report')
@@ -69,6 +75,88 @@ class summary {
                     return item
             }
             return [columns: columns, items: items]
+        }
+    }
+    /**
+     *
+     * @return
+     */
+    @GET
+    @Path('/fundSalesForMonth')
+    Response getSalesForMonth(@QueryParam('id') Long id) {
+        ok {
+            print(id);
+            def sql = new Sql(dataSource)
+            def list = sql.rows("SELECT * FROM fund_month_summary")
+            list
+        }
+    }
+    /**
+     * 获取指定名称的报表
+     * @param name
+     * @param id
+     * @return
+     */
+    @GET
+    @Path('/fundReportName')
+    Response fundReportName(@QueryParam('name') String name, @QueryParam('id') Long id) {
+        ok {
+            print(id);
+            def sql = new Sql(dataSource)
+            switch (name) {
+                case 'fundSummary':
+                    def result = [:];
+                    def fund = Fund.get(id);
+                    def ivs = InvestmentArchives.findAllByFund(fund);
+                    //todo:添加统计时间段的过滤
+                    def amount = ivs.sum {
+                        InvestmentArchives iv ->
+                            iv.tzje
+                    };
+                    //销售额
+                    result.put('amount', amount);
+                    //兑付
+                    def pay = []
+                    def tcs = []
+                    ivs.each {
+                        InvestmentArchives iv ->
+                            PaymentInfo.findAllByArchivesIdAndIsAllow(iv.id, true).each {
+                                pay.push([amount: it.yflx + it.yfbj, date: it.fxsj])
+                            };
+                            iv.gltcs.each {
+                                def date = it.real_glffsj3 ? it.real_glffsj3 : it.real_glffsj2 ? it.real_glffsj2 : it.sjffsj
+                                if (date)
+                                    tcs.push([amount: it.tcje, stype: 'gl', date: date])
+                            }
+                            iv.ywtcs.each {
+                                if (it.sjffsj)
+                                    tcs.push([amount: it.tcje, stype: 'yw', date: it.sjffsj])
+                            }
+                    }
+                    result.put('pay', pay)
+                    result.put('tc', tcs)
+
+                    //TODO:添加利润和项目利息
+                    return result
+
+                    break;
+                case 'fundSales':
+                    break;
+            }
+            null
+        }
+    }
+
+    @GET
+    @Path('/fundTzje')
+    Response getAmountData(@QueryParam('id') Long id) {
+        ok {
+            def sql = new Sql(dataSource)
+            def list = sql.rows("SELECT sum(ia.tzje) as tzje,f.raise_funds rtzje ,f.fund_name as fundName,f.id\n" +
+                    "FROM investment_archives as ia\n" +
+                    "join fund as f on f.id=ia.fund_id\n" +
+                    "WHERE f.id=" + id);
+            list
         }
     }
 }
