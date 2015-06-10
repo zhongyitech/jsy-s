@@ -199,7 +199,7 @@ class BootStrap {
                     department: adminDeparment,
                     enabled: true).save(flush: true)
 
-            //角色
+            //-------设置系统预设角色------
             def userRole = Role.findByAuthority('ROLE_USER')
             if (!userRole) {
                 userRole = new Role(authority: 'ROLE_USER', name: '职员')
@@ -238,6 +238,7 @@ class BootStrap {
                 manager3 = new Role(authority: 'ROLE_MANAGER3', name: '兑付操作员')
                 manager3.save(failOnError: true)
             }
+
 
             //待办事项 测试数据
             def projectHistoryModifier =Role.findByAuthority("ProjectHistoryModifier")

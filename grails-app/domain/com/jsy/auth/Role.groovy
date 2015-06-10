@@ -2,20 +2,23 @@ package com.jsy.auth
 
 class Role {
 
-	String authority
+    String authority
     String name
-	static mapping = {
-		cache true
-	}
-
-    def beforeInsert() {
-		if(!authority){
-        	authority=UUID.randomUUID().toString()
-		}
+    String description
+    //是否系统预置角色（不可删除 ）
+    boolean isDefault = false
+    static mapping = {
+        cache true
     }
 
-	static constraints = {
-        name blank: false,unique: true
-		authority nullable: true, unique: true
-	}
+    def beforeInsert() {
+        if (!authority) {
+            authority = UUID.randomUUID().toString()
+        }
+    }
+
+    static constraints = {
+        name blank: false, unique: true
+        authority nullable: true, unique: true
+    }
 }

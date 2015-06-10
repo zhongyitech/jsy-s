@@ -1,6 +1,7 @@
 package com.jsy.auth
 
 import com.jsy.utility.DomainHelper
+import com.jsy.utility.MyException
 import grails.transaction.Transactional
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
@@ -47,8 +48,10 @@ class RoleResourceService {
 
     def delete(Long id) {
         def obj = Role.get(id)
-        if (obj) {
+        if (obj && !obj.isDefault) {
             obj.delete()
+        }else{
+            throw new MyException("预置角色，不允许删除！")
         }
         return true
     }
