@@ -202,40 +202,40 @@ class BootStrap {
             //-------设置系统预设角色------
             def userRole = Role.findByAuthority('ROLE_USER')
             if (!userRole) {
-                userRole = new Role(authority: 'ROLE_USER', name: '职员')
+                userRole = new Role(authority: 'ROLE_USER', name: '职员',isDefault: true)
                 userRole.save(flush: true)
             }
 
             def adminRole = Role.findByAuthority('ROLE_ADMIN')
             if (!adminRole) {
-                adminRole = new Role(authority: 'ROLE_ADMIN', name: '管理员')
+                adminRole = new Role(authority: 'ROLE_ADMIN', name: '管理员',isDefault: true)
                 adminRole.save(failOnError: true)
             }
             def assistRole = Role.findByAuthority('ROLE_ASIST')
             if (!assistRole) {
-                assistRole = new Role(authority: 'ROLE_ASIST', name: '助理')
+                assistRole = new Role(authority: 'ROLE_ASIST', name: '助理',isDefault: true)
                 assistRole.save(failOnError: true)
             }
             def finaRole = Role.findByAuthority('ROLE_FINA')
             if (!finaRole) {
-                finaRole = new Role(authority: 'ROLE_FINA', name: '财务')
+                finaRole = new Role(authority: 'ROLE_FINA', name: '财务',isDefault: true)
                 finaRole.save(failOnError: true)
             }
 
             def projectManagerRole = Role.findByAuthority('ROLE_MANAGER')
             if (!projectManagerRole) {
-                projectManagerRole = new Role(authority: 'ROLE_MANAGER', name: '项目部人员')
+                projectManagerRole = new Role(authority: 'ROLE_MANAGER', name: '项目部人员',isDefault: true)
                 projectManagerRole.save(failOnError: true)
             }
 
             def manager2 = Role.findByAuthority('ROLE_MANAGER2')
             if (!manager2) {
-                manager2 = new Role(authority: 'ROLE_MANAGER2', name: '提成操作员')
+                manager2 = new Role(authority: 'ROLE_MANAGER2', name: '提成操作员',isDefault: true)
                 manager2.save(failOnError: true)
             }
             def manager3 = Role.findByAuthority('ROLE_MANAGER3')
             if (!manager3) {
-                manager3 = new Role(authority: 'ROLE_MANAGER3', name: '兑付操作员')
+                manager3 = new Role(authority: 'ROLE_MANAGER3', name: '兑付操作员',isDefault: true)
                 manager3.save(failOnError: true)
             }
 

@@ -9,6 +9,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 class RoleResourceService {
 
     def create(Role dto) {
+//        dto.isDefault=true;
         dto.save()
     }
 
@@ -48,10 +49,11 @@ class RoleResourceService {
 
     def delete(Long id) {
         def obj = Role.get(id)
+        if(obj.isDefault){
+            throw new MyException("预置角色，不允许删除！")
+        }
         if (obj && !obj.isDefault) {
             obj.delete()
-        }else{
-            throw new MyException("预置角色，不允许删除！")
         }
         return true
     }
