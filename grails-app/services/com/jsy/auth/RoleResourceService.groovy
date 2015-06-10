@@ -50,7 +50,7 @@ class RoleResourceService {
     def delete(Long id) {
         def obj = Role.get(id)
         if(obj.isDefault){
-            throw new MyException("预置角色，不允许删除！")
+            throw new MyException(obj.name + " 是预置角色，不允许删除！")
         }
         if (obj && !obj.isDefault) {
             obj.delete()
