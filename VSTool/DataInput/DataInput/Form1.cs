@@ -48,5 +48,19 @@ namespace DataInput
             var dt = UtilityData.QueryTable(sql, tbox_exceFile.Text);
             dataGridView1.DataSource = dt;
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var dt = _data.Tables["职位"];
+            var data = new List<String>();
+            foreach (DataRow item in dt.Rows)
+            {
+                data.Add(Newtonsoft.Json.JsonConvert.SerializeObject(new { name = item["名称"], description = item["描述"] }));
+            }
+            foreach (var d in data)
+            {
+                RESTapi.Post("/api/role", "", d);
+            }
+        }
     }
 }

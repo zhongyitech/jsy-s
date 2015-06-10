@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace DataInput
 {
@@ -13,6 +15,13 @@ namespace DataInput
         [STAThread]
         static void Main()
         {
+            //JObject json = (JObject)JsonConvert.DeserializeObject("{\"rest_result\":[{\"tzje\":null,\"rtzje\":234.00,\"fundName\":\"合并用的基金\",\"id\":4}],\"rest_status\":\"suc\"}");
+            //var s = json.ToString();
+            //var ss = RESTapi.Get(new Uri("http://localhost:8080/jsy/api/report/fundTzje"), "{id:1}");
+            //ss = RESTapi.Post(new Uri("http://localhost:8080/jsy/api/role"), "{id:1}", "{name:textname}");
+
+            //var locks = ss.ToString();
+
             Application.ThreadException += Application_ThreadException;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
