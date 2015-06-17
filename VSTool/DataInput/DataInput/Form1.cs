@@ -17,8 +17,19 @@ namespace DataInput
         public Form1()
         {
             InitializeComponent();
+            tbox_exceFile.Text = @"C:\Users\世忠\Desktop\JSY数据导入模板.xls";
         }
-
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (tbox_exceFile.Text == "") return;
+            _data = UtilityData.ExcelToDS(tbox_exceFile.Text.Trim());
+            listBox1.Items.Clear();
+            foreach (DataTable tb in _data.Tables)
+            {
+                listBox1.Items.Add(tb.TableName);
+            }
+            listBox1.SelectedIndex = 0;
+        }
         private void btn_select_excelfile_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
@@ -59,8 +70,18 @@ namespace DataInput
             }
             foreach (var d in data)
             {
-                RESTapi.Post("/api/role", "", d);
+                //RESTapi.Post("/api/role", "", d);
             }
         }
+
+        private void btn_fund_Click(object sender, EventArgs e)
+        {
+            var dt = _data.Tables["基金资料"];
+            foreach (DataRow dr in dt.Rows)
+            {
+                var tcfw = dr.Field<string>("收益率范围").ReplaceDo();
+                Console.WriteLine("{0}",dr.ItemArray.ToJson());
+            }
+        }        
     }
 }
