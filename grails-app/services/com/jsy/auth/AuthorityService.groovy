@@ -157,6 +157,38 @@ class AuthorityService {
         return properties?.unique { a, b -> a.id <=> b.id }
     }
 
+    /**
+     * 这是一个脏操作
+     * @param obj
+     * @param objectClassName
+     * @param user
+     * @return
+     */
+    def filterObjectProperty(def obj,def objectClassName){
+        def user = springSecurityService.getCurrentUser()
+        obj.discard()
+        getUnVisibleProperty(user,objectClassName)?.each{prop->
+            if(obj.hasProperty(prop.name)){
+                encodeField(obj, prop.name)
+            }
+        }
+        obj
+    }
+
+    /**
+     * 这是一个脏操作
+     * @param list
+     * @param objectClassName
+     * @param user
+     * @return
+     */
+    def filterCollectionProperty(def list,def objectClassName){
+        list.each{obj->
+            filterObjectProperty(obj,objectClassName)
+        }
+        list
+    }
+
     //获取用户某个业务模型的字段
     //domain: 资源类型 ： com.jsy.archives.InvestmentArchives
     def getUnVisibleProperty(User user, def domain){

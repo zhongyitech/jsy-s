@@ -1,5 +1,6 @@
 package com.jsy.archives
 
+import com.jsy.auth.AuthorityService
 import com.jsy.auth.User
 import com.jsy.utility.DomainHelper
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -23,6 +24,7 @@ import javax.ws.rs.core.Response
 @Produces(['application/xml', 'application/json'])
 class CustomerArchivesCollectionResource {
     CustomerArchivesResourceService customerArchivesResourceService
+    AuthorityService authorityService
 
     @PUT
     Response create(CustomerArchives dto) {
@@ -46,6 +48,7 @@ class CustomerArchivesCollectionResource {
         page {
             def dc = DomainHelper.getDetachedCriteria(CustomerArchives, arg)
             def list = dc.list(max: arg.pagesize, offset: arg.startposition)
+            authorityService.filterCollectionProperty(list,"com.jsy.customerObject.Customer")
             def result = []
             list.each {
                 def r = [id: it.id]
@@ -60,7 +63,8 @@ class CustomerArchivesCollectionResource {
     @Path('/getcustomer')
     Response getCustomer(@QueryParam('cid') Long id) {
         ok {
-            CustomerArchives.get(id)
+            def cus = CustomerArchives.get(id)
+            authorityService.filterObjectProperty(cus,"com.jsy.customerObject.Customer")
         }
     }
 

@@ -1,6 +1,7 @@
 package com.jsy.fundObject
 
 import com.jsy.system.TypeConfig
+import com.jsy.utility.CreateNumberService
 import com.jsy.utility.MyException
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -30,6 +31,12 @@ class FundResourceService {
     }
 
     def create(Fund dto) {
+        dto.save(failOnError: true)
+    }
+
+    def create(Fund dto,StringBuffer former) {
+        dto.save(failOnError: true)
+        dto.fundNo = CreateNumberService.getFullNumber(former, dto.id.toString())
         dto.save(failOnError: true)
     }
 

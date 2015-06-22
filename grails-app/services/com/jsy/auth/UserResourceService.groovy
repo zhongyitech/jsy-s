@@ -6,6 +6,7 @@ import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 @Transactional(rollbackFor = Throwable.class)
 class UserResourceService {
+    def authorityService
 
     def findByName(def username) {
         return User.findByUsername(username)
@@ -114,9 +115,11 @@ class UserResourceService {
     def readAllForPage(def query) {
 
         def dc = DomainHelper.getDetachedCriteria(User, query)
+        def users = dc.list([max: query.pagesize, offset: query.startposition])
+        authorityService.filterCollectionProperty(users,"com.jsy.auth.User")
         //todo: other code
 
         //按分页要求返回数据格式 [数据,总页数]
-        return [data: dc.list([max: query.pagesize, offset: query.startposition]), total: query.startposition == 0 ? dc.count():0]
+        return [data: users, total: query.startposition == 0 ? dc.count():0]
     }
 }

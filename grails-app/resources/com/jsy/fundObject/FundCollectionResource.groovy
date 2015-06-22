@@ -55,9 +55,7 @@ class FundCollectionResource {
             }
             StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
             dto.fundNo = CreateNumberService.getRandomNumber(new StringBuffer(former))
-            def fund = fundResourceService.create(dto)
-            fund.fundNo = CreateNumberService.getFullNumber(former, dto.id.toString())
-            fund.save(failOnError: true)
+            def fund = fundResourceService.create(dto,former)
             return fund
         }
     }
@@ -115,7 +113,8 @@ class FundCollectionResource {
         String restStatus = REST_STATUS_SUC;
         def fund
         try {
-            fund = authorityService.getAuth(fundResourceService.readAll())
+            fund = fundResourceService.readAll()
+            authorityService.filterCollectionProperty(fund,"com.jsy.fundObject.Fund")
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
             print(e)
@@ -205,14 +204,9 @@ class FundCollectionResource {
             rc = json.get("page")
 //        print(funcoll.size)
 //
-            def user = springSecurityService.getCurrentUser()
-            def fund_all = fundResourceService.readAll().collect{obj->
-                authorityService.getUnVisibleProperty(user,"com.jsy.fundObject.Fund")?.each{prop->
-                    if(obj.hasProperty(prop.name)){
-                        authorityService.encodeField(obj, prop.name)
-                    }
-                }
-            }
+            def fund_all = fundResourceService.readAll()
+            authorityService.filterCollectionProperty(fund_all,"com.jsy.fundObject.Fund")
+
             int fund_count = fund_all.size() //统计总数
             int raise_count = 0    //在募基金数量
             long plan_total = 0     //预计募集总量
@@ -284,16 +278,6 @@ class FundCollectionResource {
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 
-    /*
-    * @GET
-    @Path('/user({username})/getById')
-    Response readAllById(@PathParam('username') String username,
-                         @QueryParam('max') Long max,
-                         @QueryParam('id') Long id) {
-        ok trainingResourceService.readAllById(username,max,id)
-        //URLexample: /user({username})/getById?max=1&id=2
-    }
-    * */
 
     @GET
     @Path('/{id}')

@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response
 @Consumes(['application/xml', 'application/json'])
 @Produces(['application/xml', 'application/json'])
 class InvestmentArchivesCollectionResource {
+    def authorityService
 
     public static final Integer RESPONSE_STATUS_SUC = 200;
     public static final String REST_STATUS_SUC = "suc";
@@ -432,6 +433,8 @@ class InvestmentArchivesCollectionResource {
             ia.put("archiveNum", it.archiveNum)
             result.put(ia);
         }
+
+        authorityService.filterCollectionProperty(investmentArchives,"com.jsy.archives.InvestmentArchives")
         return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build();
     }
 

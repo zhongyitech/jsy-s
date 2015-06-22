@@ -12,6 +12,7 @@ import org.json.JSONArray
 
 @Transactional(rollbackFor = Throwable.class)
 class InvestmentArchivesResourceService {
+    def authorityService
 
     def create(InvestmentArchives dto) {
         InvestmentFlow.Create.Validation(dto)
@@ -86,6 +87,7 @@ class InvestmentArchivesResourceService {
         def d = InvestmentArchives.findAllByContractNumLike("%" + queryparam + "%")
 
         def page = InvestmentArchives.findAllByFundInListOrMarkNumLikeOrContractNumLikeOrCustomerInList(f, "%" + queryparam + "%", "%" + queryparam + "%", c, [sort: "id", order: "desc", max: pagesize, offset: startposition])
+        authorityService.filterCollectionProperty(page,"com.jsy.archives.InvestmentArchives")
         def ja = new JSONArray()
         page.each {
             JSONObject JSOB = new JSONObject((it as JSON).toString());
