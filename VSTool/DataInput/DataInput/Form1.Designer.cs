@@ -29,10 +29,16 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lbox_info = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.btn_fund = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -42,21 +48,18 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.lbox_info);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.richTextBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -66,11 +69,22 @@
             this.panel1.Size = new System.Drawing.Size(1197, 79);
             this.panel1.TabIndex = 3;
             // 
+            // lbox_info
+            // 
+            this.lbox_info.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbox_info.FormattingEnabled = true;
+            this.lbox_info.ItemHeight = 21;
+            this.lbox_info.Location = new System.Drawing.Point(744, 0);
+            this.lbox_info.Name = "lbox_info";
+            this.lbox_info.Size = new System.Drawing.Size(448, 79);
+            this.lbox_info.TabIndex = 5;
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(657, 4);
+            this.button1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.button1.Location = new System.Drawing.Point(641, 0);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(103, 72);
+            this.button1.Size = new System.Drawing.Size(103, 79);
             this.button1.TabIndex = 4;
             this.button1.Text = "查询数据";
             this.button1.UseVisualStyleBackColor = true;
@@ -78,9 +92,10 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(4, 4);
+            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.richTextBox1.Location = new System.Drawing.Point(5, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(636, 72);
+            this.richTextBox1.Size = new System.Drawing.Size(636, 79);
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
             // 
@@ -113,6 +128,61 @@
             this.tabPage1.ToolTipText = "公司及部门数据";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.AutoSize = true;
+            this.flowLayoutPanel1.Controls.Add(this.button2);
+            this.flowLayoutPanel1.Controls.Add(this.button3);
+            this.flowLayoutPanel1.Controls.Add(this.button4);
+            this.flowLayoutPanel1.Controls.Add(this.btn_fund);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(5, 424);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1179, 141);
+            this.flowLayoutPanel1.TabIndex = 3;
+            // 
+            // button2
+            // 
+            this.button2.AutoSize = true;
+            this.button2.Location = new System.Drawing.Point(3, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(193, 43);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "1.公司信息导入";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.AutoSize = true;
+            this.button3.Location = new System.Drawing.Point(202, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(166, 43);
+            this.button3.TabIndex = 4;
+            this.button3.Text = "2.公司银行信息";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.AutoSize = true;
+            this.button4.Location = new System.Drawing.Point(374, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(145, 43);
+            this.button4.TabIndex = 5;
+            this.button4.Text = "3.员工及部门信息";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // btn_fund
+            // 
+            this.btn_fund.AutoSize = true;
+            this.btn_fund.Location = new System.Drawing.Point(525, 3);
+            this.btn_fund.Name = "btn_fund";
+            this.btn_fund.Size = new System.Drawing.Size(97, 43);
+            this.btn_fund.TabIndex = 5;
+            this.btn_fund.Text = "4.基金信息";
+            this.btn_fund.UseVisualStyleBackColor = true;
+            this.btn_fund.Click += new System.EventHandler(this.btn_fund_Click);
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.dataGridView1);
@@ -133,7 +203,6 @@
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.dataGridView1.Size = new System.Drawing.Size(969, 319);
             this.dataGridView1.TabIndex = 2;
             // 
@@ -204,45 +273,6 @@
             this.openFileDialog1.Filter = "Excel 2003-2007文件|*.xls";
             this.openFileDialog1.Title = "选择作为数据的Excel文件";
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.button2);
-            this.flowLayoutPanel1.Controls.Add(this.button3);
-            this.flowLayoutPanel1.Controls.Add(this.button4);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(5, 424);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1179, 141);
-            this.flowLayoutPanel1.TabIndex = 3;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(3, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(270, 43);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "人员数据（自动处理公司和部门）";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(279, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(128, 43);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "投资档案";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(413, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(168, 43);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "职位（角色）导入";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
@@ -254,14 +284,17 @@
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "Form1";
             this.Text = "基础数据导入程序";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -286,6 +319,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ListBox lbox_info;
+        private System.Windows.Forms.Button btn_fund;
 
     }
 }

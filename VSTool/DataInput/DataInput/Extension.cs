@@ -23,5 +23,24 @@ namespace DataInput
             myCommand.Fill(ds, "table1");
             return ds;
         }
+
+        /// <summary>
+        /// 将中文逗号替换为英文半角的
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ReplaceDo(this string str)
+        {
+            if (str == null) return "";
+            return str.Replace('，', ',');
+        }
+        public static string ToJson(this object obj)
+        {
+
+            if (obj == null) return null;
+            return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+        }
     }
+
+
 }
