@@ -33,6 +33,7 @@ class FundCollectionResource {
     public static final String NULL_STATUS = "200"
     FundResourceService fundResourceService
     AuthorityService authorityService
+    def springSecurityService
 
     //新增基金
     @PUT
@@ -49,7 +50,7 @@ class FundCollectionResource {
             if (dto.minInvestmentAmount <= 0) {
                 throw new MyException("最低投资额不能为0！")
             }
-            if (dto.limitRules != { 0..1 }) {
+            if (dto.limitRules !=1 && dto.limitRules!=0) {
                 throw new MyException("投资额规则数据不合法！")
             }
             StringBuffer former = CreateNumberService.getFormerNumber(new StringBuffer("F"))
@@ -192,6 +193,7 @@ class FundCollectionResource {
         JSONObject result = new JSONObject();
         JSONArray table = new JSONArray();
         String restStatus = REST_STATUS_SUC;
+        String rest_result = ""
         int total
         JSONObject json
         def rc
@@ -203,7 +205,14 @@ class FundCollectionResource {
             rc = json.get("page")
 //        print(funcoll.size)
 //
-            def fund_all = fundResourceService.readAll()
+            def user = springSecurityService.getCurrentUser()
+            def fund_all = fundResourceService.readAll().collect{obj->
+                authorityService.getUnVisibleProperty(user,"com.jsy.fundObject.Fund")?.each{prop->
+                    if(obj.hasProperty(prop.name)){
+                        authorityService.encodeField(obj, prop.name)
+                    }
+                }
+            }
             int fund_count = fund_all.size() //统计总数
             int raise_count = 0    //在募基金数量
             long plan_total = 0     //预计募集总量
@@ -259,12 +268,13 @@ class FundCollectionResource {
             result.put("half_real_total", half_real_total)
             result.put("year_plan_total", year_plan_total)
             result.put("year_real_total", year_real_total)
+            rest_result = (rc as JSON)
         } catch (Exception e) {
             restStatus = REST_STATUS_FAI;
-            print(e)
+            rest_result = e.localizedMessage
         }
         result.put("rest_status", restStatus)
-        result.put("rest_result", rc as JSON)
+        result.put("rest_result", rest_result)
         result.put("rest_total", total)
 
 //        print("funcoll class: "+funcoll.getClass().getName())

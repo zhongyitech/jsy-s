@@ -7,6 +7,9 @@ import com.jsy.system.TypeConfig
  * 基金信息表
  */
 class Fund {
+    transient springSecurityService
+    def authorityService
+
     //关联项目
     TSProject project
 
@@ -142,6 +145,14 @@ class Fund {
     }
 
     def beforeInsert() {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){//只能判断当前用户，对于空user的情况，有可能是在bootstrap中包的
+            if(!authorityService.checkAuth("com.jsy.fundObject.Fund", "creat")){
+                authorityService.throwError("insert","fund")
+            }
+        }
+
         if (project && !project.fund) {
             project.fund = this
             project.save(failOnError: true)
@@ -149,9 +160,29 @@ class Fund {
     }
 
     def beforeUpdate() {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){
+            if(!authorityService.checkAuth("com.jsy.fundObject.Fund", "update")){
+                authorityService.throwError("update","fund")
+            }
+        }
+
         if (project && !project.fund) {
             project.fund = this
             project.save(failOnError: true)
         }
+    }
+
+
+    def beforeDelete() {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){
+            if(!authorityService.checkAuth("com.jsy.fundObject.Fund", "delete")){
+                authorityService.throwError("delete","fund")
+            }
+        }
+
     }
 }

@@ -90,6 +90,8 @@ class AuthorityService {
     }
 
     //检查用户是否有权限操作
+    //resourceName: 资源名称：基金，档案，客户，用户
+    //cz: 操作：read, creat, update, delete
     def checkAuth(String resourceName,String cz){
         User user=springSecurityService.getCurrentUser()
         def roles=UserRole.findAllByUser(user).collect{it.role}
@@ -106,6 +108,11 @@ class AuthorityService {
         return b
     }
 
+    def throwError(def operate, def domain){
+        throw new Exception("Current User does not have the $operate right of $domain, operation deny!")
+    }
+
+
     //检测用户是否具有操作资源权限
     def checkAuth(List<ResourceRole> resourceRoles,String cz){
         boolean isOk = false;
@@ -119,7 +126,84 @@ class AuthorityService {
         return isOk
     }
 
-    def serviceMethod() {
+    //获取用户的操作权限
+    def getOperationAuth(User user) {
+        def operations = []
+        def roles = UserRole.findAllByUser(user).collect{it.role}
+
+        roles?.each {role ->
+            def resources = ResourceRole.findAllByRole(role).collect{it.resource}
+            resources.each {resource ->
+                operations << resource.operations
+            }
+        }
+
+        return operations?.unique { a, b -> a.id <=> b.id }
+
+    }
+
+    //获取用户某个业务模型的字段
+    def getProperty(User user){
+        def properties = []
+        def roles = UserRole.findAllByUser(user).collect{it.role}
+
+        roles?.each {role ->
+            def resources = ResourceRole.findAllByRole(role).collect{it.resource}
+            resources.each {resource ->
+                properties << resource.propertys
+            }
+        }
+
+        return properties?.unique { a, b -> a.id <=> b.id }
+    }
+
+    //获取用户某个业务模型的字段
+    //domain: 资源类型 ： com.jsy.archives.InvestmentArchives
+    def getUnVisibleProperty(User user, def domain){
+        def properties = []
+        def roles = UserRole.findAllByUser(user).collect{it.role}
+
+        roles?.each {role ->
+            def resourceRoles = ResourceRole.findAllByRole(role).findAll{it.resource.objectName==domain}
+            resourceRoles.each {resourceRole ->
+                resourceRole.propertys?.each{pp->
+                    properties << pp
+                }
+            }
+        }
+
+        return properties?.unique { a, b -> a.id <=> b.id }
+    }
+
+    def encodeField(Object obj, String fieldName){
+        if(fieldName=="id")return;
+        if(obj."$fieldName" instanceof String){
+            obj."$fieldName"="***"
+        }else if(obj."$fieldName" instanceof BigDecimal){
+            obj."$fieldName"=-1
+        }else if(obj."$fieldName" instanceof BigDecimal){
+            obj."$fieldName"=-1
+        }else{
+            obj."$fieldName"=null
+        }
+
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

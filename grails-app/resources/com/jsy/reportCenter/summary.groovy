@@ -10,6 +10,7 @@ import com.jsy.archives.PaymentInfo
 import com.jsy.bankConfig.BankOrder
 import com.jsy.bankConfig.BankOrderEntry
 import com.jsy.fundObject.Fund
+import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException
 import grails.converters.JSON
 import groovy.sql.Sql
 
@@ -35,46 +36,51 @@ class summary {
     DataSource dataSource
 
     /**
-     * »ù½ðÄ¼¼¯Ç÷ÊÆ¼°¶Ô±ÈÍ¼
+     * ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½Ô±ï¿½Í¼
      * @return
      */
     @GET
     @Path('/fundTrend')
     Response summaryFund() {
         ok {
+            try{
+                def sql = new Sql(dataSource)
+                def list = sql.rows("SELECT * FROM fund_month_summary")
+                print(list)
+                def columns = []
+                Map columnMap = [:]
+                list.each {
+                    print(it)
+                    columns.push(it.tz_date)
+                    columnMap.put(it.fund_name + "-" + it.tz_date, it.tzje_amount)
+                }
+                def funds = []
+                list.each {
+                    if (!funds.contains(it.fund_name)) {
+                        funds.push(it.fund_name)
+                    }
+                }
 
-            def sql = new Sql(dataSource)
-            def list = sql.rows("SELECT * FROM fund_month_summary")
-            print(list)
-            def columns = []
-            Map columnMap = [:]
-            list.each {
-                print(it)
-                columns.push(it.tz_date)
-                columnMap.put(it.fund_name + "-" + it.tz_date, it.tzje_amount)
-            }
-            def funds = []
-            list.each {
-                if (!funds.contains(it.fund_name)) {
-                    funds.push(it.fund_name)
+                def items = funds.collect {
+                    entity ->
+
+                        def item = [name: entity]
+                        def data = []
+                        columns.each {
+                            l ->
+                                data.push(
+                                        columnMap.containsKey(entity + "-" + l) ? columnMap[entity + "-" + l] : 0
+                                )
+                        }
+                        item.data = data
+                        return item
+                }
+                return [columns: columns, items: items]
+            }catch(Exception e){
+                if(e.getLocalizedMessage().indexOf("Table 'test1.fund_month_summary' doesn't exist")==-1){
+                    throw e
                 }
             }
-
-            def items = funds.collect {
-                entity ->
-
-                    def item = [name: entity]
-                    def data = []
-                    columns.each {
-                        l ->
-                            data.push(
-                                    columnMap.containsKey(entity + "-" + l) ? columnMap[entity + "-" + l] : 0
-                            )
-                    }
-                    item.data = data
-                    return item
-            }
-            return [columns: columns, items: items]
         }
     }
     /**
@@ -92,7 +98,7 @@ class summary {
         }
     }
     /**
-     * »ñÈ¡Ö¸¶¨Ãû³ÆµÄ±¨±í
+     * ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½ÆµÄ±ï¿½ï¿½ï¿½
      * @param name
      * @param id
      * @return
@@ -108,14 +114,14 @@ class summary {
                     def result = [:];
                     def fund = Fund.get(id);
                     def ivs = InvestmentArchives.findAllByFund(fund);
-                    //todo:Ìí¼ÓÍ³¼ÆÊ±¼ä¶ÎµÄ¹ýÂË
+                    //todo:ï¿½ï¿½ï¿½Í³ï¿½ï¿½Ê±ï¿½ï¿½ÎµÄ¹ï¿½ï¿½ï¿½
                     def amount = ivs.sum {
                         InvestmentArchives iv ->
                             iv.tzje
                     };
-                    //ÏúÊÛ¶î
+                    //ï¿½ï¿½ï¿½Û¶ï¿½
                     result.put('amount', amount);
-                    //¶Ò¸¶
+                    //ï¿½Ò¸ï¿½
                     def pay = []
                     def tcs = []
                     ivs.each {
@@ -136,7 +142,7 @@ class summary {
                     result.put('pay', pay)
                     result.put('tc', tcs)
 
-                    //TODO:Ìí¼ÓÀûÈóºÍÏîÄ¿ÀûÏ¢
+                    //TODO:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Ï¢
                     return result
 
                     break;

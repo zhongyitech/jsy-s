@@ -2,10 +2,12 @@ package com.jsy.auth
 
 import com.jsy.bankConfig.BankAccount
 import com.jsy.system.Department
+import com.jsy.auth.AuthorityService
 
 class User {
 
 	transient springSecurityService
+	def authorityService
 
     //登陆名称
 	String username
@@ -66,14 +68,44 @@ class User {
 		UserRole.findAllByUser(this).collect { it.role }
 	}
 
-	def beforeInsert() {
+	def beforeInsert(){
+		//check operation
+		def user = springSecurityService.getCurrentUser()
+		if(user){//只能判断当前用户，对于空user的情况，有可能是在bootstrap中包的
+			if(!authorityService.checkAuth("com.jsy.auth.User", "creat")){
+				authorityService.throwError("insert","user");
+			}
+		}
+
+
+
 		encodePassword()
 	}
 
 	def beforeUpdate() {
+		//check operation
+		def user = springSecurityService.getCurrentUser()
+		if(user){
+			if(!authorityService.checkAuth("com.jsy.auth.User", "update")){
+				authorityService.throwError("update","user");
+			}
+		}
+
+
 		if (isDirty('password')) {
 			encodePassword()
 		}
+	}
+
+	def beforeDelete() {
+		//check operation
+		def user = springSecurityService.getCurrentUser()
+		if(user){
+			if(!authorityService.checkAuth("com.jsy.auth.User", "delete")){
+				authorityService.throwError("delete","user");
+			}
+		}
+
 	}
 
 	protected void encodePassword() {

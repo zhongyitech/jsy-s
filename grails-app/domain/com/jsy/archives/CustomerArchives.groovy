@@ -5,6 +5,9 @@ import com.jsy.system.UploadFile
 
 //投资档案中的客户信息(生成投资档案时的信息）
 class CustomerArchives {
+    transient springSecurityService
+    def authorityService
+
     //客户名称
     String name
 
@@ -63,5 +66,39 @@ class CustomerArchives {
     }
     static mapping = {
         zch column: 'zch_me'
+    }
+
+
+    def beforeInsert(){
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){//只能判断当前用户，对于空user的情况，有可能是在bootstrap中包的
+            if(!authorityService.checkAuth("com.jsy.customerObject.Customer", "creat")){
+                authorityService.throwError("insert","customer");
+            }
+        }
+
+    }
+
+    def beforeUpdate() {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){
+            if(!authorityService.checkAuth("com.jsy.customerObject.Customer", "update")){
+                authorityService.throwError("update","customer");
+            }
+        }
+
+    }
+
+    def beforeDelete() {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){
+            if(!authorityService.checkAuth("com.jsy.customerObject.Customer", "delete")){
+                authorityService.throwError("delete","customer");
+            }
+        }
+
     }
 }

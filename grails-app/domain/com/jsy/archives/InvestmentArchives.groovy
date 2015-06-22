@@ -14,6 +14,9 @@ import com.jsy.utility.MyException
  * 投资档案
  */
 class InvestmentArchives {
+    transient springSecurityService
+    def authorityService
+
 
     //投资档案编号，自动生成
     String markNum
@@ -115,6 +118,14 @@ class InvestmentArchives {
      * @return
      */
     def beforeInsert() throws MyException {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){//只能判断当前用户，对于空user的情况，有可能是在bootstrap中包的
+            if(!authorityService.checkAuth("com.jsy.archives.InvestmentArchives", "creat")){
+                authorityService.throwError("insert","investment")
+            }
+        }
+
         //新的投资档案本金与投资相等
         bj = tzje
         /*  自动计算到期日期，不使用传入的数据 */
@@ -144,6 +155,14 @@ class InvestmentArchives {
      * 更新的时候验证投资金额
      */
     def beforeUpdate() throws MyException {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){//只能判断当前用户，对于空user的情况，有可能是在bootstrap中包的
+            if(!authorityService.checkAuth("com.jsy.archives.InvestmentArchives", "update")){
+                authorityService.throwError("update","investment")
+            }
+        }
+
         if (this.fund.limitRules == 0) {
             if (this.tzje < this.fund.minInvestmentAmount) {
                 throw new MyException("投资金额不满足基金（" + this.fund.fundName + "）的最低投资额(" + this.fund.minInvestmentAmount + ")要求！")
@@ -155,6 +174,18 @@ class InvestmentArchives {
             }
         }
     }
+
+    def beforeDelete() {
+        //check operation
+        def user = springSecurityService.getCurrentUser()
+        if(user){
+            if(!authorityService.checkAuth("com.jsy.archives.InvestmentArchives", "delete")){
+                authorityService.throwError("delete","investment")
+            }
+        }
+
+    }
+
     static constraints = {
         archiveNum unique: true
         contractNum unique: true

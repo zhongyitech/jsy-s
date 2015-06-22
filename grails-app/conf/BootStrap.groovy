@@ -28,11 +28,14 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class BootStrap {
+    def metaInitService
+    def authInitService
 
     def init = {
         servletContext ->
-            init_metaExtend();
+            metaInitService.init()
             initFlowModel();
+
 
             def users = User.findAllByUsername('admin')
             if (users && users.size() > 0) {
@@ -83,6 +86,12 @@ class BootStrap {
                     , city: '深圳市', address: '深圳市罗湖区', area: '罗湖区', corporate: "法定表人", foundingDate: new Date(), province: "广东省", status: "正常", companyType:
                     TypeConfig.findByTypeAndMapValue(6, 1), protocolTemplate: 0)
                     .save(failOnError: true)
+
+            def defaultCompany2 = new FundCompanyInformation(companyName: "深圳金赛银有限合伙", companyNickName: "JSY2", telephone: "0755-8888888", fax: "0755-8888888"
+                    , city: '深圳市', address: '深圳市罗湖区', area: '罗湖区', corporate: "法定表人", foundingDate: new Date(), province: "广东省", status: "正常", companyType:
+                    TypeConfig.findByTypeAndMapValue(6, 2), protocolTemplate: 0)
+            defaultCompany2.addToPartner(defaultCompany)
+            defaultCompany2.save(failOnError: true)
             //预定入公司组织结构
             def ceoDeparment = new Department(deptName: "董事会", performance: performance1, fundCompanyInformation: defaultCompany, type: 0, description: "", status: 0, buildDate: new Date()).save(failOnError: true)
 
@@ -624,42 +633,11 @@ class BootStrap {
             new OperationsAPI(resoureClass: CustomerArchives.class.toString(), url: '/api/customerArchives/getcustomer', method: 'GET', czlx: 'read').save(failOnError: true)
             //todo:继续添加更多的操作功能权限
 
-
+            authInitService.init();
     }
 
     def destroy = {
 
-    }
-
-    def init_metaExtend = {
-        print("Set Date out format 'yyyy/MM/dd HH:mm:ss'")
-        JSON.registerObjectMarshaller(Date) {
-            return it?.format("yyyy/MM/dd HH:mm:ss")
-        }
-        println "init_metaExtend start"
-        Object.metaClass.union = { obj ->
-            obj.properties.each { prop, val ->
-                if (prop in ["metaClass", "class"]) return
-                if (delegate.delegate.hasProperty(prop) && val) {
-                    if (delegate.delegate.hasProperty(prop).setter) {
-                        delegate.delegate[prop] = val
-                    } else {
-                    }
-                }
-            }
-        }
-
-        Object.metaClass.unionMap = { map ->
-            map.each {
-                if (delegate.delegate.hasProperty(it.key)) {
-                    if (delegate.delegate.hasProperty(it.key).setter) {
-                        delegate.delegate[it.key] = it.value
-                    } else {
-
-                    }
-                }
-            }
-        }
     }
 
     def initFlowModel = {
