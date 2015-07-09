@@ -62,7 +62,7 @@ namespace DataInput
 
         private void button4_Click(object sender, EventArgs e)
         {
-            var dt = _data.Tables["职位"];
+            var dt = getTableForName("职位");
             var data = new List<String>();
             foreach (DataRow item in dt.Rows)
             {
@@ -73,15 +73,31 @@ namespace DataInput
                 //RESTapi.Post("/api/role", "", d);
             }
         }
-
+        /// <summary>
+        /// 处理基金资料
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_fund_Click(object sender, EventArgs e)
         {
-            var dt = _data.Tables["基金资料"];
+            var dt = getTableForName("基金资料");
             foreach (DataRow dr in dt.Rows)
             {
                 var tcfw = dr.Field<string>("收益率范围").ReplaceDo();
                 Console.WriteLine("{0}",dr.ItemArray.ToJson());
             }
         }        
+
+        /* 数据源相关方法 */
+        DataTable getTableForName(string dtName)
+        {
+            return _data.Tables.Contains(dtName) ? _data.Tables[dtName] : null;            
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            RESTapi.Test();
+        }                
+        //
     }
 }

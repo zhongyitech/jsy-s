@@ -553,25 +553,29 @@ class InvestmentArchivesCollectionResource {
 
     @POST
     @Path('/readAllForPage')
-    Response readAllForPage(Finfo finfo) {
-        JSONObject result = new JSONObject();
-        String restStatus = REST_STATUS_SUC;
-        int total
-        def ia
-        ia = investmentArchivesResourceService.findByParm(finfo.keyword)
-        total = ia.size()
-        try {
-            JSONObject json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
-            total = json.get("size")
-            ia = json.get("page")
-        } catch (Exception e) {
-            restStatus = REST_STATUS_FAI;
-            print(e)
+    Response readAllForPage(Map query) {
+
+        MyResponse.page {
+            return  DomainHelper.getPage(InvestmentArchives,query)
         }
-        result.put("rest_status", restStatus)
-        result.put("rest_result", ia)
-        result.put("rest_total", total)
-        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
+//        JSONObject result = new JSONObject();
+//        String restStatus = REST_STATUS_SUC;
+//        int total
+//        def ia
+//        ia = investmentArchivesResourceService.findByParm(finfo.keyword)
+//        total = ia.size()
+//        try {
+//            JSONObject json = investmentArchivesResourceService.readAllForPage(finfo.pagesize, finfo.startposition, finfo.keyword)
+//            total = json.get("size")
+//            ia = json.get("page")
+//        } catch (Exception e) {
+//            restStatus = REST_STATUS_FAI;
+//            print(e)
+//        }
+//        result.put("rest_status", restStatus)
+//        result.put("rest_result", ia)
+//        result.put("rest_total", total)
+//        return Response.ok(result.toString()).status(RESPONSE_STATUS_SUC).build()
     }
 
     def formatClassToValue(JSONObject object) {
